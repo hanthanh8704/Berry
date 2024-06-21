@@ -15,20 +15,36 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Divider } from '@mui/material';
 
 // Dummy data for orders
 const orders = [
-  { id: 1, code: 'HD001', customer: 'John Doe', totalMoney: 1000, status: 'Completed', details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-  { id: 2, code: 'HD002', customer: 'Jane Smith', totalMoney: 1500, status: 'Pending', details: 'Nulla vitae elit libero, a pharetra augue.' },
-  { id: 3, code: 'HD003', customer: 'Mike Brown', totalMoney: 800, status: 'Completed', details: 'Donec sed odio dui.' },
-  { id: 4, code: 'HD004', customer: 'Emily Johnson', totalMoney: 1200, status: 'Cancelled', details: 'Maecenas sed diam eget risus varius blandit.' },
-  { id: 5, code: 'HD005', customer: 'David Wilson', totalMoney: 900, status: 'Completed', details: 'Nullam id dolor id nibh ultricies vehicula ut id elit.' },
-  { id: 6, code: 'HD006', customer: 'Sarah Parker', totalMoney: 1100, status: 'Pending', details: 'Maecenas faucibus mollis interdum.' },
-  { id: 7, code: 'HD007', customer: 'Adam Taylor', totalMoney: 1300, status: 'Completed', details: 'Integer posuere erat a ante venenatis dapibus posuere velit aliquet.' },
-  { id: 8, code: 'HD008', customer: 'Olivia White', totalMoney: 950, status: 'Pending', details: 'Cras mattis consectetur purus sit amet fermentum.' },
-  { id: 9, code: 'HD009', customer: 'Liam Harris', totalMoney: 850, status: 'Cancelled', details: 'Aenean lacinia bibendum nulla sed consectetur.' },
-  { id: 10, code: 'HD010', customer: 'Sophia Martin', totalMoney: 1050, status: 'Completed', details: 'Duis mollis, est non commodo luctus, nisi erat porttitor ligula.' },
+  { 
+    id: 1, 
+    code: 'HD001', 
+    customer: 'John Doe', 
+    totalMoney: 1000, 
+    status: 'Completed', 
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 
+    history: [
+      { timestamp: '2024-06-20T10:00:00Z', status: 'Processing' },
+      { timestamp: '2024-06-20T11:30:00Z', status: 'Packed' },
+      { timestamp: '2024-06-20T13:00:00Z', status: 'Shipped' },
+      { timestamp: '2024-06-20T15:00:00Z', status: 'Delivered' },
+    ]
+  },
+  { 
+    id: 2, 
+    code: 'HD002', 
+    customer: 'Jane Smith', 
+    totalMoney: 1500, 
+    status: 'Pending', 
+    details: 'Nulla vitae elit libero, a pharetra augue.', 
+    history: [
+      { timestamp: '2024-06-21T14:30:00Z', status: 'Processing' },
+    ]
+  },
+  // Add more orders as needed
 ];
 
 const Bill = () => {
@@ -119,7 +135,28 @@ const Bill = () => {
               <strong>Status:</strong> {selectedOrder.status}<br />
               <strong>Details:</strong> {selectedOrder.details}<br />
             </Typography>
-            <Button variant="contained" color="primary" onClick={handleClearDetails}>
+            <Typography variant="h6" gutterBottom>
+              Order History
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Timestamp</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {selectedOrder.history.map((step, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{step.timestamp}</TableCell>
+                      <TableCell>{step.status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Button variant="contained" color="primary" onClick={handleClearDetails} sx={{ mt: 2 }}>
               Back to Orders
             </Button>
           </Paper>
