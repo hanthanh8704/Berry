@@ -1,9 +1,9 @@
 // assets
-import { IconShirtSport } from '@tabler/icons-react';
+import { IconShirt } from '@tabler/icons-react';
 
 // constant
 const icons = {
-  IconShirtSport
+  IconShirt
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -16,9 +16,24 @@ const product = {
       id: 'product-management',
       title: 'Quản Lý Sản Phẩm',
       type: 'collapse',
-      icon: icons.IconShirtSport,
+      icon: icons.IconShirt,
 
       children: [
+        // {
+        //   id: 'product',
+        //   title: 'Sản Phẩm',
+        //   type: 'item',
+        //   url: '/products',
+        //   target: true
+        // },
+        {
+          id: 'product',
+          title: 'Sản Phẩm',
+          type: 'item',
+          icon: icons.IconShirtSport,
+          url: '/products',
+          breadcrumbs: false
+        },
         {
           id: 'color',
           title: 'Màu Sắc',
