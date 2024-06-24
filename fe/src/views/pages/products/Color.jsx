@@ -14,11 +14,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 const initialColors = [
-    { id: 1, name: 'Đỏ', code: 'RED', hex: '#FF0000', dateAdded: '2024-01-01' },
-    { id: 2, name: 'Xanh lá', code: 'GRN', hex: '#00FF00', dateAdded: '2024-02-15' },
-    { id: 3, name: 'Xanh dương', code: 'BLU', hex: '#0000FF', dateAdded: '2024-03-20' },
-    { id: 4, name: 'Vàng', code: 'YEL', hex: '#FFFF00', dateAdded: '2024-04-10' },
-    { id: 5, name: 'Đen', code: 'BLK', hex: '#000000', dateAdded: '2024-05-05' },
+    { id: 1, name: 'Đỏ', code: 'MS001', status: 'Khả dụng', dateAdded: '2024-01-01' },
+    { id: 2, name: 'Xanh lá', code: 'MS002', status: 'Khả dụng', dateAdded: '2024-02-15' },
+    { id: 3, name: 'Xanh dương', code: 'MS003', status: 'Khả dụng', dateAdded: '2024-03-20' },
+    { id: 4, name: 'Vàng', code: 'MS004', status: 'Khả dụng', dateAdded: '2024-04-10' },
+    { id: 5, name: 'Đen', code: 'MS005', status: 'Khả dụng', dateAdded: '2024-05-05' },
 ];
 
 export default function Color() {
@@ -28,7 +28,7 @@ export default function Color() {
     const [searchValue, setSearchValue] = useState('');
     const [selectedColor, setSelectedColor] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [formValues, setFormValues] = useState({ id: '', name: '', code: '', hex: '' });
+    const [formValues, setFormValues] = useState({ id: '', name: '', code: '', status: 'Khả dụng' });
 
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage);
@@ -52,14 +52,14 @@ export default function Color() {
             setColors([...colors, newColor]);
         }
         setIsDialogOpen(false);
-        setFormValues({ id: '', name: '', code: '', hex: '' });
+        setFormValues({ id: '', name: '', code: '', status: 'Khả dụng' });
     };
 
     const handleDeleteColor = (id) => {
         setColors(colors.filter(color => color.id !== id));
     };
 
-    const openDialog = (color = { id: '', name: '', code: '', hex: '' }) => {
+    const openDialog = (color = { id: '', name: '', code: '', status: 'Khả dụng' }) => {
         setFormValues(color);
         setIsDialogOpen(true);
     };
@@ -118,9 +118,9 @@ export default function Color() {
                             Chi tiết màu sắc
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            <strong>Tên màu:</strong> {selectedColor.name}<br />
+                            <strong>Tên:</strong> {selectedColor.name}<br />
                             <strong>Mã:</strong> {selectedColor.code}<br />
-                            <strong>Mã hex:</strong> {selectedColor.hex}<br />
+                            <strong>Trạng thái:</strong> {selectedColor.status}<br />
                             <strong>Ngày thêm:</strong> {selectedColor.dateAdded}<br />
                         </Typography>
                         <Button variant="contained" color="primary" onClick={handleClearDetails}>
@@ -133,10 +133,10 @@ export default function Color() {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>#</TableCell>
-                                    <TableCell>Tên màu</TableCell>
+                                    <TableCell>STT</TableCell>
+                                    <TableCell>Tên</TableCell>
                                     <TableCell>Mã</TableCell>
-                                    <TableCell>Mã hex</TableCell>
+                                    <TableCell>Trạng thái</TableCell>
                                     <TableCell>Ngày thêm</TableCell>
                                     <TableCell>Hành động</TableCell>
                                 </TableRow>
@@ -147,7 +147,19 @@ export default function Color() {
                                         <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
                                         <TableCell>{color.name}</TableCell>
                                         <TableCell>{color.code}</TableCell>
-                                        <TableCell>{color.hex}</TableCell>
+                                        <TableCell>
+                                            <span
+                                                style={{
+                                                    backgroundColor: color.status === 'Khả dụng' ? 'green' : 'red',
+                                                    color: 'white',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '20px',
+                                                    display: 'inline-block'
+                                                }}
+                                            >
+                                                {color.status}
+                                            </span>
+                                        </TableCell>
                                         <TableCell>{color.dateAdded}</TableCell>
                                         <TableCell>
                                             <Button variant="outlined" color="primary" onClick={() => handleViewDetails(color)}>
@@ -204,12 +216,12 @@ export default function Color() {
                     />
                     <TextField
                         margin="dense"
-                        name="hex"
-                        label="Mã hex"
+                        name="status"
+                        label="Trạng thái"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        value={formValues.hex}
+                        value={formValues.status}
                         onChange={handleFormChange}
                     />
                 </DialogContent>

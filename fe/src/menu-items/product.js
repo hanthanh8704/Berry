@@ -19,76 +19,58 @@ const product = {
       icon: icons.IconShirt,
 
       children: [
-        // {
-        //   id: 'product',
-        //   title: 'Sản Phẩm',
-        //   type: 'item',
-        //   url: '/products',
-        //   target: true
-        // },
         {
           id: 'product',
           title: 'Sản Phẩm',
           type: 'item',
           icon: icons.IconShirtSport,
           url: '/products',
-          breadcrumbs: false
+          target: false
         },
         {
           id: 'color',
           title: 'Màu Sắc',
           type: 'item',
           url: '/products/color',
-          target: true
+          target: false
         },
         {
           id: 'size',
           title: 'Kích Thước',
           type: 'item',
           url: '/products/size',
-          target: true
+          target: false
         },
         {
           id: 'label',
           title: 'Nhãn Hiệu',
           type: 'item',
           url: '/products/label',
-          target: true
-        },
-        {
-          id: 'style',
-          title: 'Dáng Áo',
-          type: 'item',
-          url: '/products/style',
-          target: true
-        },
-        {
-          id: 'sleeve',
-          title: 'Tay Áo',
-          type: 'item',
-          url: '/products/sleeve',
-          target: true
-        },
-        {
-          id: 'pattern',
-          title: 'Họa Tiết',
-          type: 'item',
-          url: '/products/pattern',
-          target: true
+          target: false
         },
         {
           id: 'material',
           title: 'Chất Liệu',
           type: 'item',
           url: '/products/material',
-          target: true
+          target: false
         },
+
+        {
+          id: 'sleeve',
+          title: ' Kiểu Tay Áo',
+          type: 'item',
+          url: '/products/sleeve',
+          target: false
+        },
+
+
         {
           id: 'collar',
-          title: 'Cổ Áo',
+          title: ' Kiểu Cổ Áo',
           type: 'item',
           url: '/products/collar',
-          target: true
+          target: false
         }
       ]
     }

@@ -1,10 +1,13 @@
 import { lazy } from 'react';
 
 // project imports
+
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import Product from 'views/pages/products/Product';
 import Color from 'views/pages/products/Color';
+import Size from 'views/pages/products/Size';
+
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
@@ -35,9 +38,16 @@ const MainRoutes = {
       element: <Product />
     },
     {
+      path: '/products/size',
+      element: <Size />
+    },
+
+    {
       path: '/products/color',
       element: <Color />
     },
+
+
     {
       path: 'dashboard',
       children: [

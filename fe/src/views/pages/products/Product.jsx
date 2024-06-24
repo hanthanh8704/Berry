@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Pagination from '@mui/material/Pagination';
+import { Grid, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, Box } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
 
 const initialTShirts = [
     { id: 1, name: 'Áo phông trắng', code: 'TS001', quantity: 50, status: 'Còn hàng', dateAdded: '2024-01-01' },
@@ -147,8 +144,8 @@ const Product = () => {
                             Chi tiết áo phông
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            <strong>Tên áo:</strong> {selectedTShirt.name}<br />
                             <strong>Mã:</strong> {selectedTShirt.code}<br />
+                            <strong>Tên áo:</strong> {selectedTShirt.name}<br />
                             <strong>Số lượng:</strong> {selectedTShirt.quantity}<br />
                             <strong>Trạng thái:</strong> {selectedTShirt.status}<br />
                             <strong>Ngày thêm:</strong> {selectedTShirt.dateAdded}<br />
@@ -159,15 +156,16 @@ const Product = () => {
                     </Paper>
                 ) : (
                     // Bảng danh sách áo phông
-                    <TableContainer component={Paper}>
-                        <Table>
+                    <TableContainer component={Paper} sx={{ border: '1px solid #ccc' }}>
+                        <Table sx={{ borderCollapse: 'collapse' }}>
                             <TableHead>
-                                <TableRow>
+                                <TableRow sx={{ backgroundColor: '#e0f7fa' }}>
                                     <TableCell>STT</TableCell>
-                                    <TableCell>Tên áo</TableCell>
                                     <TableCell>Mã</TableCell>
+                                    <TableCell>Tên áo</TableCell>
                                     <TableCell>Số lượng</TableCell>
                                     <TableCell>Trạng thái</TableCell>
+                                    <TableCell>Ngày thêm</TableCell>
                                     <TableCell>Hành động</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -175,20 +173,50 @@ const Product = () => {
                                 {paginatedTShirts.map((tshirt, index) => (
                                     <TableRow key={tshirt.id}>
                                         <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
-                                        <TableCell>{tshirt.name}</TableCell>
                                         <TableCell>{tshirt.code}</TableCell>
+                                        <TableCell>{tshirt.name}</TableCell>
                                         <TableCell>{tshirt.quantity}</TableCell>
-                                        <TableCell>{tshirt.status}</TableCell>
                                         <TableCell>
-                                            <Button variant="outlined" color="primary" onClick={() => handleViewDetails(tshirt)}>
-                                                Chi tiết
-                                            </Button>
-                                            <Button variant="outlined" color="secondary" onClick={() => openDialog(tshirt)}>
-                                                Sửa
-                                            </Button>
-                                            <Button variant="outlined" color="error" onClick={() => handleDeleteTShirt(tshirt.id)}>
-                                                Xóa
-                                            </Button>
+                                            <span
+                                                style={{
+                                                    backgroundColor: tshirt.status === 'Còn hàng' ? 'green' : 'red',
+                                                    color: 'white',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '20px',
+                                                    display: 'inline-block'
+                                                }}
+                                            >
+                                                {tshirt.status}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell>{tshirt.dateAdded}</TableCell>
+                                        <TableCell>
+                                            <Box display="flex" justifyContent="space-around">
+                                                <Button
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    onClick={() => handleViewDetails(tshirt)}
+                                                    sx={{ borderRadius: '8px' }}
+                                                >
+                                                    Chi tiết
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    onClick={() => openDialog(tshirt)}
+                                                    sx={{ borderRadius: '8px' }}
+                                                >
+                                                    Sửa
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    onClick={() => handleDeleteTShirt(tshirt.id)}
+                                                    sx={{ borderRadius: '8px' }}
+                                                >
+                                                    Xóa
+                                                </Button>
+                                            </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -257,7 +285,9 @@ const Product = () => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={closeDialog} color="secondary">Hủy</Button>
+                    <Button onClick={closeDialog} color="secondary">
+                        Hủy
+                    </Button>
                     <Button onClick={handleAddUpdateTShirt} color="primary">
                         {formValues.id ? 'Lưu' : 'Thêm'}
                     </Button>
