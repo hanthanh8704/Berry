@@ -2,14 +2,12 @@
 import { IconShirtSport } from '@tabler/icons-react';
 
 // constant
-const icons = {
-  IconShirtSport
-};
+const icons = { IconShirtSport };
 
-// ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
-
+// Product menu items
 const product = {
   id: 'product',
+  title: 'Quản Lý Sản Phẩm',
   type: 'group',
   children: [
     {
@@ -17,12 +15,12 @@ const product = {
       title: 'Quản Lý Sản Phẩm',
       type: 'collapse',
       icon: icons.IconShirtSport,
-
       children: [
         {
           id: 'color',
           title: 'Màu Sắc',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/color',
           target: true
         },
@@ -30,6 +28,7 @@ const product = {
           id: 'size',
           title: 'Kích Thước',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/size',
           target: true
         },
@@ -37,6 +36,7 @@ const product = {
           id: 'label',
           title: 'Nhãn Hiệu',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/label',
           target: true
         },
@@ -44,6 +44,7 @@ const product = {
           id: 'style',
           title: 'Dáng Áo',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/style',
           target: true
         },
@@ -51,6 +52,7 @@ const product = {
           id: 'sleeve',
           title: 'Tay Áo',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/sleeve',
           target: true
         },
@@ -58,6 +60,7 @@ const product = {
           id: 'pattern',
           title: 'Họa Tiết',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/pattern',
           target: true
         },
@@ -65,6 +68,7 @@ const product = {
           id: 'material',
           title: 'Chất Liệu',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/material',
           target: true
         },
@@ -72,6 +76,7 @@ const product = {
           id: 'collar',
           title: 'Cổ Áo',
           type: 'item',
+          icon: icons.IconShirtSport,
           url: '/products/collar',
           target: true
         }
