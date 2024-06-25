@@ -30,5 +30,5 @@ public class MauSac {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 }

@@ -24,7 +24,7 @@ public class HoaDonChiTiet {
     private HoaDon hoaDon;
     @ManyToOne
     @JoinColumn(name = "id_chi_tiet_san_pham")
-    private ChiTietSanPham idChiTietSanPham;
+    private ChiTietSanPham chiTietSanPham;
 
     @Column(name = "so_luong")
     private Integer soLuong;
@@ -33,7 +33,7 @@ public class HoaDonChiTiet {
     private BigDecimal donGia;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

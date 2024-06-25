@@ -1,22 +1,45 @@
 package com.example.be.dto.response;
+
 import com.example.be.entity.HoaDon;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
-import java.time.LocalDateTime;
-
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+/*
+ * Projection là một cơ chế cho phép bạn xác định chính xác các trường dữ liệu mà bạn muốn trả về từ một entity khi nó được truy xuất thông qua REST API
+ *
+ * */
 @Projection(types = {HoaDon.class})
-public interface BillResponse {
+public interface HoaDonResponse {
     @Value("#{target.indexs}")
-    Integer getIndex();
+    Integer getInteger();
     Integer getId();
     String getMa();
-    LocalDateTime getNgayTao();
-    LocalDateTime getNgaySua();
+    String getLoaiHoaDon();
+    String getTenNguoiNhan();
+    BigDecimal getTongTien();
+    BigDecimal getPhiShip();
+    String getEmailNguoiNhan();
+    String getSoDienThoaiNguoiNhan();
+    String getTrangThaiHoaDon();
+    String getTrangThaiGiaoHang();
+    Timestamp getNgayGiaoHang();
+    Integer getMaGiaoDich();
+    Timestamp getNgayNhanHang();
+    BigDecimal getTongTienSauGiamGia();
+    String getDiaChi();
+    String getGhiChu();
+    Timestamp getNgayTao();
+    Timestamp getNgaySua();
     String getNguoiTao();
     String getNguoiSua();
-    String getNhanVien();
-    String getKhachHang();
+
+    // Add methods for fetching related entities if needed
+    String getNhanVien(); // Example: Fetching tenNhanVien from NhanVien entity
+    String getKhachHang(); // Example: Fetching tenKhachHang from KhachHang entity
+}
+
 /*
 @Value("#{target.indexs}") Integer getIndex();: Lấy giá trị indexs từ thực thể Bill.
 Long getId();: Lấy giá trị id từ thực thể Bill.
@@ -38,4 +61,3 @@ Integer getStatus();: Lấy giá trị status từ thực thể Bill.
 String getVoucher();: Lấy giá trị từ trường voucher của thực thể Bill.
 String getNote();: Lấy giá trị note từ thực thể Bill.
  */
-}

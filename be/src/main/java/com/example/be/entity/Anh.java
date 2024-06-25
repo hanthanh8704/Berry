@@ -20,8 +20,8 @@ public class Anh {
     @Column(name = "ma")
     private String ma;
 
-    @Column(name = "ten")
-    private String ten;
+    @Column(name = "anh")
+    private String anh;
 
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

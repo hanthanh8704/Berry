@@ -1,0 +1,38 @@
+/* Bill.css */
+.custom-table {
+    background-color: #7bbffb; /* Màu nền của bảng */
+  }
+  
+  .custom-table .ant-table-thead {
+    background-color: #1890ff; 
+  }
+
+/* Định nghĩa các lớp CSS cho các cột */
+.custom-table .ant-table-thead th.ant-table-cell {
+    background-color: #74b9ff; /* Màu nền của tiêu đề cột */
+    color: #1a1a1a; /* Màu chữ của tiêu đề cột */
+    font-weight: bold; /* Độ đậm của chữ */
+    text-align: center; /* Căn giữa nội dung */
+    padding: 12px; /* Khoảng cách lề bên trong */
+    border-bottom: 1px solid #ddd; /* Đường viền dưới */
+  }
+  
+  /* Định nghĩa các lớp CSS cho bảng */
+  .custom-table {
+    background-color: #f0f0f0; /* Màu nền */
+    border: 1px solid #ddd; /* Viền */
+    border-radius: 8px; /* Bo góc */
+    padding: 10px; /* Khoảng cách nội bộ */
+  }
+  
+  /* Định nghĩa các lớp CSS cho các nút và icon */
+  .custom-button {
+    background-color: #108ee9; /* Màu nền nút */
+    color: white; /* Màu chữ nút */
+    border: none; /* Không có viền */
+  }
+  
+  .custom-icon {
+    color: #ff9900; /* Màu của icon */
+  }
+  

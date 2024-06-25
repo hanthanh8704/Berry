@@ -50,7 +50,7 @@ public class NhanVien {
     private String matKhau;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

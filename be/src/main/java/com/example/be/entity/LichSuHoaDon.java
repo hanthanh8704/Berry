@@ -31,7 +31,7 @@ public class LichSuHoaDon {
     private String ma;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "ghi_chu")
     private String ghiChu;

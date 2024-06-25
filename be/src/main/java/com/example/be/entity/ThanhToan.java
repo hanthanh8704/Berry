@@ -24,14 +24,14 @@ public class ThanhToan {
     @Column(name = "ma")
     private String ma;
 
-    @Column(name = "hinh_thuc_thanh_toan")
-    private String hinhThucThanhToan;
+    @Column(name = "ten_hinh_thuc")
+    private String tenHinhThuc;
 
     @Column(name = "tong_tien_thanh_toan")
     private BigDecimal tongTienThanhToan;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
     @CreationTimestamp
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

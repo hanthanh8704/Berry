@@ -31,6 +31,6 @@ public class TayAo {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
 }

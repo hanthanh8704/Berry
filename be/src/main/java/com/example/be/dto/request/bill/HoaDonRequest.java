@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HoaDonRequest {
+    // DTO Data Transfer Object
     private Integer id;
     private String ma;
     private String tenNhanVien; // Thay vì idNhanVien
@@ -25,7 +26,6 @@ public class HoaDonRequest {
     private BigDecimal tongTien;
     private BigDecimal phiShip;
     private String emailNguoiNhan;
-
     @Size(max = 20, message = "Phone number should not be greater than 20 characters")
     private String soDienThoaiNguoiNhan;
 
