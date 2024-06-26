@@ -10,7 +10,9 @@ const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
 const DotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/dotgiamgia.jsx')));
 const AddDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/AddDotGiamGia.jsx')));
-const PhieuGiamGia = Loadable(lazy(() => import('views/pages/PhieuGiamGia/phieugiamgia.jsx'))); 
+const DetailDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/DetailDotGiamGia.jsx')));
+const UpdateDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/UpdateDotGiamGia.jsx')));
+const PhieuGiamGia = Loadable(lazy(() => import('views/pages/PhieuGiamGia/phieugiamgia.jsx')));
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
@@ -39,6 +41,10 @@ const MainRoutes = {
     {
       path: '/dot-giam-gia/add',
       element: <AddDotGiamGia />
+    },
+    {
+      path: '/dot-giam-gia/detail/:id',
+      element: <DetailDotGiamGia />
     },
     {
       path: '/phieu-giam-gia',

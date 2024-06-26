@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Button, Box, Grid, TextField, Checkbox, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,106 +10,62 @@ import Pagination from '@mui/material/Pagination';
 import CheckIcon from '@mui/icons-material/Check';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-
+import StarIcon from '@mui/icons-material/Star';
+import { useNavigate, useParams } from 'react-router-dom';
+import { listSanPham } from '../api/SanPhamApi/SanPham.js'
+import { listSanPhamCT } from '../api/ChiTietSanPhamApi/ChiTietSanPhamApi.js'
 const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(5);
     const [searchValue, setSearchValue] = useState('');
+    const [searchValueSCT, setsearchValueSCT] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [sanPham, setSanPham] = useState([]);
+
 
     const [selectedSanPhamIds, setSelectedSanPhamIds] = useState([]);
     const [sanPhamCT, setSanPhamCT] = useState([]);
     const [allChecked, setAllChecked] = useState(false);
     const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
+    const navigate = useNavigate();
 
-    const handleCheckboxChange = (sanPhamId) => {
-        setSelectedCheckboxes((prevSelectedCheckboxes) => ({
-            ...prevSelectedCheckboxes,
-            [sanPhamId]: !prevSelectedCheckboxes[sanPhamId], // Đảo ngược trạng thái checkbox
-        }));
-    };
+    //Diềm nó vào danh sách san pham 
+    useEffect(() => {
+        getAllSanPham();
+    }, [])
+    //Get hiển thị 
+    function getAllSanPham() {
+        listSanPham().then((response) => {
+            setSanPham(response.data);
+        }).catch(error => {
+            console.error(error)
+        })
+    }
+
+    // Diềm nó vào danh sách chi tiết sản phẩm 
+    useEffect(() => {
+        getAllSanPhamCT();
+    }, [])
+    //Get hiển thị 
+    function getAllSanPhamCT() {
+        listSanPhamCT().then((response) => {
+            setSanPhamCT(response.data);
+        }).catch(error => {
+            console.error(error)
+        })
+    }
 
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage);
     };
 
+
     const handleStatusChange = (event) => {
         setFilterStatus(event.target.value);
-        setCurrentPage(1); // Reset page when status filter changes
+        setCurrentPage(1);
     };
-
-    const handleViewDetails = (dotGiamGia) => {
-        setSelectedOrder(dotGiamGia);
-    };
-
-    const handleClearDetails = () => {
-        setSelectedOrder(null);
-    };
-
-
-    const [formData, setFormData] = useState({
-        ten: '',
-        giaTri: '',
-        startDate: '',
-        endDate: '',
-        status: 'All'
-    });
-
-    const sanPham = [
-        { id: 1, ten: 'Sản phẩm 1', },
-        { id: 2, ten: 'Sản phẩm 2', },
-        { id: 3, ten: 'Sản phẩm 3', },
-        { id: 4, ten: 'Sản phẩm 4', },
-        { id: 5, ten: 'Sản phẩm 5', },
-        { id: 6, ten: 'Sản phẩm 6', },
-        { id: 7, ten: 'Sản phẩm 7', },
-        { id: 8, ten: 'Sản phẩm 8', },
-    ];
-
-    const handleCheckboxChangeSPCT = (idSanPham) => {
-        let updatedSelectedIds = [...selectedSanPhamIds];
-        if (updatedSelectedIds.includes(idSanPham)) {
-            updatedSelectedIds = updatedSelectedIds.filter(id => id !== idSanPham);  // Bỏ chọn sản phẩm
-        } else {
-            updatedSelectedIds.push(idSanPham);  // Chọn thêm sản phẩm
-        }
-        setSelectedSanPhamIds(updatedSelectedIds);
-
-        // Lọc chi tiết sản phẩm tương ứng với các sản phẩm đã chọn
-        const filteredSanPhamCT = sanPhamCTData.filter(item => updatedSelectedIds.includes(item.idSanPham));
-        setSanPhamCT(filteredSanPhamCT);
-
-        // Cập nhật trạng thái của checkbox "Chọn tất cả"
-        setAllChecked(updatedSelectedIds.length === paginatedOrders.length);
-    };
-    const handleSelectAll = () => {
-        if (allChecked) {
-            setSelectedSanPhamIds([]);
-            setSanPhamCT([]);
-        } else {
-            const allIds = paginatedOrders.map(sanPham => sanPham.id);
-            setSelectedSanPhamIds(allIds);
-            const filteredSanPhamCT = sanPhamCTData.filter(item => allIds.includes(item.idSanPham));
-            setSanPhamCT(filteredSanPhamCT);
-        }
-        setAllChecked(!allChecked);
-    };
-
-
-    const sanPhamCTData = [
-        { id: 1, idAnh: 'img1', idSanPham: 1, soLuongTon: 30, giaBan: 200000, idChatLieu: 1, idMau: 1, idKichCo: 1, idDanhMuc: 1 },
-        { id: 2, idAnh: 'img2', idSanPham: 2, soLuongTon: 25, giaBan: 250000, idChatLieu: 2, idMau: 2, idKichCo: 2, idDanhMuc: 2 },
-        { id: 3, idAnh: 'img3', idSanPham: 3, soLuongTon: 40, giaBan: 300000, idChatLieu: 3, idMau: 3, idKichCo: 3, idDanhMuc: 3 },
-        { id: 4, idAnh: 'img4', idSanPham: 4, soLuongTon: 20, giaBan: 150000, idChatLieu: 4, idMau: 4, idKichCo: 4, idDanhMuc: 4 },
-        { id: 5, idAnh: 'img5', idSanPham: 5, soLuongTon: 35, giaBan: 220000, idChatLieu: 5, idMau: 5, idKichCo: 5, idDanhMuc: 5 },
-        { id: 6, idAnh: 'img6', idSanPham: 6, soLuongTon: 45, giaBan: 270000, idChatLieu: 6, idMau: 6, idKichCo: 6, idDanhMuc: 6 },
-        { id: 7, idAnh: 'img7', idSanPham: 7, soLuongTon: 50, giaBan: 320000, idChatLieu: 7, idMau: 7, idKichCo: 7, idDanhMuc: 7 },
-        { id: 8, idAnh: 'img8', idSanPham: 8, soLuongTon: 15, giaBan: 180000, idChatLieu: 8, idMau: 8, idKichCo: 8, idDanhMuc: 8 },
-        { id: 9, idAnh: 'img9', idSanPham: 9, soLuongTon: 10, giaBan: 210000, idChatLieu: 9, idMau: 9, idKichCo: 9, idDanhMuc: 9 },
-        { id: 10, idAnh: 'img10', idSanPham: 10, soLuongTon: 60, giaBan: 350000, idChatLieu: 10, idMau: 10, idKichCo: 10, idDanhMuc: 10 },
-    ];
 
 
     const handleChange = (e) => {
@@ -132,15 +88,50 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
         });
     };
 
+    function quayLai() {
+        navigate('/dot-giam-gia')
+    }
 
     const filteredOrders = sanPham.filter(sanPham =>
         sanPham.ten.toLowerCase().includes(searchValue.toLowerCase())
     );
 
-    const filteredSPCT = sanPhamCT.filter(sanPhamCT =>
-        sanPhamCT.idAnh.toLowerCase().includes(searchValue.toLowerCase())
+    const searchSPCT = sanPhamCT.filter(sanPhamCT => sanPhamCT.idSanPham &&
+        sanPhamCT.idSanPham.ten.toLowerCase().includes(searchValueSCT.toLowerCase()) ||
+        sanPhamCT.idMauSac &&
+        sanPhamCT.idMauSac.ten.toLowerCase().includes(searchValueSCT.toLowerCase())
     );
 
+
+    const handleCheckboxChangeSPCT = (idSanPham) => {
+        let updatedSelectedIds = [...selectedSanPhamIds];
+        if (updatedSelectedIds.includes(idSanPham)) {
+            updatedSelectedIds = updatedSelectedIds.filter(id => id !== idSanPham);  // Bỏ chọn sản phẩm
+        } else {
+            updatedSelectedIds.push(idSanPham);  // Chọn thêm sản phẩm
+        }
+        setSelectedSanPhamIds(updatedSelectedIds);
+
+        // Lọc chi tiết sản phẩm tương ứng với các sản phẩm đã chọn
+        const filteredSanPhamCT = getAllSanPhamCT.filter(item => updatedSelectedIds.includes(item.idSanPham));
+        setSanPhamCT(filteredSanPhamCT);
+
+        // Cập nhật trạng thái của checkbox "Chọn tất cả"
+        setAllChecked(updatedSelectedIds.length === paginatedOrders.length);
+    };
+
+    const handleSelectAll = () => {
+        if (allChecked) {
+            setSelectedSanPhamIds([]);
+            setSanPhamCT([]);
+        } else {
+            const allIds = paginatedOrders.map(sanPham => sanPham.id);
+            setSelectedSanPhamIds(allIds);
+            const filteredSanPhamCT = getAllSanPhamCT.filter(item => allIds.includes(item.idSanPham));
+            setSanPhamCT(filteredSanPhamCT);
+        }
+        setAllChecked(!allChecked);
+    };
     const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
@@ -159,6 +150,19 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                 <Box component="form" noValidate autoComplete="off" onSubmit={handleSubmit} marginLeft={"15px"} width={"600px"}>
 
                     {/* <Grid container spacing={1}> */}
+                    <Grid item xs={12} md={6} marginTop={"15px"}>
+                        <Typography variant="subtitle1" gutterBottom>  {/* Nhãn cho trường Ngày bắt đầu */}
+                            Mã đợt giảm giá
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            name="ma"
+                            // value={ma}
+                            onChange={handleChange}
+                            required
+                        />
+                    </Grid>
 
                     <Grid item xs={12} md={6} marginTop={"15px"}>
                         <Typography variant="subtitle1" gutterBottom>  {/* Nhãn cho trường Ngày bắt đầu */}
@@ -168,21 +172,22 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                             fullWidth
                             variant="outlined"
                             name="ten"
-                            value={formData.ten}
+                            // value={ten}
                             onChange={handleChange}
                             required
                         />
                     </Grid>
+
                     <Grid item xs={12} md={6} marginTop={"15px"}>
                         <Typography variant="subtitle1" gutterBottom>  {/* Nhãn cho trường Ngày bắt đầu */}
-                            Giá trị
+                            Giá trị (%)
                         </Typography>
                         <TextField
                             fullWidth
                             // label="Giá trị (%)"
                             variant="outlined"
                             name="giaTri"
-                            value={formData.giaTri}
+                            // value={giaTri}
                             onChange={handleChange}
                             required
                         />
@@ -196,7 +201,7 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                             variant="outlined"
                             type="datetime-local"
                             name="startDate"
-                            value={formData.startDate}
+                            // value={startDate}
                             onChange={handleChange}
                             required
                         />
@@ -210,35 +215,17 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                             variant="outlined"
                             type="datetime-local"
                             name="endDate"
-                            value={formData.endDate}
+                            // value={endDate}
                             onChange={handleChange}
                             required
                         />
                     </Grid>
-                    <Grid item xs={12} md={6} marginTop={"15px"}>
-                        <Typography variant="subtitle1" gutterBottom>  {/* Nhãn cho trường Ngày bắt đầu */}
-                            Trạng thái
-                        </Typography>
-                        <FormControl fullWidth variant="outlined" required>
-                            <Select
-                                labelId="filter-status-label"
-                                id="filter-status"
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                label="Trạng thái"
-                            >
-                                <MenuItem value="All">Tất cả</MenuItem>
-                                <MenuItem value="Đang hoạt động">Đang hoạt động</MenuItem>
-                                <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
+
                     <Grid item xs={12}>
                         <Box display="flex" justifyContent="space-around" mt={2}>
                             <Button
                                 variant="contained"
-                                color="success"
+                                color="secondary"
                                 type="submit"
 
                             >
@@ -246,7 +233,7 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                             </Button>
 
                             <Button
-
+                                onClick={quayLai}
                                 variant="contained"
                                 color="primary"
                             >
@@ -285,10 +272,10 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                                     <TableCell>
                                         {/* Ô chọn tất cả */}
                                         <Checkbox
-                                           indeterminate={selectedSanPhamIds.length > 0 && selectedSanPhamIds.length < paginatedOrders.length}
-                                           checked={allChecked}
-                                           onChange={handleSelectAll}
-                                           inputProps={{ 'aria-label': 'Chọn tất cả' }}
+                                            indeterminate={selectedSanPhamIds.length > 0 && selectedSanPhamIds.length < paginatedOrders.length}
+                                            checked={allChecked}
+                                            onChange={handleSelectAll}
+                                            inputProps={{ 'aria-label': 'Chọn tất cả' }}
                                         />
                                     </TableCell>
                                     <TableCell>STT</TableCell>
@@ -339,33 +326,59 @@ const AddDotGiamGia = ({ handleAddDotGiamGia }) => {
                         <Typography variant="h3" gutterBottom marginBottom={"20px"} marginTop={"20px"}>
                             Danh sách chi tiết sản phẩm
                         </Typography>
+
+                        {/* Search Bar */}
+                        <Grid item xs={12} md={6}>
+                            <Box display="flex" alignItems="center">
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    placeholder="Tìm kiếm theo tên sản phẩm, chất liệu, kích cỡ, màu sắc"
+                                    value={searchValueSCT}
+                                    onChange={(e) => setsearchValueSCT(e.target.value)}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton onClick={searchSPCT}>
+                                                <SearchIcon />
+                                            </IconButton>
+                                        )
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
+
+
                         <TableContainer component={Paper}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>STT</TableCell>
                                         <TableCell>Ảnh</TableCell>
+                                        <TableCell>Tên sản phẩm</TableCell>
                                         <TableCell>Số lượng tồn</TableCell>
                                         <TableCell>Giá bán</TableCell>
                                         <TableCell>Chất liệu</TableCell>
                                         <TableCell>Màu sắc</TableCell>
                                         <TableCell>Kích cỡ</TableCell>
-                                        <TableCell>Danh mục</TableCell>
+                                        <TableCell>Thương hiệu</TableCell>
+
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {sanPhamCT.map((ct, index) => (
+                                    {searchSPCT.map((ct, index) => (
                                         <TableRow key={ct.id}>
                                             <TableCell>{index + 1}</TableCell>
-                                            <TableCell>{ct.idAnh}</TableCell>
-                                            <TableCell>{ct.soLuongTon}</TableCell>
+                                            <TableCell>{ct.idAnh && ct.idAnh.anh}</TableCell>
+                                            <TableCell>{ct.idSanPham && ct.idSanPham.ten}</TableCell>
+                                            <TableCell>{ct.soLuong}</TableCell>
                                             <TableCell>{ct.giaBan}</TableCell>
-                                            <TableCell>{ct.idChatLieu}</TableCell>
-                                            <TableCell>{ct.idMau}</TableCell>
-                                            <TableCell>{ct.idKichCo}</TableCell>
-                                            <TableCell>{ct.idDanhMuc}</TableCell>
+                                            <TableCell>{ct.idChatLieu && ct.idChatLieu.ten}</TableCell>
+                                            <TableCell>{ct.idMauSac && ct.idMauSac.ten}</TableCell>
+                                            <TableCell>{ct.idKichCo && ct.idKichCo.ten}</TableCell>
+                                            <TableCell>{ct.idThuongHieu && ct.idThuongHieu.ten}</TableCell>
                                         </TableRow>
                                     ))}
+
                                 </TableBody>
                             </Table>
                         </TableContainer>

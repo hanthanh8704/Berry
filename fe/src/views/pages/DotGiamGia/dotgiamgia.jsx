@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -19,17 +19,10 @@ import { Box, Typography, Button } from '@mui/material';
 import { Add, Details, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
-// Dummy data for orders
-const dotGiamGia = [
-  { id: 1, ten: 'Giảm giá 10%', giaTri: '10%', status: 'Đang hoạt động', startDate: '21/1/2024 12:30', endDate: '30/12/2024 12:30' },
-  { id: 2, ten: 'Chào mừng Noel 25%', giaTri: '25%', status: 'Ngừng hoạt động', startDate: '21/1/2024 12:30', endDate: '30/12/2024 12:30' },
-  { id: 3, ten: 'Khuyến mãi hè', giaTri: '15%', status: 'Đang hoạt động', startDate: '10/6/2024 08:00', endDate: '31/8/2024 23:59' },
-  { id: 4, ten: 'Săn sale tháng 7', giaTri: '20%', status: 'Đang hoạt động', startDate: '1/7/2024 00:00', endDate: '31/7/2024 23:59' },
-  { id: 5, ten: 'Black Friday', giaTri: '30%', status: 'Ngừng hoạt động', startDate: '26/11/2024 00:00', endDate: '27/11/2024 23:59' },
-  { id: 6, ten: 'Sale mùa thu', giaTri: '18%', status: 'Đang hoạt động', startDate: '1/9/2024 00:00', endDate: '30/11/2024 23:59' },
-  { id: 7, ten: 'Khuyến mãi đầu năm', giaTri: '12%', status: 'Đang hoạt động', startDate: '1/1/2024 00:00', endDate: '31/1/2024 23:59' },
-  { id: 8, ten: 'Giảm giá cuối năm', giaTri: '22%', status: 'Đang hoạt động', startDate: '1/12/2024 00:00', endDate: '31/12/2024 23:59' },
-];
+import { listDotGiamGia } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
+
+import { searchDotGiamGia } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
+import { exportData } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
 
 const DotGiamGia = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +30,33 @@ const DotGiamGia = () => {
   const [searchValue, setSearchValue] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [dotGiamGia, setDotGiamGia] = useState([]);
+  const navigate = useNavigate();
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  //Diềm nó vào danh sách
+  useEffect(() => {
+    getAllDotGiamGia();
+  }, [])
+  //Get hiển thị 
+  function getAllDotGiamGia() {
+    listDotGiamGia().then((response) => {
+      setDotGiamGia(response.data);
+    }).catch(error => {
+      console.error(error)
+    })
+  }
+
+
+  // Sử dụng hàm exportData
+  // function handleExport() {
+  //   exportData().then(response => {
+  //     console.log(response.data);
+  //   }).catch(error => {
+  //     console.error('Error exporting data:', error);
+  //   });
+  // }
 
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
@@ -44,55 +64,51 @@ const DotGiamGia = () => {
 
   const handleStatusChange = (event) => {
     setFilterStatus(event.target.value);
-    setCurrentPage(1); // Reset page when status filter changes
+    setCurrentPage(1);
   };
 
-  const handleViewDetails = (dotGiamGia) => {
-    setSelectedOrder(dotGiamGia);
+  // const handleViewDetails = (dotGiamGia) => {
+  //   setSelectedOrder(dotGiamGia);
+  // };
+
+  // const handleClearDetails = () => {
+  //   setSelectedOrder(null);
+  // };
+  const handleSearch = () => {
+    searchDotGiamGia(searchValue, startDate, endDate)
+      .then((response) => {
+        setDotGiamGia(response.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
 
-  const handleClearDetails = () => {
-    setSelectedOrder(null);
-  };
-
-  const filteredOrders = dotGiamGia.filter(dotGiamGia =>
-    (filterStatus === 'All' || dotGiamGia.status === filterStatus)
-    || (filterStatus === 'All' || dotGiamGia.giaTri === filterStatus)
-    && (dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()))
+  const searchTenMaGiaTriLike = dotGiamGia.filter(dotGiamGia =>
+    (filterStatus === 'All' || dotGiamGia.trangThai === filterStatus) &&
+    (dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
+      dotGiamGia.ma.toLowerCase().includes(searchValue.toLowerCase()) ||
+      dotGiamGia.giaTriGiam.toString().toLowerCase().includes(searchValue.toLowerCase())) &&
+    (!startDate || new Date(dotGiamGia.ngayBatDau) >= new Date(startDate)) &&
+    (!endDate || new Date(dotGiamGia.ngayKetThuc) <= new Date(endDate))
   );
 
-
-  //   const [startDate, setStartDate] = useState('');
-  //   const [endDate, setEndDate] = useState('');
-
-  //   const handleSearch = () => {
-  //     // Thực hiện tìm kiếm dựa trên startDate và endDate
-  //     console.log("Tìm kiếm từ ngày:", startDate, "đến ngày:", endDate);
-  //     // Thực hiện logic tìm kiếm ở đây
-  //   };
-
-  // const handleKeyDown = (e) => {
-  //   if (e.key === 'Enter') {
-  //     handleSearch();
-  //   }
-  // };
-  const navigate = useNavigate();
-  //Export
-  // const handleExport = () => {
-  // Thực hiện logic xuất Excel ở đây
-  //   console.log("Export Excel");
-  // };
-
-  //Them moi
+  //Chuyển sang trang thêm mới
   const handleAddNew = () => {
     // Thực hiện logic thêm mới ở đây
     navigate('/dot-giam-gia/add'); // Chuyển hướng đến /dot-giam-gia/add
     console.log("Thêm mới");
   };
+  //Chuyển sang trang detail 
+  const handleViewDetails = (id) => {
+    navigate(`/dot-giam-gia/detail/${id}`);
+  };
 
+  const handleUpdate = (id) => {
+    navigate(`/dot-giam-gia/update/${id}`);
+  };
 
-
-  const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedOrders = searchTenMaGiaTriLike.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <Grid container spacing={3}>
@@ -103,7 +119,7 @@ const DotGiamGia = () => {
             <TextField
               fullWidth
               variant="outlined"
-              placeholder="Tìm kiếm theo tên đợt giảm giá"
+              placeholder="Tìm kiếm theo tên mã và giá trị của đợt giảm giá"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               InputProps={{
@@ -125,8 +141,8 @@ const DotGiamGia = () => {
               variant="outlined"
               type="datetime-local"  // Đặt kiểu datetime-local
               placeholder="Ngày bắt đầu"
-            // value={startDate}
-            // onChange={(e) => setStartDate(e.target.value)}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
             // onKeyDown={handleKeyDown}
             />
           </Box>
@@ -140,30 +156,11 @@ const DotGiamGia = () => {
               variant="outlined"
               type="datetime-local"  // Đặt kiểu datetime-local
               placeholder="Ngày kết thúc"
-            // value={endDate}
-            // onChange={(e) => setEndDate(e.target.value)}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
             // onKeyDown={handleKeyDown}
             />
           </Box>
-        </Grid>
-
-        {/* Tìm kiếm giá trị */}
-        <Grid item xs={12} md={3}>
-          <FormControl fullWidth variant="outlined">
-            <InputLabel id="filter-status-label">Giá trị</InputLabel>
-            <Select
-              labelId="filter-status-label"
-              id="filter-status"
-              value={filterStatus}
-              onChange={handleStatusChange}
-              label="Filter by Status"
-            >
-              <MenuItem value="All">Tất cả</MenuItem>
-              <MenuItem value="10%">10%</MenuItem>
-              <MenuItem value="45%">45%</MenuItem>
-              <MenuItem value="25%">25%</MenuItem>
-            </Select>
-          </FormControl>
         </Grid>
 
         {/* Filter by Status */}
@@ -178,11 +175,13 @@ const DotGiamGia = () => {
               label="Filter by Status"
             >
               <MenuItem value="All">Tất cả</MenuItem>
-              <MenuItem value="Đang hoạt động">Đang hoạt động</MenuItem>
-              <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
+              <MenuItem value="Sắp diễn ra">Sắp diễn ra</MenuItem>
+              <MenuItem value="Đang diễn ra">Đang diễn ra</MenuItem>
+              <MenuItem value="Đã kết thúc">Đã kết thúc</MenuItem>
             </Select>
           </FormControl>
         </Grid>
+
         <Box display="flex" margin={"20px"} paddingTop={"10px"}>
           {/* Nút EXPORT EXCEL */}
           <Grid item xs={12} md={3}>
@@ -216,143 +215,54 @@ const DotGiamGia = () => {
           </Grid>
         </Box>
       </Grid>
+
       {/* Orders Table */}
       <Grid item xs={12}>
-        {selectedOrder ? (
-          // Detail View
-          <Paper elevation={3} sx={{ p: 3, backgroundColor: 'white', borderRadius: '8px' }}>
-            <Typography variant="h4" marginBottom={"15px"} gutterBottom>
-              Đợt giảm giá chi tiết
-            </Typography>
-            <Box component="form" noValidate autoComplete="off">
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="ID"
-                    variant="outlined"
-                    value={selectedOrder.id}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Tên đợt giảm giá"
-                    variant="outlined"
-                    value={selectedOrder.ten}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Giá trị"
-                    variant="outlined"
-                    value={`${selectedOrder.giaTri} đ`}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Ngày bắt đầu"
-                    variant="outlined"
-                    value={selectedOrder.startDate}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Ngày kết thúc"
-                    variant="outlined"
-                    value={selectedOrder.endDate}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Trạng thái"
-                    variant="outlined"
-                    value={selectedOrder.status}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Box display="flex" justifyContent="center" mt={2}>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>STT</TableCell>
+                <TableCell>Mã đợt giảm giá</TableCell>
+                <TableCell>Tên đợt giảm giá</TableCell>
+                <TableCell>Giá trị</TableCell>
+                <TableCell>Thời gian bắt đầu</TableCell>
+                <TableCell>Thời gian kết thúc</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedOrders.map((dotGiamGia, index) => (
+                <TableRow key={dotGiamGia.id}>
+                  <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
+                  <TableCell>{dotGiamGia.ma}</TableCell>
+                  <TableCell>{dotGiamGia.ten}</TableCell>
+                  <TableCell>{dotGiamGia.giaTriGiam}%</TableCell>
+                  <TableCell>{dotGiamGia.ngayBatDau} </TableCell>
+                  <TableCell>{dotGiamGia.ngayKetThuc} </TableCell>
+                  <TableCell>{dotGiamGia.trangThai}</TableCell>
+                  <TableCell>
                     <Button
-
                       variant="contained"
                       color="primary"
-                      onClick={handleClearDetails}
+                      startIcon={<Details />} // Icon sẽ được đặt ở phía bắt đầu của Button
+                      onClick={() => handleViewDetails(dotGiamGia.id)}
                     >
-                      Back to Orders
+                      Chi tiết
                     </Button>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
-        ) : (
-          // Orders Table
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>STT</TableCell>
-                  <TableCell>Tên đợt giảm giá</TableCell>
-                  <TableCell>Giá trị</TableCell>
-                  <TableCell>Thời gian bắt đầu</TableCell>
-                  <TableCell>Thời gian kết thúc</TableCell>
-                  <TableCell>Trạng thái</TableCell>
-                  <TableCell>Hoạt động</TableCell>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedOrders.map((dotGiamGia, index) => (
-                  <TableRow key={dotGiamGia.id}>
-                    <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
-                    <TableCell>{dotGiamGia.ten}</TableCell>
-                    <TableCell>{dotGiamGia.giaTri}</TableCell>
-                    <TableCell>{dotGiamGia.startDate} </TableCell>
-                    <TableCell>{dotGiamGia.endDate} </TableCell>
-                    <TableCell>{dotGiamGia.status}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<Details />} // Icon sẽ được đặt ở phía bắt đầu của Button
-                        onClick={() => handleViewDetails(dotGiamGia)}
-                      >
-                        Chi tiết
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Grid>
 
       {/* Pagination */}
       <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
         <Pagination
-          count={Math.ceil(filteredOrders.length / pageSize)}
+          count={Math.ceil(searchTenMaGiaTriLike.length / pageSize)}
           page={currentPage}
           onChange={handleChangePage}
           color="primary"
