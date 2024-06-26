@@ -1,8 +1,17 @@
 package com.example.be.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 @Entity
 @Table(name = "phieu_giam_gia_khach_hang")
 public class PhieuGiamGiaKhachHang {
@@ -10,23 +19,29 @@ public class PhieuGiamGiaKhachHang {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "id_phieu_giam_gia")
-    private Integer idPhieuGiamGia;
+    @ManyToOne
+    @JoinColumn(name = "id_phieu_giam_gia")
+    private PhieuGiamGia idPhieuGiamGia;
 
-    @Column(name = "id_khach_hang")
-    private Integer idKhachHang;
+    @ManyToOne
+    @JoinColumn(name = "id_khach_hang")
+    private KhachHang idKhachHang;
 
     @Column(name = "ma")
     private String ma;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
-
+    private String trangThai;
+    @CreationTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_tao")
     private java.sql.Timestamp ngayTao;
-
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_sua")
     private java.sql.Timestamp ngaySua;
+
+
 
     public Integer getId() {
         return this.id;
@@ -34,22 +49,6 @@ public class PhieuGiamGiaKhachHang {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getIdPhieuGiamGia() {
-        return this.idPhieuGiamGia;
-    }
-
-    public void setIdPhieuGiamGia(Integer idPhieuGiamGia) {
-        this.idPhieuGiamGia = idPhieuGiamGia;
-    }
-
-    public Integer getIdKhachHang() {
-        return this.idKhachHang;
-    }
-
-    public void setIdKhachHang(Integer idKhachHang) {
-        this.idKhachHang = idKhachHang;
     }
 
     public String getMa() {
@@ -60,13 +59,7 @@ public class PhieuGiamGiaKhachHang {
         this.ma = ma;
     }
 
-    public Integer getTrangThai() {
-        return this.trangThai;
-    }
 
-    public void setTrangThai(Integer trangThai) {
-        this.trangThai = trangThai;
-    }
 
     public java.sql.Timestamp getNgayTao() {
         return this.ngayTao;

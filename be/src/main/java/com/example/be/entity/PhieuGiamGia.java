@@ -1,9 +1,21 @@
 package com.example.be.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 @Entity
 @Table(name = "phieu_giam_gia")
 public class PhieuGiamGia {
@@ -11,38 +23,46 @@ public class PhieuGiamGia {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ma_code")
-    private String maCode;
+    @Column(name = "ma")
+    private String ma;
 
     @Column(name = "ten")
     private String ten;
 
     @Column(name = "so_luong")
     private Integer soLuong;
-
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_bat_dau")
-    private java.sql.Timestamp ngayBatDau;
-
+    private Timestamp ngayBatDau;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_ket_thuc")
-    private java.sql.Timestamp ngayKetThuc;
-
+    private Timestamp ngayKetThuc;
+    @CreationTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_tao")
-    private java.sql.Timestamp ngayTao;
-
+    private Timestamp ngayTao;
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "ngay_sua")
-    private java.sql.Timestamp ngaySua;
+    private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
-
+    private String trangThai;
     @Column(name = "gia_tri_hoa_don_duoc_ap_dung")
-    private BigDecimal giaTriHoaDonDuocApDung;
-
+    private BigDecimal giaTriToiDa;
     @Column(name = "gia_tri_hoa_don_duoc_giam")
-    private BigDecimal giaTriHoaDonDuocGiam;
+    private BigDecimal giaTriGiam;
 
     @Column(name = "hinh_thuc_giam")
-    private String hinhThucGiam;
+    private String kieuGiam;
+
+
+    @Column(name = "nguoi_tao")
+    private String nguoiTao;
+
+    @Column(name = "nguoi_sua")
+    private String nguoiSua;
+
 
     public Integer getId() {
         return this.id;
@@ -50,14 +70,6 @@ public class PhieuGiamGia {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getMaCode() {
-        return this.maCode;
-    }
-
-    public void setMaCode(String maCode) {
-        this.maCode = maCode;
     }
 
     public String getTen() {
@@ -76,67 +88,5 @@ public class PhieuGiamGia {
         this.soLuong = soLuong;
     }
 
-    public java.sql.Timestamp getNgayBatDau() {
-        return this.ngayBatDau;
-    }
 
-    public void setNgayBatDau(java.sql.Timestamp ngayBatDau) {
-        this.ngayBatDau = ngayBatDau;
-    }
-
-    public java.sql.Timestamp getNgayKetThuc() {
-        return this.ngayKetThuc;
-    }
-
-    public void setNgayKetThuc(java.sql.Timestamp ngayKetThuc) {
-        this.ngayKetThuc = ngayKetThuc;
-    }
-
-    public java.sql.Timestamp getNgayTao() {
-        return this.ngayTao;
-    }
-
-    public void setNgayTao(java.sql.Timestamp ngayTao) {
-        this.ngayTao = ngayTao;
-    }
-
-    public java.sql.Timestamp getNgaySua() {
-        return this.ngaySua;
-    }
-
-    public void setNgaySua(java.sql.Timestamp ngaySua) {
-        this.ngaySua = ngaySua;
-    }
-
-    public Integer getTrangThai() {
-        return this.trangThai;
-    }
-
-    public void setTrangThai(Integer trangThai) {
-        this.trangThai = trangThai;
-    }
-
-    public BigDecimal getGiaTriHoaDonDuocApDung() {
-        return this.giaTriHoaDonDuocApDung;
-    }
-
-    public void setGiaTriHoaDonDuocApDung(BigDecimal giaTriHoaDonDuocApDung) {
-        this.giaTriHoaDonDuocApDung = giaTriHoaDonDuocApDung;
-    }
-
-    public BigDecimal getGiaTriHoaDonDuocGiam() {
-        return this.giaTriHoaDonDuocGiam;
-    }
-
-    public void setGiaTriHoaDonDuocGiam(BigDecimal giaTriHoaDonDuocGiam) {
-        this.giaTriHoaDonDuocGiam = giaTriHoaDonDuocGiam;
-    }
-
-    public String getHinhThucGiam() {
-        return this.hinhThucGiam;
-    }
-
-    public void setHinhThucGiam(String hinhThucGiam) {
-        this.hinhThucGiam = hinhThucGiam;
-    }
 }
