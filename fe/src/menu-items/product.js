@@ -7,7 +7,6 @@ const icons = { IconShirtSport };
 // Product menu items
 const product = {
   id: 'product',
-  title: 'Quản Lý Sản Phẩm',
   type: 'group',
   children: [
     {

@@ -3,10 +3,16 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import { element } from 'prop-types';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
+const BillDetail = Loadable(lazy(() => import('views/pages/bill/billDetail.jsx')));
+const BillHistory = Loadable(lazy(() => import('views/pages/bill/billHistory.jsx')));
+const BillTimeline = Loadable(lazy(() => import('views/pages/bill/billTimeline.jsx')));
+const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
+const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
@@ -27,6 +33,10 @@ const MainRoutes = {
     {
       path: '/bill',
       element: <Bill />
+    },
+    {
+      path: '/bill/:id',
+      element: <BillDetail/>
     },
     {
       path: 'dashboard',

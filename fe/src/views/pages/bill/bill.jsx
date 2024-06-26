@@ -4,8 +4,9 @@ import FormatDate from "views/utilities/FormatDate";
 import FormatCurrency from "views/utilities/FormatCurrency";
 import { Badge, Button, DatePicker, Input, Table, Tabs, Tag, Tooltip, Select } from "antd";
 import { Link } from "react-router-dom";
-import { IconBrandOpenai } from "@tabler/icons-react";
+import { IconArrowsMove } from "@tabler/icons-react";
 import "./bill.css"; // Import file CSS để tùy chỉnh màu sắc
+import { useNavigate } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -14,29 +15,31 @@ const Bill = ({ onload }) => {
   const [listHoaDon, setListHoaDon] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [searchValue, setSearchValue] = useState("");
+  const [ma, setMa] = useState("");
   const [pageSize, setPageSize] = useState(5);
-  const [status, setStatus] = useState(null);
+  const [trangThaiHoaDon, setTrangThaiHoaDon] = useState("");
   const [tabs, setTabs] = useState([]);
   const [selectedDates, setSelectedDates] = useState({});
-  const [activeTab, setActiveTab] = useState(""); 
+  const [activeTab, setActiveTab] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadOrders();
-  }, [currentPage, pageSize, searchValue, status, onload, selectedDates]);
+  }, [currentPage, pageSize, ma, trangThaiHoaDon, onload, selectedDates]);
 
   const loadOrders = async () => {
     try {
-      const response = await request.get(`bill`, {
-        params: {
-          page: currentPage,
-          sizePage: pageSize,
-          status: status,
-          code: searchValue,
-          fromDate: selectedDates?.fromDate,
-          toDate: selectedDates?.toDate,
-        }
-      });
+      const params = {
+        page: currentPage,
+        sizePage: pageSize,
+      };
+
+      if (ma) params.ma = ma;
+      if (trangThaiHoaDon) params.trangThaiHoaDon = trangThaiHoaDon;
+      if (selectedDates?.fromDate) params.fromDate = selectedDates.fromDate;
+      if (selectedDates?.toDate) params.toDate = selectedDates.toDate;
+
+      const response = await request.get(`bill`, { params });
       console.log('Bill data:', response);
       setListHoaDon(response.data);
       setTotalPages(response.totalPages);
@@ -56,16 +59,22 @@ const Bill = ({ onload }) => {
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
       setSelectedDates({
-        fromDate: dates[0].format('YYYY-MM-DD'),
-        toDate: dates[1].format('YYYY-MM-DD')
+        fromDate: dates[0].format('DD-MM-YYYY'),
+        toDate: dates[1].format('DD-MM-YYYY')
       });
+      loadOrders(); // Gọi hàm loadOrders để tải lại dữ liệu ngay khi thay đổi khoảng thời gian
     } else {
       setSelectedDates({});
     }
   };
+  
 
   const handleSearch = () => {
     loadOrders();
+  };
+
+  const handleDetail = (id) => {
+    navigate(`/bill-detail/${id}`);
   };
 
   const items = [
@@ -84,9 +93,10 @@ const Bill = ({ onload }) => {
   const columns = [
     {
       title: '#',
-      dataIndex: 'integer',
-      key: 'integer',
+      dataIndex: 'id',
+      key: 'id',
       className: 'custom-column', // Thêm lớp CSS cho cột '#'
+      render: (text, record, index) => index + 1,
     },
     {
       title: 'Mã',
@@ -115,11 +125,11 @@ const Bill = ({ onload }) => {
     },
     {
       title: 'Tổng tiền',
-      dataIndex: 'tongTien',
-      key: 'tongTien',
-      render: (tongTien, record) => (
+      dataIndex: 'tongTienSauGiamGia',
+      key: 'tongTienSauGiamGia',
+      render: (tongTienSauGiamGia, record) => (
         <span className="fw-semibold text-danger">
-          <FormatCurrency value={tongTien + (record.phiShip || 0)} />
+          <FormatCurrency value={tongTienSauGiamGia + (record.phiShip || 0)} />
         </span>
       ),
     },
@@ -130,27 +140,27 @@ const Bill = ({ onload }) => {
       render: (text) => text || 'null',
     },
     {
+      title: 'Ngày tạo',
+      dataIndex: 'ngayTao',
+      key: 'ngayTao',
+      render: (ngayTao) => <FormatDate date={ngayTao} />,
+      // className: 'custom-title', // Thêm lớp CSS cho tiêu đề cột 'Ngày tạo'
+    },
+    {
       title: 'Loại đơn hàng',
-      dataIndex: 'type',
-      key: 'type',
-      render: (type) => (
+      dataIndex: 'loaiHoaDon',
+      key: 'loaiHoaDon',
+      render: (loaiHoaDon) => (
         <Tag
           style={{ width: '100px' }}
           className="text-center"
-          color={type === "Tại quầy" ? "#87d068" : type === "Giao hàng" ? "#108ee9" : "#87df"}
-          icon={type === "Tại quầy" ? <i className="fas fa-shop me-1"></i> : type === "Giao hàng" ? <i className="fas fa-truck-fast me-1"></i> : <i className="fas fa-plus me-1"></i>}
+          color={loaiHoaDon === "Tại Quầy" ? "#87d068" : loaiHoaDon === "Giao hàng" ? "#108ee9" : "#87df"}
+          icon={loaiHoaDon === "Tại Quầy" ? <i className="fas fa-shop me-1"></i> : loaiHoaDon === "Giao hàng" ? <i className="fas fa-truck-fast me-1"></i> : <i className="fas fa-plus me-1"></i>}
         >
-          {type === "Tại quầy" ? "Tại quầy" : type === "Giao hàng" ? "Giao hàng" : "Đơn mới"}
+          {loaiHoaDon}
         </Tag>
       )
     },
-    // {
-    //   title: 'Ngày tạo',
-    //   dataIndex: 'ngayTao',
-    //   key: 'ngayTao',
-    //   render: (ngayTao) => <FormatDate date={ngayTao} />,
-    //   className: 'custom-title', // Thêm lớp CSS cho tiêu đề cột 'Ngày tạo'
-    // },
     {
       title: 'Hành động',
       dataIndex: 'id',
@@ -158,8 +168,8 @@ const Bill = ({ onload }) => {
       render: (id, record) => (
         <>
           <Tooltip title="Xem chi tiết">
-            <Link to={`/admin/bill/${id}`}>
-              <Button type="text" icon={<IconBrandOpenai />} className="custom-button" /> {/* Thêm lớp CSS cho nút */}
+            <Link to={`/bill/${id}`}>
+              <Button type="text" icon={<IconArrowsMove />} className="custom-button" /> {/* Thêm lớp CSS cho nút */}
             </Link>
           </Tooltip>
         </>
@@ -172,15 +182,15 @@ const Bill = ({ onload }) => {
       {/* Bộ lọc */}
       <div className="d-flex mb-4 flex-wrap align-items-center">
         <Input
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => setMa(e.target.value)}
           placeholder="Tìm kiếm theo mã hóa đơn"
           style={{ width: '400px', marginRight: '10px' }}
         />
         <Select
           placeholder="Chọn trạng thái"
           style={{ width: '300px', marginRight: '10px' }}
-          onChange={(value) => setStatus(value)}
-          value={status}
+          onChange={(value) => setTrangThaiHoaDon(value)}
+          value={trangThaiHoaDon}
         >
           <Option value="">Tất cả</Option>
           {tabs.map(item => (
@@ -197,8 +207,8 @@ const Bill = ({ onload }) => {
         tabBarGutter={74}
         items={items}
         onChange={(key) => {
-          setStatus(key);
-          setActiveTab(key); 
+          setTrangThaiHoaDon(key);
+          setActiveTab(key);
           loadOrders(); // Load lại dữ liệu khi tab thay đổi
         }}
         activeKey={activeTab} // Chỉ định tab đang hoạt động
@@ -212,14 +222,14 @@ const Bill = ({ onload }) => {
           pageSize: pageSize,
           pageSizeOptions: [5, 10, 20, 50, 100],
           showQuickJumper: false,
-          showTotal: total => `Tổng ${total} mục`,
+          //showTotal: total => `Tổng ${total} mục`,
           total: totalPages * pageSize,
           onChange: (page, pageSize) => {
             setCurrentPage(page);
             setPageSize(pageSize);
           },
         }}
-        className="custom-table" // Thêm lớp CSS cho bảng
+        className="custom-table"
       />
     </div>
   );

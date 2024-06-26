@@ -26,10 +26,6 @@ public class LichSuHoaDon {
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien")
     private NhanVien nhanVien;
-
-    @Column(name = "ma")
-    private String ma;
-
     @Column(name = "trang_thai")
     private String trangThai;
 

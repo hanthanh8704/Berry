@@ -1,7 +1,7 @@
 package com.example.be.controller;
 
-import com.example.be.dto.response.LichSuHoaDonResponse;
-import com.example.be.service.LichSuHoaDonService;
+import com.example.be.dto.response.ThanhToanResponse;
+import com.example.be.service.ThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bill-history")
-public class LichSuHoaDonController {
+@RequestMapping("/api/payment-method")
+public class ThanhToanController {
     @Autowired
-    private LichSuHoaDonService billHistoryService;
-    @GetMapping("/{idHoaDon}")
-    public List<LichSuHoaDonResponse> getByBill(@PathVariable("idHoaDon") Integer id){
-        return billHistoryService.getByBill(id);
+    private ThanhToanService thanhToanService;
+
+    @GetMapping("/{id}")
+    public List<ThanhToanResponse> getAll(@PathVariable Integer id){
+        return thanhToanService.getThanhToanByIdHoaDon(id);
     }
 }

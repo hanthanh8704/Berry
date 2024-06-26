@@ -21,8 +21,8 @@ public class ThanhToan {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ma")
-    private String ma;
+    @Column(name = "ma_giao_dich")
+    private Integer ma_giao_dich;
 
     @Column(name = "ten_hinh_thuc")
     private String tenHinhThuc;

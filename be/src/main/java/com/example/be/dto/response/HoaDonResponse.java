@@ -34,7 +34,6 @@ public interface HoaDonResponse {
     Timestamp getNgaySua();
     String getNguoiTao();
     String getNguoiSua();
-
     // Add methods for fetching related entities if needed
     String getNhanVien(); // Example: Fetching tenNhanVien from NhanVien entity
     String getKhachHang(); // Example: Fetching tenKhachHang from KhachHang entity
