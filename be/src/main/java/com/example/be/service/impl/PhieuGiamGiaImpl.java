@@ -1,6 +1,8 @@
 package com.example.be.service.impl;
 
+import com.example.be.dto.request.KhachHang.KhachHangRequest;
 import com.example.be.dto.request.voucher.PhieuGiamGiaRequest;
+import com.example.be.dto.response.KhachHangResponse;
 import com.example.be.dto.response.PhieuGiamGiaResponse;
 import com.example.be.entity.KhachHang;
 import com.example.be.entity.PhieuGiamGia;
@@ -9,6 +11,7 @@ import com.example.be.repository.KhachHangRepository;
 import com.example.be.repository.PhieuGiamGiaKhachHangRepository;
 import com.example.be.repository.PhieuGiamGiaRepository;
 import com.example.be.service.PhieuGiamGiaService;
+import com.example.be.utils.common.PageableObject;
 import com.example.be.utils.converter.PhieuGiamGiaConvert;
 import com.example.be.utils.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +46,7 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         String prefix = "VBS0";
         int x = 1;
         String code = prefix + x;
-        while (voucherRepository.existsByCode(code)) {
+        while (voucherRepository.existsByMa(code)) {
             x++;
             code = prefix + x;
         }
@@ -71,6 +77,12 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
     }
 
     @Override
+    public PhieuGiamGiaResponse edit(Integer id) {
+        PhieuGiamGiaResponse pgg = voucherRepository.getOneVoucher(id);
+        return pgg;
+    }
+
+    @Override
     @Transactional(rollbackFor = RestApiException.class)
     public PhieuGiamGia add(PhieuGiamGiaRequest request) {
         if (request.getTen().length() > 50) {
@@ -85,15 +97,28 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         if(request.getSoLuong()>10000){
             throw new RestApiException("Số lượng không được vượt quá 10000. ");
         }
-        try {
-            double percentReduce = Double.valueOf(request.getGiaTriGiam().toString());
-            if (percentReduce < 0 || percentReduce > 50) {
+        if(request.getKieuGiam().equals("%")) {
+            try {
+                double percentReduce = Double.valueOf(request.getGiaTriGiam().toString());
+                if (percentReduce < 0 || percentReduce > 50) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+                }
+            } catch (NumberFormatException e) {
                 throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+            } catch (RestApiException e) {
+                throw e;
             }
-        } catch (NumberFormatException e) {
-            throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
-        } catch (RestApiException e) {
-            throw e;
+        }else{
+            try {
+                double percentReduce = Double.valueOf(request.getGiaTriGiam().toString());
+                if (percentReduce < 0 || percentReduce >2000000000) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                }
+            } catch (NumberFormatException e) {
+                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+            } catch (RestApiException e) {
+                throw e;
+            }
         }
 
         if (Double.valueOf(request.getGiaTriGiam().toString()) <= 0) {
@@ -105,7 +130,7 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         if (request.getNgayBatDau().after(request.getNgayKetThuc())) {
             throw new RestApiException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
         }
-        if (request.getNgayBatDau().before(LocalDateTime.now())) {
+        if (request.getNgayBatDau().before(Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC)))) {
             throw new RestApiException("Ngày bắt đầu phải từ ngày hiện tại trở đi.");
         }
         if (request.getNgayBatDau().equals(request.getNgayKetThuc())) {
@@ -116,25 +141,16 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         PhieuGiamGia voucherSave = voucherRepository.save(voucher);
         updateStatus(voucherSave);
         System.out.println(request);
-        if (!voucherSave.getKieuGiam()) {
-            if (!request.getKieuGiam().isEmpty()) {
-                request.getKieuGiam()..forEach(customerId -> {
+        if (voucherSave.getLoai().equals("Cá nhân")) {
+            if (!request.getCustomers().isEmpty()) {
+                request.getCustomers().forEach(customerId -> {
                     PhieuGiamGiaKhachHang accountVoucher = new PhieuGiamGiaKhachHang();
                     KhachHang account = accountRepository.findById(customerId).get();
                     accountVoucher.setIdPhieuGiamGia(voucherSave);
                     accountVoucher.setIdKhachHang(account);
+                    accountVoucher.setTrangThai("Chưa sử dụng");
                     accountVoucherRepository.save(accountVoucher);
 
-//                    Notification notification = new Notification();
-//                    notification.setAccount(account);
-//                    notification.setTitle("Phiếu giảm giá dành riêng cho bạn [" + voucher.getCode() + "]");
-//                    notification.setContent("Bạn vừa nhận được phiếu giảm giá giảm " +
-//                            voucher.getPercentReduce() + "% cho đơn hàng từ " +
-//                            FormatCommon.convertCurrency(voucher.getMinBillValue().doubleValue()) + "" +
-//                            "##Ngày bắt đầu: " + FormatCommon.formatDate(voucher.getStartDate()) +
-//                            "##Ngày hết hạn: " + FormatCommon.formatDate(voucher.getEndDate()));
-//                    notification.setType(NotificationType.CHUA_DOC);
-//                    notificationRepository.save(notification);
                 });
             }
         }
@@ -158,8 +174,26 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
             throw new RestApiException("Số lượng phải là số nguyên dương.");
         }
         if(request.getKieuGiam().equals("%")) {
-            if (Double.valueOf(request.getGiaTriGiam().toString()) < 0 || Double.valueOf(request.getGiaTriGiam().toString()) > 50) {
+            try {
+                double percentReduce = Double.valueOf(request.getGiaTriGiam().toString());
+                if (percentReduce < 0 || percentReduce > 50) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+                }
+            } catch (NumberFormatException e) {
                 throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+            } catch (RestApiException e) {
+                throw e;
+            }
+        }else{
+            try {
+                double percentReduce = Double.valueOf(request.getGiaTriGiam().toString());
+                if (percentReduce < 0 || percentReduce >2000000000) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                }
+            } catch (NumberFormatException e) {
+                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+            } catch (RestApiException e) {
+                throw e;
             }
         }
         if (!String.valueOf(request.getGiaTriGiam()).matches("^-?\\d+(\\.\\d+)?$")) {
@@ -174,33 +208,24 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         }
         PhieuGiamGia voucherSave = voucherRepository.save(voucherConvert.convertRequestToEntity(id, request));
         if (voucherSave != null) {
-            updateStatus(voucherToUpdate);
+            this.updateStatus(voucherToUpdate);
         }
-        if (!voucherSave.getKieuGiam()) {
-            if (!request.getKieuGiam().isEmpty()) {
-                accountVoucherRepository.deleteAll(accountVoucherRepository.findByVoucherId(voucherSave.getId()));
-                request.getKieuGiam().forEach(customerId -> {
+        if (voucherSave.getLoai().equals("Cá nhân")) {
+            if (!request.getCustomers().isEmpty()) {
+                request.getCustomers().forEach(customerId -> {
                     PhieuGiamGiaKhachHang accountVoucher = new PhieuGiamGiaKhachHang();
                     KhachHang account = accountRepository.findById(customerId).get();
                     accountVoucher.setIdPhieuGiamGia(voucherSave);
                     accountVoucher.setIdKhachHang(account);
+                    accountVoucher.setTrangThai("Chưa sử dụng");
                     accountVoucherRepository.save(accountVoucher);
-//
-//                    Notification notification = new Notification();
-//                    notification.setAccount(account);
-//                    notification.setTitle("Phiếu giảm giá dành riêng cho bạn [" + voucherSave.getMa() + "]");
-//                    notification.setContent("Bạn vừa nhận được phiếu giảm giá giảm " +
-//                            voucherSave.getGiaTriGiam() + "% cho đơn hàng từ " +
-//                            FormatCommon.convertCurrency(voucherSave.getGiaTriToiDa().doubleValue()) + "" +
-//                            "##Ngày bắt đầu: " + FormatCommon.formatDate(voucherSave.getNgayBatDau().toLocalDateTime()) +
-//                            "##Ngày hết hạn: " + FormatCommon.formatDate(voucherSave.getNgayKetThuc().toLocalDateTime()));
-//                    notification.setType(NotificationType.CHUA_DOC);
-//                    notificationRepository.save(notification);
+
                 });
             }
-        } else {
-            accountVoucherRepository.deleteAll(accountVoucherRepository.findByVoucherId(voucherSave.getId()));
         }
+//        else {
+//            accountVoucherRepository.deleteAll(accountVoucherRepository.findByVoucherId(voucherSave.getId()));
+//        }
         return voucherSave;
     }
 
@@ -213,7 +238,7 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
 
     @Override
     public boolean isVoucherCodeExists(String code) {
-        return voucherRepository.existsByCode(code);
+        return voucherRepository.existsByMa(code);
     }
 
     public void updateStatusVoucher() {
@@ -259,13 +284,19 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         }
         if(voucherToUpdate.getTrangThai().equals("Sắp diễn ra")){
             LocalDateTime startDate = currentDate.with(LocalTime.MIN);
-            voucherToUpdate.setNgayBatDau(startDate);
+            voucherToUpdate.setNgayBatDau(Timestamp.valueOf(startDate));
         }
-        voucherToUpdate.setNgayKetThuc(currentDate);
+        voucherToUpdate.setNgayKetThuc(Timestamp.valueOf(currentDate));
         voucherToUpdate.setTrangThai("Đã kết thúc"); // Đã kết thúc
         return voucherRepository.save(voucherToUpdate);
 
     }
+
+    @Override
+    public PageableObject<KhachHangResponse> findKhachHang(KhachHangRequest request) {
+        return new PageableObject<>(accountRepository.getAllKhachHang(request, PageRequest.of(request.getPage() - 1 > 0 ? request.getPage() - 1 : 0, request.getSizePage())));
+    }
+
 
 
     public void updateStatus(PhieuGiamGia voucher) {
@@ -298,8 +329,8 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         PhieuGiamGia voucher = new PhieuGiamGia();
         voucher.setMa(genCode());
         voucher.setTen(voucherName);
-        voucher.setNgayBatDau(startDate);
-        voucher.setNgayKetThuc(endDate);
+        voucher.setNgayBatDau(Timestamp.valueOf(startDate));
+        voucher.setNgayKetThuc(Timestamp.valueOf(endDate));
         voucher.setGiaTriToiDa(BigDecimal.valueOf(10000));
         voucher.setGiaTriGiam(BigDecimal.valueOf(5));
         voucher.setSoLuong(100);

@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "phieu_giam_gia")
 public class PhieuGiamGia {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -55,38 +56,12 @@ public class PhieuGiamGia {
 
     @Column(name = "hinh_thuc_giam")
     private String kieuGiam;
-
-
+    @Column(name = "loai")
+    private String loai;
     @Column(name = "nguoi_tao")
     private String nguoiTao;
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
-
-
-    public Integer getId() {
-        return this.id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTen() {
-        return this.ten;
-    }
-
-    public void setTen(String ten) {
-        this.ten = ten;
-    }
-
-    public Integer getSoLuong() {
-        return this.soLuong;
-    }
-
-    public void setSoLuong(Integer soLuong) {
-        this.soLuong = soLuong;
-    }
-
 
 }

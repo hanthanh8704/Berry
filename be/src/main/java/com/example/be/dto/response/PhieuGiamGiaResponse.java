@@ -5,6 +5,7 @@ import org.springframework.data.rest.core.config.Projection;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -16,19 +17,14 @@ public interface PhieuGiamGiaResponse {
     Integer getId();
     String getMa();
     String getTen();
+    String getLoai();
     Integer getSoLuong();
     Timestamp getNgayBatDau();
     Timestamp getNgayKetThuc();
-    Timestamp getNgayTao();
-    Timestamp getNgaySua();
-
-    String getNguoiTao();
-
-    String getNguoiSua();
-
     String getTrangThai();
-    BigDecimal getGiaTriToiDa();
-    BigDecimal getGiaTriGiam();
     String getKieuGiam();
+    BigDecimal getGiaTriGiam();
+    BigDecimal getGiaTriToiDa();
+    String getCustomer();
 
 }

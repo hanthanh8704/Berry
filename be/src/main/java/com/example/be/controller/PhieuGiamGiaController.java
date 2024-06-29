@@ -1,8 +1,10 @@
 package com.example.be.controller;
 
+import com.example.be.dto.request.KhachHang.KhachHangRequest;
 import com.example.be.dto.request.voucher.PhieuGiamGiaRequest;
 import com.example.be.dto.response.PhieuGiamGiaResponse;
 import com.example.be.service.PhieuGiamGiaService;
+import com.example.be.utils.common.PageableObject;
 import com.example.be.utils.common.ResponseObject;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
-@CrossOrigin("*")
+@RestController
 @RequestMapping("/api/voucher")
 public class PhieuGiamGiaController {
     @Autowired
@@ -35,7 +36,12 @@ public class PhieuGiamGiaController {
         return voucherService.getAll(request);
     }
 
-    @PostMapping("add")
+    @GetMapping("khach-hang")
+    public PageableObject getAllKhachHang(final KhachHangRequest request) {
+        return voucherService.findKhachHang(request);
+    }
+
+    @PostMapping("/add")
     public ResponseObject addVoucher(@RequestBody @Valid PhieuGiamGiaRequest request) {
         return new ResponseObject(voucherService.add(request));
 
@@ -49,6 +55,10 @@ public class PhieuGiamGiaController {
     @GetMapping("/{id}")
     public ResponseEntity<PhieuGiamGiaResponse> getOne(@PathVariable Integer id) {
         return new ResponseEntity<>(voucherService.getOne(id), HttpStatus.OK);
+    }
+    @GetMapping("/edit/{id}")
+    public PhieuGiamGiaResponse edit(@PathVariable Integer id) {
+        return voucherService.edit(id);
     }
     @PutMapping("/update/end-date/{id}")
     public ResponseObject updateEndDate( @PathVariable Integer id) {
