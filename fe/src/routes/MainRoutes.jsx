@@ -7,7 +7,10 @@ import Loadable from 'ui-component/Loadable';
 import Product from 'views/pages/products/Product';
 import Color from 'views/pages/products/Color';
 import Size from 'views/pages/products/Size';
-
+import Label from 'views/pages/products/Label';
+import Material from 'views/pages/products/Material';
+import Sleeve from 'views/pages/products/Sleeve';
+import Collar from 'views/pages/products/Collar';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
@@ -46,8 +49,22 @@ const MainRoutes = {
       path: '/products/color',
       element: <Color />
     },
-
-
+    {
+      path: '/products/label',
+      element: <Label />
+    },
+    {
+      path: '/products/material',
+      element: <Material />
+    },
+    {
+      path: '/products/sleeve',
+      element: <Sleeve />
+    },
+    {
+      path: '/products/collar',
+      element: <Collar />
+    },
     {
       path: 'dashboard',
       children: [

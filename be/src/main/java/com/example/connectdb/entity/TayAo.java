@@ -25,6 +25,9 @@ public class TayAo {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "mota")
+    private String mota;
+
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 
@@ -32,6 +35,6 @@ public class TayAo {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
 }

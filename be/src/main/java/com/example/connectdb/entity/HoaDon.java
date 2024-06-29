@@ -21,19 +21,28 @@ public class HoaDon {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien")
     private NhanVien nhanVien;
 
     @ManyToOne
+    @JoinColumn(name = "id_phieu_giam_gia")
+    private PhieuGiamGia phieuGiamGia;
+
+    @ManyToOne
     @JoinColumn(name = "id_khach_hang")
     private KhachHang khachHang;
+
     @ManyToOne
     @JoinColumn(name = "id_hinh_thuc_thanh_toan")
     private ThanhToan thanhToan;
 
     @Column(name = "ma")
     private String ma;
+
+    @Column(name = "loai_hoa_don")
+    private String loaiHoaDon;
 
     @Column(name = "ten_nguoi_nhan")
     private String tenNguoiNhan;
@@ -56,8 +65,11 @@ public class HoaDon {
     @Column(name = "trang_thai_giao_hang")
     private String trangThaiGiaoHang;
 
-    @Column(name = "ngay_giao_dich")
-    private Timestamp ngayGiaoDich;
+    @Column(name = "ngay_giao_hang")
+    private Timestamp ngayGiaoHang;
+
+    @Column(name = "ngay_nhan_hang")
+    private Timestamp ngayNhanHang;
 
     @Column(name = "ma_giao_dich")
     private Integer maGiaoDich;
@@ -70,9 +82,11 @@ public class HoaDon {
 
     @Column(name = "ghi_chu")
     private String ghiChu;
+
     @CreationTimestamp
-    @Column(name = "ngay_tao")
+    @Column(name = "ngay_tao", updatable = false)
     private Timestamp ngayTao;
+
     @UpdateTimestamp
     @Column(name = "ngay_sua")
     private Timestamp ngaySua;

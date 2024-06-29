@@ -22,7 +22,7 @@ public class PhieuGiamGiaKhachHang {
     private String ma;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "ngay_tao")
     private java.sql.Timestamp ngayTao;
@@ -62,11 +62,11 @@ public class PhieuGiamGiaKhachHang {
         this.ma = ma;
     }
 
-    public Integer getTrangThai() {
+    public String getTrangThai() {
         return this.trangThai;
     }
 
-    public void setTrangThai(Integer trangThai) {
+    public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
 

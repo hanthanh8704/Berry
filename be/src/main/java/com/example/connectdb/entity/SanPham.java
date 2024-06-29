@@ -27,6 +27,12 @@ public class SanPham {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
+    @Column(name = "mota")
+    private String mota;
+
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 
@@ -34,7 +40,8 @@ public class SanPham {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
+
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;

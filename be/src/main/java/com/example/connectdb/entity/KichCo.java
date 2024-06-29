@@ -1,9 +1,6 @@
 package com.example.connectdb.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -12,13 +9,14 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+
 @Builder
 @Entity
 @Table(name = "kich_co")
 public class KichCo {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "ma")
@@ -27,6 +25,9 @@ public class KichCo {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "mota")
+    private String mota;
+
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 
@@ -34,5 +35,5 @@ public class KichCo {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 }

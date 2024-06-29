@@ -15,11 +15,11 @@ import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 
 const initialTShirts = [
-    { id: 1, name: 'Áo phông trắng', code: 'TS001', quantity: 50, status: 'Còn hàng', dateAdded: '2024-01-01' },
-    { id: 2, name: 'Áo phông đen', code: 'TS002', quantity: 0, status: 'Hết hàng', dateAdded: '2024-02-15' },
-    { id: 3, name: 'Áo phông xanh', code: 'TS003', quantity: 30, status: 'Còn hàng', dateAdded: '2024-03-20' },
-    { id: 4, name: 'Áo phông đỏ', code: 'TS004', quantity: 10, status: 'Còn hàng', dateAdded: '2024-04-10' },
-    { id: 5, name: 'Áo phông vàng', code: 'TS005', quantity: 0, status: 'Hết hàng', dateAdded: '2024-05-05' },
+    { id: 1, name: 'Áo phông trắng', code: 'TS001', quantity: 50, status: 'Còn hàng', dateAdded: '2024-01-01', color: 'Trắng', size: 'M', brand: 'Brand A', material: 'Cotton', collar: 'Tròn', sleeve: 'Ngắn' },
+    { id: 2, name: 'Áo phông đen', code: 'TS002', quantity: 0, status: 'Hết hàng', dateAdded: '2024-02-15', color: 'Đen', size: 'L', brand: 'Brand B', material: 'Polyester', collar: 'Tròn', sleeve: 'Ngắn' },
+    { id: 3, name: 'Áo phông xanh', code: 'TS003', quantity: 30, status: 'Còn hàng', dateAdded: '2024-03-20', color: 'Xanh', size: 'S', brand: 'Brand C', material: 'Cotton', collar: 'Polo', sleeve: 'Dài' },
+    { id: 4, name: 'Áo phông đỏ', code: 'TS004', quantity: 10, status: 'Còn hàng', dateAdded: '2024-04-10', color: 'Đỏ', size: 'XL', brand: 'Brand D', material: 'Cotton', collar: 'Tròn', sleeve: 'Ngắn' },
+    { id: 5, name: 'Áo phông vàng', code: 'TS005', quantity: 0, status: 'Hết hàng', dateAdded: '2024-05-05', color: 'Vàng', size: 'M', brand: 'Brand E', material: 'Polyester', collar: 'Tròn', sleeve: 'Dài' },
 ];
 
 const Product = () => {
@@ -60,10 +60,6 @@ const Product = () => {
         }
         setIsDialogOpen(false);
         setFormValues({ id: '', name: '', code: '', quantity: '', status: '' });
-    };
-
-    const handleDeleteTShirt = (id) => {
-        setTShirts(tshirts.filter(tshirt => tshirt.id !== id));
     };
 
     const openDialog = (tshirt = { id: '', name: '', code: '', quantity: '', status: '' }) => {
@@ -144,11 +140,16 @@ const Product = () => {
                             Chi tiết áo phông
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            <strong>Mã:</strong> {selectedTShirt.code}<br />
-                            <strong>Tên áo:</strong> {selectedTShirt.name}<br />
+                            <strong>STT:</strong> {selectedTShirt.id}<br />
+                            <strong>Tên sản phẩm:</strong> {selectedTShirt.name}<br />
                             <strong>Số lượng:</strong> {selectedTShirt.quantity}<br />
+                            <strong>Màu sắc:</strong> {selectedTShirt.color}<br />
+                            <strong>Kích cỡ:</strong> {selectedTShirt.size}<br />
+                            <strong>Thương hiệu:</strong> {selectedTShirt.brand}<br />
+                            <strong>Chất liệu:</strong> {selectedTShirt.material}<br />
+                            <strong>Kiểu cổ áo:</strong> {selectedTShirt.collar}<br />
+                            <strong>Kiểu tay áo:</strong> {selectedTShirt.sleeve}<br />
                             <strong>Trạng thái:</strong> {selectedTShirt.status}<br />
-                            <strong>Ngày thêm:</strong> {selectedTShirt.dateAdded}<br />
                         </Typography>
                         <Button variant="contained" color="primary" onClick={handleClearDetails}>
                             Quay lại danh sách
@@ -160,13 +161,13 @@ const Product = () => {
                         <Table sx={{ borderCollapse: 'collapse' }}>
                             <TableHead>
                                 <TableRow sx={{ backgroundColor: '#e0f7fa' }}>
-                                    <TableCell>STT</TableCell>
-                                    <TableCell>Mã</TableCell>
-                                    <TableCell>Tên áo</TableCell>
-                                    <TableCell>Số lượng</TableCell>
-                                    <TableCell>Trạng thái</TableCell>
-                                    <TableCell>Ngày thêm</TableCell>
-                                    <TableCell>Hành động</TableCell>
+                                    <TableCell><strong>STT</strong></TableCell>
+                                    <TableCell><strong>Mã</strong></TableCell>
+                                    <TableCell><strong>Tên áo</strong></TableCell>
+                                    <TableCell><strong>Số lượng</strong></TableCell>
+                                    <TableCell><strong>Trạng thái</strong></TableCell>
+                                    <TableCell><strong>Ngày thêm</strong></TableCell>
+                                    <TableCell><strong>Hành động</strong></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -207,14 +208,6 @@ const Product = () => {
                                                     sx={{ borderRadius: '8px' }}
                                                 >
                                                     Sửa
-                                                </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="error"
-                                                    onClick={() => handleDeleteTShirt(tshirt.id)}
-                                                    sx={{ borderRadius: '8px' }}
-                                                >
-                                                    Xóa
                                                 </Button>
                                             </Box>
                                         </TableCell>

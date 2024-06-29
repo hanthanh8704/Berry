@@ -1,4 +1,51 @@
 package com.example.connectdb.controller;
 
+import com.example.connectdb.dto.request.color.MauSacRequest;
+import com.example.connectdb.entity.MauSac;
+import com.example.connectdb.service.MauSacService;
+import com.example.connectdb.util.common.PageableObject;
+import com.example.connectdb.util.common.ResponseObject;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("api/color")
 public class MauSacController {
+private final MauSacService mauSacService;
+
+    @Autowired
+    public MauSacController(MauSacService mauSacService) {
+        this.mauSacService = mauSacService;
+    }
+
+    // Hiển thị các danh sách hóa đơn
+    @GetMapping
+    public PageableObject getAll(MauSacRequest request) {
+        return mauSacService.getAll(request);
+    }
+
+    // Hàm này dùng để hiển thị những danh sách hóa đơn theo trạng thái
+
+
+    // Hàm này hiển thị detail của hóa đơn
+    @GetMapping("/{id}")
+    public MauSac getOne(@PathVariable Integer id) {
+        return mauSacService.getOne(id);
+    }
+
+
+    @PostMapping("create")
+    public ResponseObject create(@RequestBody @Valid MauSacRequest request) {
+        return new ResponseObject(mauSacService.create(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid MauSacRequest request) {
+        return new ResponseObject(mauSacService.update(id, request));
+    }
+
+
 }

@@ -43,7 +43,7 @@ const product = {
         },
         {
           id: 'label',
-          title: 'Nhãn Hiệu',
+          title: 'Thương Hiệu',
           type: 'item',
           url: '/products/label',
           target: false

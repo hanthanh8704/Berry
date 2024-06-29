@@ -28,9 +28,6 @@ public class ChucVu {
     @Column(name = "vai_tro")
     private String vaiTro;
 
-    @Column(name = "tinh_trang")
-    private Integer tinhTrang;
-
     @Column(name = "nguoi_tao")
     private String nguoiTao;
 

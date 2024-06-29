@@ -27,6 +27,9 @@ public class DanhMuc {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "mota")
+    private String mota;
+
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 

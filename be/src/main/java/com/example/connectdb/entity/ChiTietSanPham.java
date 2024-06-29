@@ -44,9 +44,6 @@ public class ChiTietSanPham {
     @JoinColumn(name = "id_san_pham")
     private SanPham sanPham;
 
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_tiet")
-    private HoaTiet hoaTiet;
 
     @ManyToOne
     @JoinColumn(name = "id_thuong_hieu")
@@ -56,8 +53,11 @@ public class ChiTietSanPham {
     @JoinColumn(name = "id_anh")
     private Anh anh;
 
-    @Column(name = "so_luong_ton")
-    private Integer soLuongTon;
+    @Column(name = "ma")
+    private String ma;
+
+    @Column(name = "so_luong")
+    private Integer soLuong;
 
     @Column(name = "gia_ban")
     private BigDecimal giaBan;

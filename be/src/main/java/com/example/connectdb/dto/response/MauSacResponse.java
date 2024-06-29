@@ -11,10 +11,8 @@ public interface MauSacResponse {
     @Value("#{target.indexs}")
     Integer getIndex();
     Integer getId();
-    String getMa();
+
+    String getTen();
     String getTrangThai();
     LocalDateTime getNgayTao();
-    LocalDateTime getNgaySua();
-    String getNguoiTao();
-    String getNguoiSua();
 }
