@@ -10,7 +10,6 @@ const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
 const BillDetail = Loadable(lazy(() => import('views/pages/bill/billDetail.jsx')));
 const BillHistory = Loadable(lazy(() => import('views/pages/bill/billHistory.jsx')));
-const BillTimeline = Loadable(lazy(() => import('views/pages/bill/billTimeline.jsx')));
 const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
 const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
 // utilities routing

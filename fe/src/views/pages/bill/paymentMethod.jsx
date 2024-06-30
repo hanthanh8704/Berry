@@ -126,7 +126,8 @@ function PaymentMethod({ bill, onSucess }) {
     <>
       <div className="mt-3">
         <div className="d-flex align-items-center">
-          <Title level={5} className="text-danger text-uppercase p-0 m-0 flex-grow-1 p-2">Lịch sử thanh toán</Title>
+        <h2 level={5} className="text-danger text-uppercase p-0 m-0 flex-grow-1 p-2" style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20', textAlign: 'left' ,background:'#c8d6e5', color:'#1e272e'}}> Lịch sử thanh toán </h2>
+
           <div className="p-2">
             {/* Nút xác nhận thanh toán */}
             {totalPayment < (bill.totalMoney + bill?.moneyShip) && (

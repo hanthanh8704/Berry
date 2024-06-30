@@ -35,9 +35,28 @@
   .custom-icon {
     color: #ff9900; /* Màu của icon */
   }
+
+  .custom-table-header .ant-table-thead th.ant-table-cell {
+  background-color: #1890ff; /* Màu nền xanh dương */
+  color: white; /* Màu chữ trắng */
+  font-weight: bold; /* Chữ in đậm */
+}
+
   
   .Timeline-wrapper-1 {
     position: relative;
     overflow: auto !important;
     width: 98%;
   }
+
+  .table-header {
+    position: sticky;
+    top: 0;
+    padding: auto;
+    background-color: rgb(162, 195, 252);
+  }
+  
+  .table-body td {
+    padding: 8px;
+  }
+  

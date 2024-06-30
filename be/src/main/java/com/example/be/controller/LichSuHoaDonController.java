@@ -15,8 +15,8 @@ import java.util.List;
 public class LichSuHoaDonController {
     @Autowired
     private LichSuHoaDonService billHistoryService;
-    @GetMapping("/{idHoaDon}")
-    public List<LichSuHoaDonResponse> getByBill(@PathVariable("idHoaDon") Integer id){
+    @GetMapping("/{id}")
+    public List<LichSuHoaDonResponse> getByBill(@PathVariable("id") Integer id){
         return billHistoryService.getByBill(id);
     }
 }

@@ -6,12 +6,10 @@ import com.example.be.dto.response.TKHoaDonTrangThai;
 import com.example.be.entity.HoaDon;
 import com.example.be.service.HoaDonService;
 import com.example.be.util.common.PageableObject;
+import com.example.be.util.common.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class HoaDonController {
         return hoaDonService.getAll(request);
     }
 
-    // Hàm này dùng để hiển thị những danh sách hóa đơn theo trạng thái
+    // Hàm này dùng để thống kê danh trạng thái hóa đơn
     @GetMapping("/statistic-bill-status")
     public List<TKHoaDonTrangThai> getListHoaDonByTrangThai() {
         return hoaDonService.getHoaDonByTrangThai();
@@ -42,6 +40,25 @@ public class HoaDonController {
     public HoaDon getOne(@PathVariable Integer id) {
         return hoaDonService.getOne(id);
     }
+
+    // Hàm này dùng để tạo mới một hóa đơn
+    @PostMapping
+    public ResponseEntity<HoaDon> create(@RequestBody HoaDonRequest request) {
+        return ResponseEntity.ok(hoaDonService.create());
+    }
+
+    // Hàm này này dùng để tạo 1 đơn đặt hag
+    @PostMapping("/order/{id}")
+    public ResponseEntity<HoaDon> createOrder(@RequestBody HoaDonRequest request) {
+        return ResponseEntity.ok(hoaDonService.create());
+    }
+
+    // Hàm này dùng để thay đổi trạng thái của một hóa đơn.
+    public ResponseObject changeStatus(@PathVariable Integer id, @RequestParam String ghiChu, @RequestParam(defaultValue = "false") String trangThai) {
+        return new ResponseObject(hoaDonService.changeStatus(id, ghiChu,trangThai));
+    }
+
+    // Hàm này dùng để thay đổi thông tin khách hàng của một hóa đơn.
 
 
 }

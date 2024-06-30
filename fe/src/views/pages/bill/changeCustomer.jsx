@@ -1,3 +1,5 @@
+//  Hàm này chứa thông tin chi tiết của đơn hàng và khách hàng
+
 import { Col, Divider, Row } from "antd";
 import Title from "antd/es/skeleton/Title";
 import React from "react";
@@ -9,32 +11,33 @@ function ChangeCustom({props, onSuccess}){
     return (
         <>
           <div className="mt-3">
-            <Title level={5} className="text-danger text-uppercase">Thông tin đơn hàng</Title>
+          <h2 level={7} className="text-danger text-uppercase" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', background:'#c8d6e5', color:'#1e272e' }}> Thông tin đơn hàng </h2>
+
             <Row gutter={24} className="fw-semibold">
               <Col xl={12}>
                 <ul className="list-unstyled">
-                  <li className="mb-2">Trạng thái: <span className="float-end text-danger">{props.status === 0 ? " Chờ thanh toán" : props.status === 1 ? " Tạo đơn hàng" : props.status === 2 ? " Chờ xác nhận" : props.status === 3 ? " Xác nhận thông tin thanh toán" : props.status === 4 ? " Chờ giao" : props.status === 5 ? " Đang giao" : props.status === 6 ? " Hoàn thành" : props.status === 7 ? " Hủy" : props.status === 8 ? " Trả hàng" : " "}</span></li>
-                  <li className="mb-2">Mã đơn hàng: <span className="float-end text-danger">{props?.code}</span></li>
-                  <li className="mb-2">Loại đơn hàng: <span className="float-end text-danger">{props.type === 0 ? " Tại quầy" : " Giao hàng"}</span></li>
+                <li className="mb-2">Mã đơn hàng: <span className="float-end text-danger">{props?.ma}</span></li>
+                  <li className="mb-2">Trạng thái: <span className="float-end text-danger">{props.trangThai === " Chờ thanh toán" ? " Chờ thanh toán" : props.trangThai === " Tạo đơn hàng" ? " Tạo đơn hàng" : props.trangThai === " Chờ xác nhận" ? " Chờ xác nhận" : props.trangThai === " Xác nhận thông tin thanh toán" ? " Xác nhận thông tin thanh toán" : props.trangThai === " Chờ giao" ? " Chờ giao" : props.trangThai === " Đang giao" ? " Đang giao" : props.trangThai === " Hoàn thành" ? " Hoàn thành" : props.trangThai === " Hủy" ? " Hủy" : " "}</span></li>
+                  <li className="mb-2">Loại đơn hàng: <span className="float-end text-danger">{props.loaiDonHang === 0 ? " Tại quầy" : " Giao hàng"}</span></li>
                 </ul>
               </Col>
               <Col xl={12}>
                 <ul className="list-unstyled">
                   <li className="mb-2">Phí vận chuyển: <span className="float-end text-danger">{
-                    props.type === 1 ? <FormatCurrency value={props.moneyShip} /> : "Không có"
+                    props.type === 1 ? <FormatCurrency value={props.phiShip} /> : "Không có"
                   }</span></li>
-                  <li className="mb-2">Tổng tiền: <span className="float-end text-danger"><FormatCurrency value={props.totalMoney} /></span></li>
-                  <li className="mb-2">Phải thanh toán: <span className="float-end text-danger"><FormatCurrency value={props.totalMoney + props.moneyShip} /></span></li>
+                  <li className="mb-2">Tổng tiền: <span className="float-end text-danger"><FormatCurrency value={props.tongTien} /></span></li>
+                  <li className="mb-2">Phải thanh toán: <span className="float-end text-danger"><FormatCurrency value={props.tongTien + props.moneyShip} /></span></li>
                 </ul>
               </Col>
               <Col xl={8}>
     
               </Col>
-              {props.voucher !== null && (
+              {props.phieuGiamGia !== null && (
                 <Col xl={24}>
                   <ul className="list-unstyled">
                     <li className="mb-2">
-                      Mã giảm giá: <span className="text-danger">({props?.voucher?.code})</span> {props.voucher?.name} - giảm <span className="text-danger">{props.voucher?.percentReduce} %</span> cho đơn tối thiểu từ <span className="text-danger"><FormatCurrency value={props.voucher?.minBillValue} /></span>, đã giảm <span className="text-success"><FormatCurrency value={props.moneyReduce} /></span>
+                      Mã giảm giá: <span className="text-danger">({props?.phieuGiamGia?.ma})</span> {props.phieuGiamGia?.ma} - giảm <span className="text-danger">{props.phieuGiamGia?.giaTriHoaDonDuocGiam} %</span> cho đơn tối thiểu từ <span className="text-danger"><FormatCurrency value={props.phieuGiamGia?.giaTriHoaDonDuocApDung} /></span>, đã giảm <span className="text-success"><FormatCurrency value={props.tongTienSauGiamGia} /></span>
                     </li>
                   </ul>
                 </Col>
@@ -45,10 +48,11 @@ function ChangeCustom({props, onSuccess}){
           <div>
             <div className="d-flex">
               <div className="flex-grow-1">
-                <Title level={5} className="text-danger text-uppercase">Thông tin khách hàng</Title>
+              <h2 level={5} className="text-danger text-uppercase" style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px', textAlign: 'left', background:'#c8d6e5', color:'#1e272e' }}> Thông tin khách hàng </h2>
+
               </div>
               <div className="">
-                {props.status <= 4 ? (
+                {props.trangThai <= 4 ? (
                   <ChangeInfoBill bill={props} onSuccess={() => {
                     onSuccess()
                   }} />
@@ -58,17 +62,17 @@ function ChangeCustom({props, onSuccess}){
             <ul className="list-unstyled fw-semibold">
               <Row gutter={12}>
                 <Col xl={12}>
-                  <li className="mb-2">Tên khách hàng: <span className="float-end text-danger">{props.customerName === null ? "Khách hàng lẻ" : props.customerName}</span></li>
-                  <li className="mb-2">Số điện thoại: <span className="float-end text-danger">{props.phoneNumber === null ? "Không có" : props.phoneNumber}</span></li>
+                  <li className="mb-2">Tên khách hàng: <span className="float-end text-danger">{props.tenNguoiNhan === null ? "Khách hàng lẻ" : props.tenNguoiNhan}</span></li>
+                  <li className="mb-2">Số điện thoại: <span className="float-end text-danger">{props.soDienThoaiNguoiNhan === null ? "Không có" : props.soDienThoaiNguoiNhan}</span></li>
                 </Col>
                 <Col xl={12}>
-                  <li className="mb-2">Email: <span className="float-end text-danger">{props.customer?.email === null | props.customer?.email === undefined ? "Không có" : props.customer?.email}</span></li>
-                  <li className="mb-2">Địa chỉ: <span className="float-end text-danger text-end" style={{ width: "24rem" }}>{props?.address !== null ? (
+                  <li className="mb-2">Email: <span className="float-end text-danger">{props.khachHang?.email === null | props.khachHang?.email === undefined ? "Không có" : props.khachHang?.email}</span></li>
+                  <li className="mb-2">Địa chỉ: <span className="float-end text-danger text-end" style={{ width: "24rem" }}>{props?.diaChi !== null ? (
                     <>
-                      {props.address?.split("##")[0]} ,
-                      <DetailAddress war={props.address?.split("##")[1]}
-                        distr={props.address?.split("##")[2]}
-                        prov={props.address?.split("##")[3]} />
+                      {props.diaChi?.split("##")[0]} ,
+                      <DetailAddress war={props.diaChi?.split("##")[1]}
+                        distr={props.diaChi?.split("##")[2]}
+                        prov={props.diaChi?.split("##")[3]} />
                     </>
                   ) : "Tại cửa hàng"}</span></li>
                 </Col>

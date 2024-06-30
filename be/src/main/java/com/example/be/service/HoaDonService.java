@@ -24,4 +24,9 @@ public interface HoaDonService {
 
     HoaDon getOne(Integer id);
 
+    HoaDon create();
+
+    HoaDon changeStatus(Integer id, String ghiChu, String trangThai);
+
+    HoaDon changeInfoCustomer(Long id, HoaDonRequest request);
 }

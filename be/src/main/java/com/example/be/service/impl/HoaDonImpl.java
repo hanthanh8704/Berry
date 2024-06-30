@@ -5,6 +5,7 @@ import com.example.be.dto.request.bill.HoaDonSearchRequest;
 import com.example.be.dto.response.HoaDonResponse;
 import com.example.be.dto.response.TKHoaDonTrangThai;
 import com.example.be.entity.HoaDon;
+import com.example.be.entity.LichSuHoaDon;
 import com.example.be.repository.HoaDonRepository;
 import com.example.be.service.HoaDonService;
 import com.example.be.util.common.PageableObject;
@@ -50,5 +51,22 @@ public class HoaDonImpl implements HoaDonService {
     @Override
     public HoaDon getOne(Integer id) {
         return hoaDonRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public HoaDon create() {
+        HoaDon hd = new HoaDon();
+        LichSuHoaDon lshd = new LichSuHoaDon();
+        return null;
+    }
+
+    @Override
+    public HoaDon changeStatus(Integer id, String ghiChu, String trangThai) {
+        return null;
+    }
+
+    @Override
+    public HoaDon changeInfoCustomer(Long id, HoaDonRequest request) {
+        return null;
     }
 }

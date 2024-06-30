@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public interface LichSuHoaDonResponse {
     @Value("#{target.indexs}")
     Integer getIndex();
+    Integer getIdHoaDon();
     String getHoaDon();
     String getNhanVien();
     Integer getId();

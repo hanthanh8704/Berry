@@ -1,3 +1,5 @@
+// Hàm này sử dụng để thay đổi thông tin của đơn hàng
+
 import { Button, Col, Form, Input, Modal, Row } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, {useEffect} from 'react';
@@ -11,7 +13,7 @@ function changeBill({bill, onSuccess}){
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Địa chỉ
-    const [address, setAddress] = useState([]);
+    const [diaChi, setAddress] = useState([]);
 
     // Phí ship
     const [moneyShip, setMoneyShip] = useState(0);
@@ -25,15 +27,15 @@ function changeBill({bill, onSuccess}){
     // Hàm show modal
     const showModal = () => {
         setAddress({
-            province: bill?.address?.split("##")[3],
-            district: bill?.address?.split("##")[2],
-            ward: bill?.address?.split("##")[1],
+            province: bill?.diaChi?.split("##")[3],
+            district: bill?.diaChi?.split("##")[2],
+            ward: bill?.diaChi?.split("##")[1],
         });
         form.setFieldsValue({
-            customerName: bill?.customerName,
-            phoneNumber: bill?.phoneNumber,
+            customerName: bill?.soDienThoaiNguoiNhan,
+            phoneNumber: bill?.soDienThoaiNguoiNhan,
             // Địa chỉ cụ thể
-            specificAddress: bill?.address?.split("##")[0],
+            specificAddress: bill?.diaChi?.split("##")[0],
         });
         setIsModalOpen(true);
     };
@@ -55,8 +57,8 @@ function changeBill({bill, onSuccess}){
             {
                 service_id: 53320,
                 service_type_id: null,
-                to_district_id: parseInt(address.district),
-                to_ward_code: address.ward,
+                to_district_id: parseInt(diaChi.district),
+                to_ward_code: diaChi.ward,
                 height: 50,
                 length: 20,
                 weight: totalWeight,
@@ -101,29 +103,29 @@ function changeBill({bill, onSuccess}){
     // Khởi tạo địa chỉ và tính phí vận chuyển
     useEffect(() => {
         setAddress({
-            province: bill?.address?.split("##")[3],
-            district: bill?.address?.split("##")[2],
-            ward: bill?.address?.split("##")[1],
+            province: bill?.diaChi?.split("##")[3],
+            district: bill?.diaChi?.split("##")[2],
+            ward: bill?.diaChi?.split("##")[1],
         });
         form.setFieldsValue({
-            customerName: bill?.customerName,
-            phoneNumber: bill?.phoneNumber,
-            specificAddress: bill?.address?.split("##")[0],
+            customerName: bill?.soDienThoaiNguoiNhan,
+            phoneNumber: bill?.soDienThoaiNguoiNhan,
+            specificAddress: bill?.diaChi?.split("##")[0],
         });
         caculateWeight();
     }, [bill]);
     
     useEffect(() => {
         tinhPhiVC();
-    }, [address]);
+    }, [diaChi]);
     
     // Hàm cập nhật
     useEffect(() => {
         caculateFee();
-    }, [address])
+    }, [diaChi])
     const handleChangeInfo = (data) => {
         const newData = { ...data };
-        newData.address = `${data.specificAddress}##${data.ward}##${data.district}##${data.province}`;
+        newData.diaChi = `${data.specificAddress}##${data.ward}##${data.district}##${data.province}`;
         newData.moneyShip = moneyShip;
         request.put(`/bill/change-info-customer/${bill.id}`, newData).then(response => {
             toast.success("Cập nhật thành công!");
@@ -149,16 +151,16 @@ function changeBill({bill, onSuccess}){
                 <Form form={form} layout='vertical' onFinish={(data) => handleChangeInfo(data)}>
                     <Row gutter={10}>
                         <Col xl={12}>
-                            <Form.Item label="Tên người nhận" name={"customerName"} rules={[{ required: true, message: "Tên người nhận không được để trống!", },]}>
+                            <Form.Item label="Tên người nhận" name={"tenNguoiNhan"} rules={[{ required: true, message: "Tên người nhận không được để trống!", },]}>
                                 <Input />
                             </Form.Item>
                         </Col>
                         <Col xl={12}>
-                            <Form.Item label="Số điện thoại" name={"phoneNumber"} rules={[{ required: true, message: "SĐT người nhận không được để trống!", },]}>
+                            <Form.Item label="Số điện thoại" name={"soDienThoaiNguoiNhan"} rules={[{ required: true, message: "SĐT người nhận không được để trống!", },]}>
                                 <Input />
                             </Form.Item>
                         </Col>
-                        <GHNInfo distr={address.district} dataAddress={(data) => setAddress({ ...address, ...data })} prov={address.province} war={address.ward} />
+                        <GHNInfo distr={diaChi.district} dataAddress={(data) => setAddress({ ...diaChi, ...data })} prov={diaChi.province} war={diaChi.ward} />
                         <Col xl={24}>
                             <Form.Item label="Địa chỉ cụ thể" name={"specificAddress"} rules={[{ required: true, message: "Địa chỉ cụ thể không được để trống!", },]}>
                                 <TextArea />

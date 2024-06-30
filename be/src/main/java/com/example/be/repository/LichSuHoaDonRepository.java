@@ -14,6 +14,7 @@ public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon,Integ
     @Query(value = """
             SELECT ROW_NUMBER() OVER(ORDER BY lshd.ngay_tao ASC) AS indexs,
                    lshd.id AS id,
+                   hd.id as idHoaDon,
                    hd.ma AS hoaDon,
                    nv.ten AS nhanVien,
                    lshd.ghi_chu AS ghiChu,
@@ -23,7 +24,7 @@ public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon,Integ
             FROM lich_su_hoa_don lshd
             LEFT JOIN hoa_don hd ON lshd.id_hoa_don = hd.id
             LEFT JOIN nhan_vien nv ON lshd.id_nhan_vien = nv.id
-            WHERE lshd.id_hoa_don = :idHoaDon
+            WHERE lshd.id_hoa_don = :id
             """, nativeQuery = true)
-    List<LichSuHoaDonResponse> getByBill(@Param("idHoaDon") Integer idHoaDon);
+    List<LichSuHoaDonResponse> getByBill(@Param("id") Integer id);
 }
