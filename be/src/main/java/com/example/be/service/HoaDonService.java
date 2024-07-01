@@ -29,4 +29,6 @@ public interface HoaDonService {
     HoaDon changeStatus(Integer id, String ghiChu, String trangThai);
 
     HoaDon changeInfoCustomer(Long id, HoaDonRequest request);
+
+    // Hàm này dùng để xuất file pdf của hóa đơn
 }

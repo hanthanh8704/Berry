@@ -7,6 +7,7 @@
     background-color: #1890ff; 
   }
 
+
 /* Định nghĩa các lớp CSS cho các cột */
 .custom-table .ant-table-thead th.ant-table-cell {
     background-color: #74b9ff; /* Màu nền của tiêu đề cột */
@@ -58,5 +59,74 @@
   
   .table-body td {
     padding: 8px;
+  }
+  
+  .bill-history {
+    margin: 20px 0;
+  }
+  
+  .bill-history-descriptions {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .bill-history-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+  }
+  
+  .bill-history-descriptions .ant-descriptions-item-label {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .bill-history-descriptions .ant-descriptions-item-content {
+    color: #333;
+  }
+  
+  .bill-history-modal .ant-modal-title {
+    text-align: center;
+  }  
+  
+
+  /* Đây là css của changeBill */
+  .order-details-container, .customer-details-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+  }
+  
+  .order-section-title, .customer-section-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1e272e;
+    background: #c8d6e5;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .order-descriptions, .customer-descriptions {
+    background-color: #fff;
+    border-radius: 8px;
+  }
+  
+  .order-descriptions .ant-descriptions-item-label, .customer-descriptions .ant-descriptions-item-label {
+    font-weight: bold;
+  }
+  
+  .order-descriptions .ant-descriptions-item-content, .customer-descriptions .ant-descriptions-item-content {
+    color: #333;
+  }
+  
+  .order-descriptions .ant-descriptions-item, .customer-descriptions .ant-descriptions-item {
+    padding: 12px;
   }
   

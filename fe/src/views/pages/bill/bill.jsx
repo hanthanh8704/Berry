@@ -4,7 +4,7 @@ import FormatDate from "views/utilities/FormatDate";
 import FormatCurrency from "views/utilities/FormatCurrency";
 import { Badge, Button, DatePicker, Input, Table, Tabs, Tag, Tooltip, Select } from "antd";
 import { Link } from "react-router-dom";
-import { IconArrowsMove } from "@tabler/icons-react";
+import { IconArrowsMove, IconPrinter } from "@tabler/icons-react";
 import "./bill.css"; // Import file CSS để tùy chỉnh màu sắc
 import { useNavigate } from "react-router-dom";
 
@@ -50,10 +50,15 @@ const Bill = ({ onload }) => {
     try {
       const response = await request.get('/bill/statistic-bill-status');
       console.log('Statistic data:', response);
-      setTabs(response);
+      setTabs(sortTabs(response));
     } catch (error) {
       console.error("Error fetching bill status:", error);
     }
+  };
+
+  const sortTabs = (tabs) => {
+    const order = ["Chờ xác nhận", "Chờ giao", "Hoàn thành", "Đã hủy", "Hoàn 1 phần"];
+    return tabs.sort((a, b) => order.indexOf(a.trangThai) - order.indexOf(b.trangThai));
   };
 
   const handleDateChange = (dates) => {
@@ -67,7 +72,6 @@ const Bill = ({ onload }) => {
       setSelectedDates({});
     }
   };
-  
 
   const handleSearch = () => {
     loadOrders();
@@ -85,9 +89,14 @@ const Bill = ({ onload }) => {
     },
     ...(tabs.map(item => ({
       key: item.trangThai,
-      label: <Badge count={item.totalCount} offset={[8, 0]} size="small">{item.trangThai}</Badge>,
+      label: (
+        <span>
+          {item.trangThai}
+          <Badge count={item.totalCount} offset={[8, 0]} style={{ backgroundColor: '#f5222d', color: '#f5222d', marginLeft: '8px' }} />
+        </span>
+      ),
       children: <div></div>
-    })) || []), // Sử dụng [] nếu tabs không có dữ liệu
+    })) || []),
   ];
 
   const columns = [
@@ -96,7 +105,7 @@ const Bill = ({ onload }) => {
       dataIndex: 'id',
       key: 'id',
       className: 'custom-column', // Thêm lớp CSS cho cột '#'
-      render: (text, record, index) => index + 1,
+      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: 'Mã',
@@ -172,6 +181,11 @@ const Bill = ({ onload }) => {
               <Button type="text" icon={<IconArrowsMove />} className="custom-button" /> {/* Thêm lớp CSS cho nút */}
             </Link>
           </Tooltip>
+          {record.status !== "Tạo đơn hàng" && (
+            <Tooltip title="In hóa đơn">
+              <Link className="px-2" target="blank" to={`/export-pdf/${record.id}`}><IconPrinter /></Link>
+            </Tooltip>
+          )}
         </>
       ),
     },
@@ -220,9 +234,8 @@ const Bill = ({ onload }) => {
           showSizeChanger: true,
           current: currentPage,
           pageSize: pageSize,
-          pageSizeOptions: [5, 10, 20, 50, 100],
+          pageSizeOptions: [5, 10, 20, 50],
           showQuickJumper: false,
-          //showTotal: total => `Tổng ${total} mục`,
           total: totalPages * pageSize,
           onChange: (page, pageSize) => {
             setCurrentPage(page);

@@ -30,7 +30,11 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
                     hdc.don_gia AS gia,
                     img.anh AS anh,
                     hdc.so_luong AS soLuong,
-                    hdc.trang_thai AS trangThai
+                    hdc.trang_thai AS trangThai,
+                    hdc.ngay_tao AS ngayTao,
+                    hdc.ngay_sua AS ngaySua,
+                    hdc.nguoi_tao AS nguoiTao,
+                    hdc.nguoi_sua AS nguoiSua
                 FROM 
                     hoa_don_chi_tiet hdc
                     JOIN chi_tiet_san_pham ctsp ON hdc.id_chi_tiet_san_pham = ctsp.id
@@ -52,10 +56,11 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
     @Query("SELECT hdct FROM HoaDonChiTiet hdct WHERE hdct.hoaDon.id =: id")
     HoaDonChiTiet findHoaDonChiTiet(@Param("id") Integer id);
 
-    // Hàm này dùng để lấy ra danh sách hóa đơn chi tiết qua id hóa đơn
-    List<HoaDonChiTiet> findByHoaDonId(Integer id);
-
 
     // Hàm này dùng để lấy ra danh sách hóa đơn chi tiết thông qua hóa đơn và trạng thái
     List<HoaDonChiTiet> findByHoaDonAndTrangThai(HoaDon hoaDon, String trangThai);
+
+
+    @Query(value = "SELECT * FROM hoa_don_chi_tiet WHERE id_hoa_don = :idHoaDon", nativeQuery = true)
+    List<HoaDonChiTiet> findByHoaDonId(Integer idHoaDon);
 }

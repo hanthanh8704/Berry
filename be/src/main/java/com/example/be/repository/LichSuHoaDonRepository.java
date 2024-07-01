@@ -24,7 +24,7 @@ public interface LichSuHoaDonRepository extends JpaRepository<LichSuHoaDon,Integ
             FROM lich_su_hoa_don lshd
             LEFT JOIN hoa_don hd ON lshd.id_hoa_don = hd.id
             LEFT JOIN nhan_vien nv ON lshd.id_nhan_vien = nv.id
-            WHERE lshd.id_hoa_don = :id
+            WHERE lshd.id_hoa_don = :idHoaDon
             """, nativeQuery = true)
-    List<LichSuHoaDonResponse> getByBill(@Param("id") Integer id);
+    List<LichSuHoaDonResponse> getByBill(@Param("idHoaDon") Integer idHoaDon);
 }

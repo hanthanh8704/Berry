@@ -83,6 +83,14 @@ function PaymentMethod({ bill, onSucess }) {
       key: 'index',
     },
     {
+      title: 'Mã giao dịch',
+      dataIndex: 'maGiaoDich',
+      key: 'maGiaoDich',
+      render: (x, record) => (
+        <>{x === null ? '---' : x}</>
+      )
+    },
+    {
       title: 'Số tiền',
       dataIndex: 'tongTienThanhToan',
       key: 'tongTienThanhToan',
@@ -95,14 +103,6 @@ function PaymentMethod({ bill, onSucess }) {
       render: (x) => (<FormatDate date={x} />)
     },
     {
-      title: 'Mã giao dịch',
-      dataIndex: 'maGiaoDich',
-      key: 'maGiaoDich',
-      render: (x, record) => (
-        <>{x === null ? '---' : x}</>
-      )
-    },
-    {
       title: 'Loại giao dịch',
       dataIndex: 'tenHinhThuc',
       key: 'tenHinhThuc',
@@ -111,14 +111,14 @@ function PaymentMethod({ bill, onSucess }) {
       )
     },
     {
-      title: 'Nhân viên xác nhận',
-      dataIndex: 'nguoiTao',
-      key: 'nguoiTao',
-    },
-    {
       title: 'Ghi chú',
       dataIndex: 'ghiChu',
       key: 'ghiChu',
+    },
+    {
+      title: 'Nhân viên xác nhận',
+      dataIndex: 'nguoiTao',
+      key: 'nguoiTao',
     },
   ];
 

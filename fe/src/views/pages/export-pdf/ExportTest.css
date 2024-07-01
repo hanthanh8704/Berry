@@ -1,0 +1,203 @@
+.export-test {
+  position: relative;
+}
+
+.center-image {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  width: 30%;
+  opacity: 0.3;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+.bill-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bill-info .left {
+  flex: 1;
+}
+
+.bill-info .right {
+  flex: 1;
+  text-align: right;
+}
+
+.product-list {
+  margin-top: 20px;
+}
+
+.product-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-list th,
+.product-list td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.product-list th {
+  background-color: #f2f2f2;
+}
+
+.total-info {
+  margin-top: 20px;
+}
+
+.total-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.total-info li {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-info .total-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #dc3545;
+}
+
+.status-info {
+  margin-top: 20px;
+}
+
+.status-info p {
+  margin: 0;
+  font-weight: bold;
+}
+
+
+/* ExportTest.css */
+.invoice-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #d0d0d0;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 200px;
+  margin-right: 20px;
+}
+
+.store-info {
+  flex: 2;
+  text-align: right; /* Điều chỉnh căn lề cho phần thông tin cửa hàng */
+}
+
+.store-info h1 {
+  font-size: 24px;
+  margin: 0;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.store-info p {
+  margin: 2px 0;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.invoice-title h2 {
+  text-align: center;
+  font-size: 20px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.customer-info, .product-list, .voucher-info, .total-info, .status-info {
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 18px;
+  border-bottom: 1px solid #d0d0d0;
+  padding-bottom: 5px;
+  color: #444;
+}
+
+.info-box {
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.product-item {
+  margin-bottom: 10px;
+}
+
+.product-item p {
+  margin: 5px 0;
+}
+
+.text-danger {
+  color: #e74c3c;
+}
+
+.text-success {
+  color: #27ae60;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.table tbody tr:hover {
+  background-color: #f5f5f5;
+}

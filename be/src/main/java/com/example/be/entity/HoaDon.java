@@ -48,6 +48,9 @@ public class HoaDon {
     @Column(name = "ten_nguoi_nhan")
     private String tenNguoiNhan;
 
+    @Column(name = "so_tien_duoc_giam")
+    private BigDecimal soTienDuocGiam;
+
     @Column(name = "tong_tien")
     private BigDecimal tongTien;
 

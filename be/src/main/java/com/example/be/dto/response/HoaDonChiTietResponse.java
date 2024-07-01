@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Projection(types = {HoaDonChiTiet.class})
 public interface HoaDonChiTietResponse {
@@ -21,4 +22,8 @@ public interface HoaDonChiTietResponse {
     String getAnh();
     Integer getSoLuong();
     String getTrangThai();
+    Timestamp getNgayTao();
+    Timestamp getNgaySua();
+    String getNguoiTao();
+    String getNguoiSua();
 }

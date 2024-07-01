@@ -72,7 +72,7 @@ public class ChiTietSanPham {
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;

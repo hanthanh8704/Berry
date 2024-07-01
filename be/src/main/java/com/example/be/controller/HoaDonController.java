@@ -40,6 +40,7 @@ public class HoaDonController {
     public HoaDon getOne(@PathVariable Integer id) {
         return hoaDonService.getOne(id);
     }
+    // Hàm này dùng để xuất file pdf
 
     // Hàm này dùng để tạo mới một hóa đơn
     @PostMapping

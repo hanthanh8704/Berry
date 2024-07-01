@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bill-detail")
 public class HoaDonChiTietController {
@@ -29,6 +31,12 @@ public class HoaDonChiTietController {
     @GetMapping("/{id}")
     public HoaDonChiTiet getOne(@PathVariable Integer id) {
         return hoaDonChiTietService.getOne(id);
+    }
+
+    // Hàm này dùng để lấy ra danh sách hóa đơn chi tiết theo id hóa đơn
+    @GetMapping("/hoaDon/{idHoaDon}")
+    public List<HoaDonChiTiet> findByHoaDonId(@PathVariable Integer idHoaDon) {
+        return hoaDonChiTietService.findByHoaDonId(idHoaDon);
     }
 
 

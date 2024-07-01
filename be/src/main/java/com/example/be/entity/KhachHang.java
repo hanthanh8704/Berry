@@ -54,5 +54,4 @@ public class KhachHang {
     @Column(name = "nguoi_sua")
     private String nguoiSua;
 
-
 }

@@ -9,6 +9,8 @@ import { element } from 'prop-types';
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
 const BillDetail = Loadable(lazy(() => import('views/pages/bill/billDetail.jsx')));
+const ExportPdf = Loadable(lazy(() => import('views/pages/export-pdf/ExportBill.jsx')));
+const Customer =  Loadable(lazy(() => import('views/pages/customer/customer.jsx')));
 const BillHistory = Loadable(lazy(() => import('views/pages/bill/billHistory.jsx')));
 const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
 const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
@@ -37,6 +39,23 @@ const MainRoutes = {
       path: '/bill/:id',
       element: <BillDetail/>
     },
+    {
+      path: '/export-pdf/:id',
+      element: <ExportPdf/>
+    },
+    {
+      path: '/account',
+      children: [
+        {
+          path: 'customer',
+          element: <Customer />
+        },
+        {
+          path: 'employee',
+          element: <DashboardDefault />
+        }
+      ]
+    },    
     {
       path: 'dashboard',
       children: [

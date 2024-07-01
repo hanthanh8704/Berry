@@ -19,7 +19,7 @@ public class GioHang {
     private java.sql.Timestamp ngayTao;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "ngay_thanh_toan")
     private java.sql.Timestamp ngayThanhToan;

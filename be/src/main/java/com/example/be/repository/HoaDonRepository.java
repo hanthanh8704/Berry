@@ -20,6 +20,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                 hd.id AS id,
                 ROW_NUMBER() OVER(ORDER BY hd.ngay_sua DESC) AS indexs,
                 hd.ma AS ma,
+                pgg.ten AS phieuGiamGia,
                 nv.ten AS nhanVien,
                 kh.ho_ten AS khachHang,
                 tt.ten_hinh_thuc AS thanhToan,
@@ -45,6 +46,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             LEFT JOIN nhan_vien nv ON hd.id_nhan_vien = nv.id
             LEFT JOIN khach_hang kh ON hd.id_khach_hang = kh.id
             LEFT JOIN thanh_toan tt ON hd.id_hinh_thuc_thanh_toan = tt.id
+            LEFT JOIN phieu_giam_gia pgg ON hd.id_phieu_giam_gia = pgg.id
             WHERE (:#{#req.ma} IS NULL OR hd.ma LIKE %:#{#req.ma}%)
               AND (:#{#req.trangThaiHoaDon} IS NULL OR hd.trang_thai_hoa_don = :#{#req.trangThaiHoaDon})
               AND (:#{#req.fromDate} IS NULL OR :#{#req.toDate} IS NULL OR (hd.ngay_sua BETWEEN :#{#req.fromDate} AND :#{#req.toDate}))

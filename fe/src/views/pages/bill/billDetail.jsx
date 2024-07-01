@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Modal, Divider,Radio,Space,Button, Table, Tooltip, Form, Input, Carousel } from "antd";
-import { IconBrandOpenai,IconPrinter, IconFileInvoice, IconCircleXFilled, IconCheck, IconTruckDelivery, IconCalendarClock, IconCreditCardPay } from "@tabler/icons-react";
+import { IconBrandOpenai,IconArrowsMove,IconPrinter, IconFileInvoice, IconCircleXFilled, IconCheck, IconTruckDelivery, IconCalendarClock, IconCreditCardPay } from "@tabler/icons-react";
 import FormatDate from "views/utilities/FormatDate";
 import FormatCurrency from "views/utilities/FormatCurrency";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
@@ -21,6 +21,7 @@ import * as request from "views/utilities/httpRequest";
 
 import "./bill.css";
 import { margin, style } from "@mui/system";
+
 
 const BillDetail = () => {
   const [bill, setBill] = useState([]);
@@ -43,19 +44,25 @@ const BillDetail = () => {
     });
     setLoading(false);
   };
+
   const loadBillDetail = async () => {
-    await request.get(`/bill-detail`, {
-      params: {
-        bill: id,
-        page: currentPage,
-        sizePage: pageSize,
-      }
-    }).then((response) => {
+    try {
+      const response = await request.get(`/bill-detail`, {
+        params: {
+          bill: id,
+          idHoaDon : id,
+          page: currentPage,
+          sizePage: pageSize,
+        }
+      });
+
+      console.log('ID hóa đơn : ' + id);
       setListBillDetail(response.data);
+      console.log('Data trả về :', response.data); // Đã sửa ở đây để log dữ liệu response.data
       setTotalPages(response.totalPages);
-    }).catch((e) => {
-      console.log(e);
-    });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const loadBillHistory = () => {
@@ -255,31 +262,31 @@ const BillDetail = () => {
       key: 'action',
       render: (id, record) => (
         <>
-          {bill.trangThai <= "Chờ giao" ? (
-            <>
-              {
-                listBillDetail.length > 1 && (
-                  <>
-                    <Button onClick={() => handleDeleteBillDetail(id)} type="text" className="text-danger me-1"><IconTrashFilled/>Xóa</Button>
-                  </>
-                )
-              }
-            </>
-          ) : bill.trangThai === 6 ? (
-            record.trangThai === false ? (
-              <>
-                {bill.trangThai === 7 || bill.trangThai === 8 ? "" : (
-                  <Tooltip placement="top" title="Trả hàng">
-                    <Button onClick={() => handleGiveBack(id)} type="primary" danger icon={<i class="fa-solid fa-rotate-left"></i>}></Button>
-                  </Tooltip>
-                )}
-              </>
-            ) : ""
-          ) : ""}
+          {bill.trangThai === "Chờ thanh toán" ||
+          bill.trangThai === "Tạo đơn hàng" ||
+          bill.trangThai === "Chờ xác nhận" ||
+          bill.trangThai === "Chờ giao" ||
+          bill.trangThai === "Đang giao" ? (
+            <Space size="middle">
+              <Button onClick={() => handleDeleteBillDetail(record.id)} type="danger">
+                Xóa
+              </Button>
+              <Button onClick={() => handleGiveBack(record.id)} type="warning">
+                Trả hàng
+              </Button>
+            </Space>
+          ) : (
+            <IconArrowsMove/>
+          )}
         </>
-      )
+      ),
     },
-  ]
+  ];
+
+  const updateModalTitle = {
+    'Chờ thanh toán' : 'Chờ thanh toán',
+    'Tạo đơn hàng': 'Tạo đơn hàng',
+  };
 
   if (loading) {
     return <Loading />;
@@ -288,13 +295,7 @@ const BillDetail = () => {
   return (
     <>
       <nav className="breadcrumb fw-semibold">
-        <Link
-          className="breadcrumb-item __bee-text text-decoration-none"
-          to={"/admin/bill"}
-        >
-          Danh sách hóa đơn
-        </Link>
-        <h3 className="breadcrumb-item">Mã đơn hàng : {bill.ma}</h3>
+        <h2 className="breadcrumb-item">Mã đơn hàng : {bill.ma}</h2>
       </nav>
       <div className="container overflow-x-auto mb-3">
         <Timeline minEvents={8} placeholder maxEvents={billHistory.length} style={{ height: "400px" }}>
@@ -359,7 +360,7 @@ const BillDetail = () => {
     )}
   </div>
   <div className="mt-3">
-  <div style={{ float: 'right',marginBottom:'20px', marginTop:'20px', marginLeft: '50px'}}>
+  <div style={{ float: 'right',marginBottom:'20px', marginLeft: '50px'}}>
     <BillHistory props={billHistory} />
   </div>
 </div>
@@ -380,12 +381,14 @@ const BillDetail = () => {
       <PaymentMethod bill={bill} onSucess={() => { loadBillHistory() }} />
       {/* Thông tin đơn hàng */}
       <div className="d-flex align-items-center mt-5 align-middle">
-        <Title level={5} className="text-danger text-uppercase p-0 m-0 flex-grow-1 p-2">Danh sách sản phẩm</Title>
-        {bill.trangThai <= 4 ? (
+        <h2 level={5} className="text-danger text-uppercase p-0 m-0 flex-grow-1 p-2">
+          Danh sách sản phẩm
+        </h2>
+        {["Chờ thanh toán", "Tạo đơn hàng", "Chờ xác nhận", "Xác nhận thanh toán", "Chờ giao"].includes(bill.trangThai) ? (
           <ShowProductModal idBill={bill.id} onClose={() => { loadBillDetail(); loadBill(); loadBillHistory() }} />
-        ) : bill.trangThai === 6 ? (
+        ) : bill.trangThai === "Đang giao" ? (
           <>
-            {bill.trangThai === 7 || bill.trangThai === 8 ? "" : (
+            {["Hoàn thành", "Hủy"].includes(bill.trangThai) ? "" : (
               <GivebackAll bill={bill} onSuccess={() => { loadBillDetail(); loadBill(); loadBillHistory() }} />
             )}
           </>

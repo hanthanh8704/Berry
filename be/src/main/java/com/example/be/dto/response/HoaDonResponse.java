@@ -18,6 +18,7 @@ public interface HoaDonResponse {
     String getMa();
     String getLoaiHoaDon();
     String getTenNguoiNhan();
+    BigDecimal getSoTienDuocGiam();
     BigDecimal getTongTien();
     BigDecimal getPhiShip();
     String getEmailNguoiNhan();
@@ -35,6 +36,7 @@ public interface HoaDonResponse {
     String getNguoiTao();
     String getNguoiSua();
     // Add methods for fetching related entities if needed
+    String getPhieuGiamGia();
     String getNhanVien(); // Example: Fetching tenNhanVien from NhanVien entity
     String getKhachHang(); // Example: Fetching tenKhachHang from KhachHang entity
 }
