@@ -65,7 +65,7 @@ public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia,Integ
                    v.hinh_thuc_giam AS kieuGiam,
                    v.ngay_ket_thuc AS ngayKetThuc,
                    v.trang_thai AS trangThai
-            FROM phieu_giam_gia v JOIN phieu_giam_gia_khach_hang av ON v.id = av.id_phieu_giam_gia
+            FROM phieu_giam_gia v
             WHERE v.id = :id
             """, nativeQuery = true)
     PhieuGiamGiaResponse getOneVoucher(@Param("id") Integer id);

@@ -6,6 +6,7 @@ import com.example.be.dto.response.KhachHangResponse;
 import com.example.be.dto.response.PhieuGiamGiaResponse;
 import com.example.be.entity.KhachHang;
 import com.example.be.entity.PhieuGiamGia;
+import com.example.be.entity.PhieuGiamGiaKhachHang;
 import com.example.be.utils.common.PageableObject;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,11 @@ import java.util.List;
 public interface PhieuGiamGiaService {
     List<PhieuGiamGiaResponse> getAccountVoucher(Integer id,PhieuGiamGiaRequest request);
     List<PhieuGiamGiaResponse> getPublicVoucher(PhieuGiamGiaRequest request);
+
+    List<PhieuGiamGiaKhachHang> getFind(Integer id);
     PageableObject<PhieuGiamGiaResponse> getAll(PhieuGiamGiaRequest request);
     PhieuGiamGiaResponse getOne(Integer id);
 
-    PhieuGiamGiaResponse edit(Integer id);
 
     PhieuGiamGia add(PhieuGiamGiaRequest voucher);
 

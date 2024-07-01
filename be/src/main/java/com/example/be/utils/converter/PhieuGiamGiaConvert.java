@@ -28,7 +28,7 @@ public class PhieuGiamGiaConvert {
     }
     public PhieuGiamGia convertRequestToEntity(Integer id, PhieuGiamGiaRequest request){
         PhieuGiamGia voucher = voucherRepository.findById(id).get();
-        voucher.setMa(request.getMa());
+//        voucher.setMa(request.getMa());
         voucher.setTen(request.getTen());
         voucher.setLoai(request.getLoai());
         voucher.setSoLuong(request.getSoLuong());

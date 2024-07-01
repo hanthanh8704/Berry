@@ -64,6 +64,11 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
     }
 
     @Override
+    public List<PhieuGiamGiaKhachHang> getFind(Integer id) {
+        return accountVoucherRepository.findByVoucherId(id);
+    }
+
+    @Override
     public PageableObject<PhieuGiamGiaResponse> getAll(PhieuGiamGiaRequest request) {
         return new PageableObject<>(voucherRepository.getAllVoucher(request, PageRequest.of(request.getPage() - 1 > 0 ? request.getPage() - 1 : 0, request.getSizePage())));
     }
@@ -76,11 +81,6 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         return voucherRepository.getOneVoucher(id);
     }
 
-    @Override
-    public PhieuGiamGiaResponse edit(Integer id) {
-        PhieuGiamGiaResponse pgg = voucherRepository.getOneVoucher(id);
-        return pgg;
-    }
 
     @Override
     @Transactional(rollbackFor = RestApiException.class)
@@ -88,14 +88,16 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         if (request.getTen().length() > 50) {
             throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự.");
         }
-        if (request.getSoLuong() <= 0) {
-            throw new RestApiException("Số lượng phải lớn hơn 0.");
-        }
-        if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
-            throw new RestApiException("Số lượng phải là số nguyên dương.");
-        }
-        if(request.getSoLuong()>10000){
-            throw new RestApiException("Số lượng không được vượt quá 10000. ");
+        if(request.getLoai().equals("Công khai")) {
+            if (request.getSoLuong() <= 0) {
+                throw new RestApiException("Số lượng phải lớn hơn 0.");
+            }
+            if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
+                throw new RestApiException("Số lượng phải là số nguyên dương.");
+            }
+            if (request.getSoLuong() > 10000) {
+                throw new RestApiException("Số lượng không được vượt quá 10000. ");
+            }
         }
         if(request.getKieuGiam().equals("%")) {
             try {
@@ -164,14 +166,17 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         if (request.getTen().length() > 50) {
             throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự.");
         }
-        if (request.getSoLuong() <= 0) {
-            throw new RestApiException("Số lượng phải lớn hơn 0. ");
-        }
-        if(request.getSoLuong()>10000){
-            throw new RestApiException("Số lượng không được vượt quá 10000. ");
-        }
-        if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
-            throw new RestApiException("Số lượng phải là số nguyên dương.");
+        if(request.getLoai().equals("Công khai")) {
+
+            if (request.getSoLuong() <= 0) {
+                throw new RestApiException("Số lượng phải lớn hơn 0. ");
+            }
+            if (request.getSoLuong() > 10000) {
+                throw new RestApiException("Số lượng không được vượt quá 10000. ");
+            }
+            if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
+                throw new RestApiException("Số lượng phải là số nguyên dương.");
+            }
         }
         if(request.getKieuGiam().equals("%")) {
             try {

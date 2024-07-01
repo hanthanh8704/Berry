@@ -38,4 +38,12 @@ public class PhieuGiamGiaRequest  extends PageableRequest {
     private String nguoiTao;
     private String nguoiSua;
     private List<Integer> customers;
+
+//    public Integer getSoLuong() {
+//        return (soLuong != null) ? soLuong : 0; // Trả về giá trị mặc định nếu soLuong là null
+//    }
+//
+//    public void setSoLuong(Integer soLuong) {
+//        this.soLuong = soLuong;
+//    }
 }

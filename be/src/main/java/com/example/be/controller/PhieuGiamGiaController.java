@@ -44,7 +44,6 @@ public class PhieuGiamGiaController {
     @PostMapping("/add")
     public ResponseObject addVoucher(@RequestBody @Valid PhieuGiamGiaRequest request) {
         return new ResponseObject(voucherService.add(request));
-
     }
 
     @PutMapping("/update/{id}")
@@ -53,13 +52,11 @@ public class PhieuGiamGiaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PhieuGiamGiaResponse> getOne(@PathVariable Integer id) {
+    public ResponseEntity<PhieuGiamGiaResponse> getVoucher(@PathVariable("id") Integer id) {
         return new ResponseEntity<>(voucherService.getOne(id), HttpStatus.OK);
     }
-    @GetMapping("/edit/{id}")
-    public PhieuGiamGiaResponse edit(@PathVariable Integer id) {
-        return voucherService.edit(id);
-    }
+
+
     @PutMapping("/update/end-date/{id}")
     public ResponseObject updateEndDate( @PathVariable Integer id) {
         return new ResponseObject(voucherService.updateEndDate(id));
