@@ -253,6 +253,7 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
             LocalDateTime startDate = voucher.getNgayBatDau().toLocalDateTime();
             LocalDateTime endDate = voucher.getNgayKetThuc().toLocalDateTime();
             // so luong bang 0 thi se ket thuc voucher som
+            if(voucher.getLoai().equals("Cá nhân")){
             if (voucher.getSoLuong() == 0) {
                 voucher.setTrangThai("Đã kết thúc"); // Đã kết thúc
 //                voucher.setEndDate(currentDateTime);
@@ -260,6 +261,9 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
                 if (voucher.getSoLuong() > 0) {
                     voucher.setTrangThai("Đang diễn ra"); // Đang diễn ra
                 }
+            }
+            }
+            else{
                 if (currentDateTime.isBefore(startDate)) {
                     voucher.setTrangThai("Sắp diễn ra"); // Chưa bắt đầu
                 } else if (currentDateTime.isAfter(startDate) && currentDateTime.isBefore(endDate)) {
@@ -275,6 +279,7 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
 //                voucher.setDeleted(true);
                 }
             }
+
             voucherRepository.save(voucher);
         }
     }
