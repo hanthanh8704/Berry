@@ -14,21 +14,24 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Typography, Button } from '@mui/material';
 import { Add, Details, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
-
+import FormatDate from "../../utilities/FormatDate.jsx";
+import VoucherStatus from "./DotGiamGiaTrangThai.jsx";
 import { listDotGiamGia } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
 
-import { searchDotGiamGia } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
-import { exportData } from '../api/DotGiamGiaApi/DotGiamGiaApi.js'
+
+
 
 const DotGiamGia = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [searchValue, setSearchValue] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [filterPrice, setFilterPrice] = useState('All');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [dotGiamGia, setDotGiamGia] = useState([]);
   const navigate = useNavigate();
@@ -66,7 +69,10 @@ const DotGiamGia = () => {
     setFilterStatus(event.target.value);
     setCurrentPage(1);
   };
-
+  const handlePriceChange = (event) => {
+    setFilterPrice(event.target.value);
+    setCurrentPage(1);
+  };
   // const handleViewDetails = (dotGiamGia) => {
   //   setSelectedOrder(dotGiamGia);
   // };
@@ -84,14 +90,23 @@ const DotGiamGia = () => {
       });
   };
 
-  const searchTenMaGiaTriLike = dotGiamGia.filter(dotGiamGia =>
-    (filterStatus === 'All' || dotGiamGia.trangThai === filterStatus) &&
-    (dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
+  const searchTenMaGiaTriLike = dotGiamGia.filter(dotGiamGia => {
+    const isStatusMatch = filterStatus === 'All' || dotGiamGia.trangThai === filterStatus;
+    const isNameOrCodeMatch = dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
       dotGiamGia.ma.toLowerCase().includes(searchValue.toLowerCase()) ||
-      dotGiamGia.giaTriGiam.toString().toLowerCase().includes(searchValue.toLowerCase())) &&
-    (!startDate || new Date(dotGiamGia.ngayBatDau) >= new Date(startDate)) &&
-    (!endDate || new Date(dotGiamGia.ngayKetThuc) <= new Date(endDate))
-  );
+      dotGiamGia.giaTriGiam.toString().toLowerCase().includes(searchValue.toLowerCase());
+    const isDateInRange = (!startDate || new Date(dotGiamGia.ngayBatDau) >= new Date(startDate)) &&
+      (!endDate || new Date(dotGiamGia.ngayKetThuc) <= new Date(endDate));
+
+    let isPriceMatch = true;
+    if (filterPrice !== 'All') {
+      const [minPrice, maxPrice] = filterPrice.split('-').map(Number);
+      isPriceMatch = dotGiamGia.giaTriGiam >= minPrice && dotGiamGia.giaTriGiam <= maxPrice;
+    }
+
+    return isStatusMatch && isNameOrCodeMatch && isDateInRange && isPriceMatch;
+  });
+
 
   //Chuyển sang trang thêm mới
   const handleAddNew = () => {
@@ -182,26 +197,29 @@ const DotGiamGia = () => {
           </FormControl>
         </Grid>
 
-        <Box display="flex" margin={"20px"} paddingTop={"10px"}>
-          {/* Nút EXPORT EXCEL */}
-          <Grid item xs={12} md={3}>
-            <Box marginLeft={"5px"} width={"153px"} height={"1px"}>
-              <Button
-                fullWidth
-                fullHeight
-                variant="contained"
-                color="primary"
-                startIcon={<Save />}
-              // onClick={handleExport}
+        <Box display="flex" margin={"20px"} paddingTop={"5px"}>
+          {/* Tim theo khoang gia */}
+          <Grid item xs={12} md={20} width={"220px"}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="filter-price-label">Giá trị</InputLabel>
+              <Select
+                labelId="filter-price-label"
+                id="filter-price"
+                value={filterPrice}
+                onChange={handlePriceChange}
+                label="Khoảng giá"
               >
-                EXPORT EXCEL
-              </Button>
-            </Box>
+                <MenuItem value="All">Tất cả</MenuItem>
+                <MenuItem value="1-20">1%-20%</MenuItem>
+                <MenuItem value="20-40">20%-40%</MenuItem>
+                <MenuItem value="40-50">40%-50%</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
 
           {/* Nút THÊM MỚI */}
           <Grid item xs={12} md={3} marginLeft={"0px"}>
-            <Box marginLeft={"70px"} width={"153px"} >
+            <Box marginLeft={"47px"} width={"130px"} marginTop={"5px"}>
               <Button
                 fullWidth
                 variant="contained"
@@ -239,9 +257,9 @@ const DotGiamGia = () => {
                   <TableCell>{dotGiamGia.ma}</TableCell>
                   <TableCell>{dotGiamGia.ten}</TableCell>
                   <TableCell>{dotGiamGia.giaTriGiam}%</TableCell>
-                  <TableCell>{dotGiamGia.ngayBatDau} </TableCell>
-                  <TableCell>{dotGiamGia.ngayKetThuc} </TableCell>
-                  <TableCell>{dotGiamGia.trangThai}</TableCell>
+                  <TableCell>{<FormatDate date={dotGiamGia.ngayBatDau} />}</TableCell>
+                  <TableCell>{<FormatDate date={dotGiamGia.ngayKetThuc} />}</TableCell>
+                  <TableCell><VoucherStatus status={dotGiamGia.trangThai} /></TableCell>
                   <TableCell>
                     <Button
                       variant="contained"

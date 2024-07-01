@@ -1,24 +1,22 @@
-import React from "react";
+import React from 'react';
 
-function FormatDate({ date }) {
-  // Hàm formatDate để định dạng ngày tháng
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-
-    const options = {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      hour12: false,
-    };
-
-    return date.toLocaleString("vi-VN", options);
-  };
-
-  return <span>{formatDate(date)}</span>;
-}
+const FormatDate = ({ date }) => {
+  const dateObj = new Date(date);
+  const formattedDate = dateObj.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const formattedTime = dateObj.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  return (
+    <span>
+      {formattedDate} {formattedTime}
+    </span>
+  );
+};
 
 export default FormatDate;

@@ -8,10 +8,11 @@ import Loadable from 'ui-component/Loadable';
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
-const DotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/dotgiamgia.jsx')));
+const DotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/Dotgiamgia.jsx')));
 const AddDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/AddDotGiamGia.jsx')));
 const DetailDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/DetailDotGiamGia.jsx')));
 const UpdateDotGiamGia = Loadable(lazy(() => import('views/pages/DotGiamGia/UpdateDotGiamGia.jsx')));
+const Save = Loadable(lazy(() => import('views/pages/DotGiamGia/Save.jsx')));
 const PhieuGiamGia = Loadable(lazy(() => import('views/pages/PhieuGiamGia/phieugiamgia.jsx')));
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
