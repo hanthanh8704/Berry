@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c54da89a-9487-4d19-ab19-f4ac4bed66bc" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="workspaceImportEnabled" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2iY3TsLQSdBn1DZYIIUqexe0P3y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/DATN_Backend/BerryStore",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "spring.configuration.checksum": "7db8ad72caf70c7482d392cf33c3f19d",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Spring Boot.BerryStoreApplication">
+    <configuration name="BerryStoreApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="BerryStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.poly.BerryStore.BerryStoreApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.poly.BerryStore.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BerryStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="BerryStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.poly.backend.BerryStoreApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BerryStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="BerryStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.poly.backend.BerryStoreApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.poly.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BerryStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="BerryStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.poly.BerryStore.BerryStoreApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.poly.BerryStore.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BerryStoreApplication(1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
+      <module name="BerryStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.poly.backend.BerryStoreApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.poly.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.BerryStoreApplication(1)" />
+        <item itemvalue="Spring Boot.BerryStoreApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c54da89a-9487-4d19-ab19-f4ac4bed66bc" name="Changes" comment="" />
+      <created>1719653694644</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1719653694644</updated>
+      <workItem from="1719653695793" duration="35000" />
+      <workItem from="1719653758645" duration="144000" />
+      <workItem from="1719653924584" duration="114000" />
+      <workItem from="1719654152726" duration="502000" />
+      <workItem from="1719654684958" duration="15000" />
+      <workItem from="1719654716353" duration="24000" />
+      <workItem from="1719654756551" duration="4444000" />
+      <workItem from="1719667191306" duration="31000" />
+      <workItem from="1719667279522" duration="698000" />
+      <workItem from="1719668062840" duration="1493000" />
+      <workItem from="1719669650471" duration="264000" />
+      <workItem from="1719669936067" duration="544000" />
+      <workItem from="1719670534260" duration="19902000" />
+      <workItem from="1719760399072" duration="1416000" />
+      <workItem from="1719794906663" duration="538000" />
+      <workItem from="1719795494858" duration="3074000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
