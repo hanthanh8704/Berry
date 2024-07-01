@@ -25,16 +25,16 @@ const account = {
           id: 'employee-list',
           title: 'Danh Sách Nhân Viên',
           type: 'item',
-          url: '/account/employees',
-          target: true,
+          url: '/nhan-vien',
+          target: false,
           icon: icons.IconUsers
         },
         {
           id: 'customer-list',
           title: 'Danh Sách Khách Hàng',
           type: 'item',
-          url: '/account/customers',
-          target: true,
+          url: '/khach-hang',
+          target: false,
           icon: icons.IconUserShield
         }
       ]

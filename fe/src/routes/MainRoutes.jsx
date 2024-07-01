@@ -3,10 +3,16 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import { element } from 'prop-types';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
+const Nhanvien = Loadable(lazy(() => import('views/pages/nhan_vien/nhanvien.jsx')));
+const AddCustomer = Loadable(lazy(() => import('views/pages/nhan_vien/addNhanVien.jsx')));
+
+const Khachhang = Loadable(lazy(() => import('views/pages/khach_hang/khachhang.jsx')));
+
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
@@ -27,6 +33,18 @@ const MainRoutes = {
     {
       path: '/bill',
       element: <Bill />
+    },
+     {
+      path: '/nhan-vien',
+      element: <Nhanvien />
+    }, 
+    {
+      path:"/nhan-vien/add",
+      element:<AddCustomer/>
+    },
+    {
+      path: '/khach-hang',
+      element: <Khachhang />
     },
     {
       path: 'dashboard',
