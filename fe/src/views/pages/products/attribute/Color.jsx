@@ -12,7 +12,8 @@ import {
     Radio,
     Switch,
 } from "antd";
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react"; // Import IconEdit from Tabler Icons
+
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
@@ -34,6 +35,7 @@ function Color() {
     useEffect(() => {
         loadData(currentPage, pageSize, searchValue, statusColor);
     }, [currentPage, pageSize, searchValue, statusColor]);
+
 
     const loadData = async (page, size, search, trangThai) => {
         try {
@@ -107,7 +109,7 @@ function Color() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.put(`/color/${item.id}`, values);
+                    const response = await request.put("/color/update/${item.id}", values);
                     if (response.status === 200) {
                         toast.success("Cập nhật màu sắc thành công!");
                         setIsModalUpdateOpen(false);
@@ -163,7 +165,7 @@ function Color() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-warning w-100"
+                        className="bg-primary w-100"
                     >
                         <i className="fas fa-plus-circle me-1"></i> Thêm màu sắc
                     </Button>
@@ -205,11 +207,9 @@ function Color() {
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
                                 <Button
-                                    type="primary"
                                     onClick={() => handleEdit(record)}
-                                    className="btn btn-sm text-warning"
                                 >
-                                    <i className="fas fa-edit"></i>
+                                    <IconEdit />
                                 </Button>
                             </Tooltip>
                         ),
@@ -280,7 +280,7 @@ function Color() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Màu sắc"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}
                     >
                         <Input placeholder="Nhập tên màu sắc..." />

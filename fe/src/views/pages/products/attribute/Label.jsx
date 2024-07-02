@@ -6,12 +6,12 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 import * as request from "views/utilities/httpRequest";
 
-function Material() {
-    const [materialList, setMaterialList] = useState([]);
+function Brand() {
+    const [brandList, setBrandList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
-    const [statusMaterial, setStatusMaterial] = useState(null);
+    const [statusBrand, setStatusBrand] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -20,15 +20,15 @@ function Material() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, statusMaterial);
-    }, [currentPage, pageSize, searchValue, statusMaterial]);
+        loadData(currentPage, pageSize, searchValue, statusBrand);
+    }, [currentPage, pageSize, searchValue, statusBrand]);
 
     const loadData = async (page, size, search, status) => {
         try {
-            const response = await request.get("/material", {
+            const response = await request.get("/brand", {
                 params: { name: search, page, sizePage: size, status },
             });
-            setMaterialList(response.data);
+            setBrandList(response.data);
             setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -39,7 +39,7 @@ function Material() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn xóa chất liệu này?",
+            content: "Bạn có chắc muốn xóa thương hiệu này?",
             okText: "Xác nhận",
             okType: "danger",
             cancelText: "Hủy",
@@ -51,12 +51,12 @@ function Material() {
 
     const handleDelete = async (id) => {
         try {
-            await request.remove(`/material/${id}`);
-            loadData(currentPage, pageSize, searchValue, statusMaterial);
+            await request.remove(`/brand/${id}`);
+            loadData(currentPage, pageSize, searchValue, statusBrand);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
-            toast.error("Xóa chất liệu thất bại!");
+            toast.error("Xóa thương hiệu thất bại!");
         }
     };
 
@@ -64,22 +64,22 @@ function Material() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn thêm chất liệu này?",
+            content: "Bạn có chắc muốn thêm thương hiệu này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.post("/material/create", values);
+                    const response = await request.post("/brand/create", values);
                     if (response.status === 200) {
-                        toast.success("Thêm chất liệu thành công!");
+                        toast.success("Thêm thương hiệu thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusMaterial);
+                        loadData(currentPage, pageSize, searchValue, statusBrand);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
-                    toast.error("Thêm chất liệu thất bại!");
+                    toast.error("Thêm thương hiệu thất bại!");
                 }
             },
         });
@@ -89,22 +89,22 @@ function Material() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn cập nhật chất liệu này?",
+            content: "Bạn có chắc muốn cập nhật thương hiệu này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.put(`/material/${item.id}`, values);
+                    const response = await request.put(`/brand/${item.id}`, values);
                     if (response.status === 200) {
-                        toast.success("Cập nhật chất liệu thành công!");
+                        toast.success("Cập nhật thương hiệu thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusMaterial);
+                        loadData(currentPage, pageSize, searchValue, statusBrand);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
-                    toast.error("Cập nhật chất liệu thất bại!");
+                    toast.error("Cập nhật thương hiệu thất bại!");
                 }
             },
         });
@@ -125,6 +125,7 @@ function Material() {
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
             name: record.name,
+            status: record.status,
         });
     };
 
@@ -136,13 +137,13 @@ function Material() {
     return (
         <div>
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách chất liệu</h6>
+            <h6 className="fw-semibold">Danh sách thương hiệu</h6>
             <Row gutter={10}>
                 <Col span={13}>
-                    <label className="mb-1">Chất liệu</label>
+                    <label className="mb-1">Thương hiệu</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
-                        placeholder="Tìm kiếm chất liệu theo tên..."
+                        placeholder="Tìm kiếm thương hiệu theo tên..."
                     />
                 </Col>
                 <Col span={6}></Col>
@@ -151,14 +152,14 @@ function Material() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-warning w-100"
+                        className="bg-primary w-100"
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm chất liệu
+                        <i className="fas fa-plus-circle me-1"></i> Thêm thương hiệu
                     </Button>
                 </Col>
             </Row>
             <Table
-                dataSource={materialList}
+                dataSource={brandList}
                 columns={[
                     {
                         title: "#",
@@ -167,7 +168,7 @@ function Material() {
                         className: "text-center",
                     },
                     {
-                        title: "Tên Chất Liệu",
+                        title: "Tên Thương Hiệu",
                         dataIndex: "ten",
                         key: "ten",
                         className: "text-center",
@@ -193,11 +194,9 @@ function Material() {
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
                                 <Button
-                                    type="primary"
                                     onClick={() => handleEdit(record)}
-                                    className="btn btn-sm text-warning"
                                 >
-                                    <i className="fas fa-edit"></i>
+                                    <IconEdit />
                                 </Button>
                             </Tooltip>
                         ),
@@ -219,7 +218,7 @@ function Material() {
             />
 
             <Modal
-                title="Thêm chất liệu"
+                title="Thêm thương hiệu"
                 visible={isModalAddOpen}
                 onCancel={handleCancelAdd}
                 footer={[
@@ -238,17 +237,24 @@ function Material() {
             >
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
-                        label="Chất liệu"
+                        label="Tên thương hiệu"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập tên thương hiệu!" }]}
                     >
-                        <Input placeholder="Nhập tên chất liệu..." />
+                        <Input placeholder="Nhập tên thương hiệu..." />
+                    </Form.Item>
+                    <Form.Item
+                        label="Trạng thái"
+                        name="trangThai"
+                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+                    >
+                        <Input placeholder="Nhập trạng thái..." />
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="Chỉnh sửa chất liệu"
+                title="Chỉnh sửa thương hiệu"
                 visible={isModalUpdateOpen}
                 onCancel={handleCancelUpdate}
                 footer={[
@@ -267,11 +273,18 @@ function Material() {
             >
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
-                        label="Chất liệu"
-                        name="name"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        label="Tên thương hiệu"
+                        name="ten"
+                        rules={[{ required: true, message: "Vui lòng nhập tên thương hiệu!" }]}
                     >
-                        <Input placeholder="Nhập tên chất liệu..." />
+                        <Input placeholder="Nhập tên thương hiệu..." />
+                    </Form.Item>
+                    <Form.Item
+                        label="Trạng thái"
+                        name="trangThai"
+                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+                    >
+                        <Input placeholder="Nhập trạng thái..." />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -279,4 +292,4 @@ function Material() {
     );
 }
 
-export default Material;
+export default Brand;

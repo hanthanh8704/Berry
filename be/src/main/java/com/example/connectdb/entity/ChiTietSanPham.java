@@ -2,6 +2,8 @@ package com.example.connectdb.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -66,13 +68,15 @@ public class ChiTietSanPham {
     private BigDecimal giaNhap;
 
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;

@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
+import { Link } from "react-router-dom";
+import {
+    Button,
+    Col,
+    Form,
+    Input,
+    Modal,
+    Row,
+    Table,
+    Tooltip,
+    Radio,
+    Switch,
+} from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 import * as request from "views/utilities/httpRequest";
 
-function Brand() {
-    const [brandList, setBrandList] = useState([]);
+function Size() {
+    const [sizeList, setSizeList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
-    const [statusBrand, setStatusBrand] = useState(null);
+    const [statusSize, setStatusSize] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -20,15 +32,15 @@ function Brand() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, statusBrand);
-    }, [currentPage, pageSize, searchValue, statusBrand]);
+        loadData(currentPage, pageSize, searchValue, statusSize);
+    }, [currentPage, pageSize, searchValue, statusSize]);
 
-    const loadData = async (page, size, search, status) => {
+    const loadData = async (page, size, search, trangThai) => {
         try {
-            const response = await request.get("/brand", {
-                params: { name: search, page, sizePage: size, status },
+            const response = await request.get("/size", {
+                params: { name: search, page, sizePage: size, trangThai },
             });
-            setBrandList(response.data);
+            setSizeList(response.data);
             setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -39,7 +51,7 @@ function Brand() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn xóa thương hiệu này?",
+            content: "Bạn có chắc muốn xóa kích cỡ này?",
             okText: "Xác nhận",
             okType: "danger",
             cancelText: "Hủy",
@@ -51,12 +63,12 @@ function Brand() {
 
     const handleDelete = async (id) => {
         try {
-            await request.remove(`/brand/${id}`);
-            loadData(currentPage, pageSize, searchValue, statusBrand);
+            await request.remove(`/size/${id}`);
+            loadData(currentPage, pageSize, searchValue, statusSize);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
-            toast.error("Xóa thương hiệu thất bại!");
+            toast.error("Xóa kích cỡ thất bại!");
         }
     };
 
@@ -64,22 +76,22 @@ function Brand() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn thêm thương hiệu này?",
+            content: "Bạn có chắc muốn thêm kích cỡ này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.post("/brand/create", values);
+                    const response = await request.post("/size/create", values);
                     if (response.status === 200) {
-                        toast.success("Thêm thương hiệu thành công!");
+                        toast.success("Thêm kích cỡ thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusBrand);
+                        loadData(currentPage, pageSize, searchValue, statusSize);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
-                    toast.error("Thêm thương hiệu thất bại!");
+                    toast.error("Thêm kích cỡ thất bại!");
                 }
             },
         });
@@ -89,22 +101,22 @@ function Brand() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn cập nhật thương hiệu này?",
+            content: "Bạn có chắc muốn cập nhật kích cỡ này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.put(`/brand/${item.id}`, values);
+                    const response = await request.put(`/size/${item.id}`, values);
                     if (response.status === 200) {
-                        toast.success("Cập nhật thương hiệu thành công!");
+                        toast.success("Cập nhật kích cỡ thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusBrand);
+                        loadData(currentPage, pageSize, searchValue, statusSize);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
-                    toast.error("Cập nhật thương hiệu thất bại!");
+                    toast.error("Cập nhật kích cỡ thất bại!");
                 }
             },
         });
@@ -125,7 +137,6 @@ function Brand() {
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
             name: record.name,
-            status: record.status,
         });
     };
 
@@ -137,13 +148,13 @@ function Brand() {
     return (
         <div>
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách thương hiệu</h6>
+            <h6 className="fw-semibold">Danh sách kích cỡ</h6>
             <Row gutter={10}>
                 <Col span={13}>
-                    <label className="mb-1">Thương hiệu</label>
+                    <label className="mb-1">Kích cỡ</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
-                        placeholder="Tìm kiếm thương hiệu theo tên..."
+                        placeholder="Tìm kiếm kích cỡ theo tên..."
                     />
                 </Col>
                 <Col span={6}></Col>
@@ -152,14 +163,14 @@ function Brand() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-warning w-100"
+                        className="bg-primary w-100"
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm thương hiệu
+                        <i className="fas fa-plus-circle me-1"></i> Thêm kích cỡ
                     </Button>
                 </Col>
             </Row>
             <Table
-                dataSource={brandList}
+                dataSource={sizeList}
                 columns={[
                     {
                         title: "#",
@@ -168,7 +179,7 @@ function Brand() {
                         className: "text-center",
                     },
                     {
-                        title: "Tên Thương Hiệu",
+                        title: "Tên Kích Cỡ",
                         dataIndex: "ten",
                         key: "ten",
                         className: "text-center",
@@ -194,11 +205,9 @@ function Brand() {
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
                                 <Button
-                                    type="primary"
                                     onClick={() => handleEdit(record)}
-                                    className="btn btn-sm text-warning"
                                 >
-                                    <i className="fas fa-edit"></i>
+                                    <IconEdit />
                                 </Button>
                             </Tooltip>
                         ),
@@ -220,7 +229,7 @@ function Brand() {
             />
 
             <Modal
-                title="Thêm thương hiệu"
+                title="Thêm kích cỡ"
                 visible={isModalAddOpen}
                 onCancel={handleCancelAdd}
                 footer={[
@@ -239,24 +248,17 @@ function Brand() {
             >
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
-                        label="Tên thương hiệu"
+                        label="Kích cỡ"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên thương hiệu!" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
                     >
-                        <Input placeholder="Nhập tên thương hiệu..." />
-                    </Form.Item>
-                    <Form.Item
-                        label="Trạng thái"
-                        name="trangThai"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Input placeholder="Nhập trạng thái..." />
+                        <Input placeholder="Nhập tên kích cỡ..." />
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="Chỉnh sửa thương hiệu"
+                title="Chỉnh sửa kích cỡ"
                 visible={isModalUpdateOpen}
                 onCancel={handleCancelUpdate}
                 footer={[
@@ -275,18 +277,11 @@ function Brand() {
             >
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
-                        label="Tên thương hiệu"
-                        name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên thương hiệu!" }]}
+                        label="Kích cỡ"
+                        name="name"
+                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
                     >
-                        <Input placeholder="Nhập tên thương hiệu..." />
-                    </Form.Item>
-                    <Form.Item
-                        label="Trạng thái"
-                        name="trangThai"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Input placeholder="Nhập trạng thái..." />
+                        <Input placeholder="Nhập tên kích cỡ..." />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -294,4 +289,4 @@ function Brand() {
     );
 }
 
-export default Brand;
+export default Size;

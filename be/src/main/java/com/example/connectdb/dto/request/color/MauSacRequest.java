@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class MauSacRequest extends PageableRequest {
     @NotEmpty(message = "Màu sắc không được để trống!")
     private String ten;
     private String trangThai;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Timestamp ngayTao;
 
 }

@@ -1,10 +1,10 @@
 package com.example.connectdb.dto.request.product;
 
+import com.example.connectdb.util.common.PageableRequest;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -14,15 +14,22 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SanPhamRequest {
+@Builder
+public class SanPhamRequest extends PageableRequest {
     // DTO Data Transfer Object
     private Integer id;
+    @NotEmpty(message = "Mã không được để trống!")
     private String ma;
+    @NotEmpty(message = "Tên không được để trống!")
     private String tenSanPham;
-    private String tenMauSac;
-    private String tenKichCo;
-    private String tenThuonHieu;
-    private String tenChatLieu;
-    private String tenTayAo;
-    private String tenCoAo;
+    @NotNull(message = "Danh mục không được để trống!")
+    private  Integer danhMuc;
+    @NotNull(message = "Thương hiệu không được để trống!")
+    private Integer thuongHieu;
+    private  Integer soLuong;
+    private String trangThai;
+
+
+
+
 }

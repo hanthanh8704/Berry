@@ -2,6 +2,8 @@ package com.example.connectdb.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -16,6 +18,7 @@ import java.sql.Timestamp;
 public class SanPham {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "id_danh_muc")
@@ -34,9 +37,11 @@ public class SanPham {
     private String mota;
 
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")

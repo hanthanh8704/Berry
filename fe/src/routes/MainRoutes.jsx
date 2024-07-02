@@ -1,16 +1,20 @@
 import { lazy } from 'react';
 
 // project imports
-
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
-import Product from 'views/pages/products/Product';
-import Color from 'views/pages/products/Color';
-import Size from 'views/pages/products/Size';
-import Label from 'views/pages/products/Label';
-import Material from 'views/pages/products/Material';
-import Sleeve from 'views/pages/products/Sleeve';
-import Collar from 'views/pages/products/Collar';
+import Product from 'views/pages/products/shirt/Product';
+import Color from 'views/pages/products/attribute/Color';
+import Size from 'views/pages/products/attribute/Size';
+import Label from 'views/pages/products/attribute/Label';
+import Material from 'views/pages/products/attribute/Material';
+import Category from 'views/pages/products/attribute/Category';
+import Sleeve from 'views/pages/products/attribute/Sleeve';
+import Collar from 'views/pages/products/attribute/Collar';
+import AddShirt from 'views/pages/products/shirt-detail/AddShirt'; // Import AddProduct component
+import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
+import AddShoe from 'views/pages/products/shirt-detail/AddShoe';
+
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
@@ -41,10 +45,21 @@ const MainRoutes = {
       element: <Product />
     },
     {
+      path: '/products/addshirt',
+      element: <AddShirt />
+    },
+    {
+      path: '/products/add-shirt',
+      element: <AddShoe />
+    },
+    {
+      path: '/products/shirtinfo',
+      element: <ShirtInfo />
+    },
+    {
       path: '/products/size',
       element: <Size />
     },
-
     {
       path: '/products/color',
       element: <Color />
@@ -56,6 +71,10 @@ const MainRoutes = {
     {
       path: '/products/material',
       element: <Material />
+    },
+    {
+      path: '/products/category',
+      element: <Category />
     },
     {
       path: '/products/sleeve',

@@ -55,6 +55,13 @@ const product = {
           url: '/products/material',
           target: false
         },
+        {
+          id: 'category',
+          title: 'Danh Mục',
+          type: 'item',
+          url: '/products/category',
+          target: false
+        },
 
         {
           id: 'sleeve',

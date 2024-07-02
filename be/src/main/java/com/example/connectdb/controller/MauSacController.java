@@ -7,12 +7,13 @@ import com.example.connectdb.util.common.PageableObject;
 import com.example.connectdb.util.common.ResponseObject;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/color")
+@RequestMapping("/api/color")
 public class MauSacController {
 private final MauSacService mauSacService;
 
@@ -37,15 +38,21 @@ private final MauSacService mauSacService;
     }
 
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public ResponseObject create(@RequestBody @Valid MauSacRequest request) {
         return new ResponseObject(mauSacService.create(request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid MauSacRequest request) {
-        return new ResponseObject(mauSacService.update(id, request));
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseObject> update(@PathVariable Integer id, @RequestBody @Valid MauSacRequest request) {
+        MauSac updatedMauSac = mauSacService.update(id, request);
+        if (updatedMauSac != null) {
+            return ResponseEntity.ok(new ResponseObject(updatedMauSac));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
 
 }

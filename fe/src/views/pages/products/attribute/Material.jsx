@@ -1,29 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Modal,
-    Row,
-    Table,
-    Tooltip,
-    Radio,
-    Switch,
-} from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 import * as request from "views/utilities/httpRequest";
 
-function Size() {
-    const [sizeList, setSizeList] = useState([]);
+function Material() {
+    const [materialList, setMaterialList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
-    const [statusSize, setStatusSize] = useState(null);
+    const [statusMaterial, setStatusMaterial] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -32,15 +20,15 @@ function Size() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, statusSize);
-    }, [currentPage, pageSize, searchValue, statusSize]);
+        loadData(currentPage, pageSize, searchValue, statusMaterial);
+    }, [currentPage, pageSize, searchValue, statusMaterial]);
 
-    const loadData = async (page, size, search, trangThai) => {
+    const loadData = async (page, size, search, status) => {
         try {
-            const response = await request.get("/size", {
-                params: { name: search, page, sizePage: size, trangThai },
+            const response = await request.get("/material", {
+                params: { name: search, page, sizePage: size, status },
             });
-            setSizeList(response.data);
+            setMaterialList(response.data);
             setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -51,7 +39,7 @@ function Size() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn xóa kích cỡ này?",
+            content: "Bạn có chắc muốn xóa chất liệu này?",
             okText: "Xác nhận",
             okType: "danger",
             cancelText: "Hủy",
@@ -63,12 +51,12 @@ function Size() {
 
     const handleDelete = async (id) => {
         try {
-            await request.remove(`/size/${id}`);
-            loadData(currentPage, pageSize, searchValue, statusSize);
+            await request.remove(`/material/${id}`);
+            loadData(currentPage, pageSize, searchValue, statusMaterial);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
-            toast.error("Xóa kích cỡ thất bại!");
+            toast.error("Xóa chất liệu thất bại!");
         }
     };
 
@@ -76,22 +64,22 @@ function Size() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn thêm kích cỡ này?",
+            content: "Bạn có chắc muốn thêm chất liệu này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.post("/size/create", values);
+                    const response = await request.post("/material/create", values);
                     if (response.status === 200) {
-                        toast.success("Thêm kích cỡ thành công!");
+                        toast.success("Thêm chất liệu thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusSize);
+                        loadData(currentPage, pageSize, searchValue, statusMaterial);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
-                    toast.error("Thêm kích cỡ thất bại!");
+                    toast.error("Thêm chất liệu thất bại!");
                 }
             },
         });
@@ -101,22 +89,22 @@ function Size() {
         Modal.confirm({
             title: "Xác nhận",
             icon: <IconEdit />,
-            content: "Bạn có chắc muốn cập nhật kích cỡ này?",
+            content: "Bạn có chắc muốn cập nhật chất liệu này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.put(`/size/${item.id}`, values);
+                    const response = await request.put(`/material/${item.id}`, values);
                     if (response.status === 200) {
-                        toast.success("Cập nhật kích cỡ thành công!");
+                        toast.success("Cập nhật chất liệu thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusSize);
+                        loadData(currentPage, pageSize, searchValue, statusMaterial);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
-                    toast.error("Cập nhật kích cỡ thất bại!");
+                    toast.error("Cập nhật chất liệu thất bại!");
                 }
             },
         });
@@ -148,13 +136,13 @@ function Size() {
     return (
         <div>
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách kích cỡ</h6>
+            <h6 className="fw-semibold">Danh sách chất liệu</h6>
             <Row gutter={10}>
                 <Col span={13}>
-                    <label className="mb-1">Kích cỡ</label>
+                    <label className="mb-1">Chất liệu</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
-                        placeholder="Tìm kiếm kích cỡ theo tên..."
+                        placeholder="Tìm kiếm chất liệu theo tên..."
                     />
                 </Col>
                 <Col span={6}></Col>
@@ -163,14 +151,14 @@ function Size() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-warning w-100"
+                        className="bg-primary w-100"
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm kích cỡ
+                        <i className="fas fa-plus-circle me-1"></i> Thêm chất liệu
                     </Button>
                 </Col>
             </Row>
             <Table
-                dataSource={sizeList}
+                dataSource={materialList}
                 columns={[
                     {
                         title: "#",
@@ -179,7 +167,7 @@ function Size() {
                         className: "text-center",
                     },
                     {
-                        title: "Tên Kích Cỡ",
+                        title: "Tên Chất Liệu",
                         dataIndex: "ten",
                         key: "ten",
                         className: "text-center",
@@ -205,11 +193,9 @@ function Size() {
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
                                 <Button
-                                    type="primary"
                                     onClick={() => handleEdit(record)}
-                                    className="btn btn-sm text-warning"
                                 >
-                                    <i className="fas fa-edit"></i>
+                                    <IconEdit />
                                 </Button>
                             </Tooltip>
                         ),
@@ -231,7 +217,7 @@ function Size() {
             />
 
             <Modal
-                title="Thêm kích cỡ"
+                title="Thêm chất liệu"
                 visible={isModalAddOpen}
                 onCancel={handleCancelAdd}
                 footer={[
@@ -250,17 +236,17 @@ function Size() {
             >
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
-                        label="Kích cỡ"
+                        label="Chất liệu"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
                     >
-                        <Input placeholder="Nhập tên kích cỡ..." />
+                        <Input placeholder="Nhập tên chất liệu..." />
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="Chỉnh sửa kích cỡ"
+                title="Chỉnh sửa chất liệu"
                 visible={isModalUpdateOpen}
                 onCancel={handleCancelUpdate}
                 footer={[
@@ -279,11 +265,11 @@ function Size() {
             >
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
-                        label="Kích cỡ"
+                        label="Chất liệu"
                         name="name"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
                     >
-                        <Input placeholder="Nhập tên kích cỡ..." />
+                        <Input placeholder="Nhập tên chất liệu..." />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -291,4 +277,4 @@ function Size() {
     );
 }
 
-export default Size;
+export default Material;
