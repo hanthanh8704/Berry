@@ -7,7 +7,7 @@ import com.example.connectdb.util.common.PageableObject;
 
 public interface KichCoService {
     PageableObject<KichCoResponse> getAll(KichCoRequest request);
-    KichCo findByMa(String ma);
+
     KichCo getOne(Integer id);
     KichCo create(KichCoRequest kichCoRequest);
     KichCo update(Integer id, KichCoRequest kichCoRequest);

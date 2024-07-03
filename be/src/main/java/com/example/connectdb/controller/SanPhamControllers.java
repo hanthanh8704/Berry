@@ -39,7 +39,7 @@ public class SanPhamControllers {
         return sanPhamService.getOne(id);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseObject create(@RequestBody @Valid SanPhamRequest request) {
         return new ResponseObject(sanPhamService.create(request));
     }

@@ -38,10 +38,7 @@ public class MauSacImpl implements MauSacService {
         return new PageableObject<>(mauSacRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public MauSac findByMa(String ma) {
-        return mauSacRepository.findByMa(ma);
-    }
+
 
     @Override
     public MauSac getOne(Integer id) {
@@ -50,7 +47,7 @@ public class MauSacImpl implements MauSacService {
 
     @Override
     public MauSac create(MauSacRequest request) {
-        if (mauSacRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (mauSacRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Màu " + request.getTen() + " đã tồn tại!");
         }
         MauSac color = colorConverter.convertRequestToEntity(request);
@@ -60,7 +57,7 @@ public class MauSacImpl implements MauSacService {
     @Override
     public MauSac update(Integer id, MauSacRequest request) {
         MauSac oldColor = mauSacRepository.findById(id).get();
-        if (mauSacRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (mauSacRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldColor.getTen().equals(request.getTen())) {
                 return mauSacRepository.save(colorConverter.convertRequestToEntity(oldColor, request));
             }

@@ -30,8 +30,7 @@ public class DotGiamGia {
     @Column(name = "gia_tri_giam")
     private Integer giaTriGiam;
 
-    @Column(name = "loai_khuyen_mai")
-    private String loaiKhuyenMai;
+
 
     @Column(name = "trang_thai")
     private Integer trangThai;

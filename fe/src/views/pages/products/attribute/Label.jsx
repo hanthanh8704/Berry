@@ -124,8 +124,8 @@ function Brand() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name,
-            status: record.status,
+            ten: record.ten,
+            trangThai: record.trangThai,
         });
     };
 
@@ -243,13 +243,7 @@ function Brand() {
                     >
                         <Input placeholder="Nhập tên thương hiệu..." />
                     </Form.Item>
-                    <Form.Item
-                        label="Trạng thái"
-                        name="trangThai"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Input placeholder="Nhập trạng thái..." />
-                    </Form.Item>
+
                 </Form>
             </Modal>
 
@@ -279,13 +273,7 @@ function Brand() {
                     >
                         <Input placeholder="Nhập tên thương hiệu..." />
                     </Form.Item>
-                    <Form.Item
-                        label="Trạng thái"
-                        name="trangThai"
-                        rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                    >
-                        <Input placeholder="Nhập trạng thái..." />
-                    </Form.Item>
+
                 </Form>
             </Modal>
         </div>

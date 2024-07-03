@@ -2,7 +2,7 @@ import { Button, Collapse, Empty, Input, InputNumber, Modal, Upload, message } f
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ImageModal from "./ImageModal";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 function TableProduct({ props, handleChange }) {
     const [groupByColor, setGroupByColor] = useState([]);
 
@@ -84,7 +84,7 @@ function TableProduct({ props, handleChange }) {
     useEffect(() => {
         const groupedProducts = {};
         props.forEach((option) => {
-            const colorName = option.color.name;
+            const colorName = option.color.ten;
 
             if (!groupedProducts[colorName]) {
                 groupedProducts[colorName] = [];
@@ -115,7 +115,6 @@ function TableProduct({ props, handleChange }) {
                                             <td>Số lượng</td>
                                             <td>Đơn giá</td>
                                             <td>Danh mục</td>
-                                            <td>Thương hiệu</td>
                                             <td></td>
                                             <td>Ảnh</td>
                                         </tr>
@@ -134,7 +133,7 @@ function TableProduct({ props, handleChange }) {
                                                             </td>
                                                             <td width="130px">
                                                                 <InputNumber
-                                                                    defaultValue={option.soLuong}
+                                                                    defaultValue={option.quantity}
                                                                     style={{ width: "100%" }}
                                                                     step={1}
                                                                     formatter={(value) =>
@@ -152,7 +151,7 @@ function TableProduct({ props, handleChange }) {
                                                             </td>
                                                             <td width="130px">
                                                                 <InputNumber
-                                                                    defaultValue={option.giaBan}
+                                                                    defaultValue={option.price}
                                                                     style={{ width: "100%" }}
                                                                     step={10000}
                                                                     formatter={(value) =>
@@ -168,7 +167,7 @@ function TableProduct({ props, handleChange }) {
                                                                     min={0}
                                                                 />
                                                             </td>
-                                                            <td>{option.shirt.category}</td>
+                                                            <td>{option.shirt.danhMuc}</td>
                                                             <td>{option.shirt.brand}</td>
                                                             <td>
                                                                 <button className="btn btn-sm" onClick={() => deleteProductDetail(key, idx)}>

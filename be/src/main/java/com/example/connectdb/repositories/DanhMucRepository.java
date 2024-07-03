@@ -28,7 +28,6 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, Integer> {
             """, nativeQuery = true)
     Page<DanhMucResponse> findAllByCriteria(@Param("req") DanhMucRequest request, Pageable pageable);
 
-    DanhMuc findByMa(String ma);
 
-    boolean existsByMaIgnoreCase(String ma);
+    boolean existsByTenIgnoreCase(String ten);
 }

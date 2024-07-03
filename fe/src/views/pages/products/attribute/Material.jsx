@@ -110,6 +110,7 @@ function Material() {
         });
     };
 
+
     const handleCancelAdd = () => {
         setIsModalAddOpen(false);
         formAdd.resetFields();
@@ -124,9 +125,11 @@ function Material() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name,
+            ten: record.ten,
+
         });
     };
+
 
     const handleSearch = (value) => {
         setSearchValue(value);
@@ -266,7 +269,7 @@ function Material() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Chất liệu"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
                     >
                         <Input placeholder="Nhập tên chất liệu..." />

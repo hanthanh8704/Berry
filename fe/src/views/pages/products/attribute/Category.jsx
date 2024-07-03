@@ -11,7 +11,6 @@ function Category() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
-    const [statusCategory, setStatusCategory] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -20,13 +19,13 @@ function Category() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, statusCategory);
-    }, [currentPage, pageSize, searchValue, statusCategory]);
+        loadData(currentPage, pageSize, searchValue);
+    }, [currentPage, pageSize, searchValue]);
 
-    const loadData = async (page, size, search, status) => {
+    const loadData = async (page, size, search) => {
         try {
             const response = await request.get("/category", {
-                params: { name: search, page, sizePage: size, status },
+                params: { name: search, page, sizePage: size },
             });
             setCategoryList(response.data);
             setTotalPages(response.totalPages);
@@ -52,7 +51,7 @@ function Category() {
     const handleDelete = async (id) => {
         try {
             await request.remove(`/category/${id}`);
-            loadData(currentPage, pageSize, searchValue, statusCategory);
+            loadData(currentPage, pageSize, searchValue);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -75,7 +74,7 @@ function Category() {
                         toast.success("Thêm danh mục thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusCategory);
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
@@ -100,7 +99,7 @@ function Category() {
                         toast.success("Cập nhật danh mục thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusCategory);
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
@@ -124,7 +123,7 @@ function Category() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name,
+            ten: record.ten,
         });
     };
 
@@ -170,12 +169,6 @@ function Category() {
                         title: "Tên Danh Mục",
                         dataIndex: "ten",
                         key: "ten",
-                        className: "text-center",
-                    },
-                    {
-                        title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
                         className: "text-center",
                     },
                     {
@@ -266,7 +259,7 @@ function Category() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Danh mục"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}
                     >
                         <Input placeholder="Nhập tên danh mục..." />

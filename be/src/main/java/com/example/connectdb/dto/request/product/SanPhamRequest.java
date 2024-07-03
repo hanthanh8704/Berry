@@ -18,15 +18,11 @@ import java.sql.Timestamp;
 public class SanPhamRequest extends PageableRequest {
     // DTO Data Transfer Object
     private Integer id;
-    @NotEmpty(message = "Mã không được để trống!")
     private String ma;
-    @NotEmpty(message = "Tên không được để trống!")
+
     private String tenSanPham;
-    @NotNull(message = "Danh mục không được để trống!")
     private  Integer danhMuc;
-    @NotNull(message = "Thương hiệu không được để trống!")
-    private Integer thuongHieu;
-    private  Integer soLuong;
+
     private String trangThai;
 
 

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip, Select } from "antd";
 import { IconEdit } from "@tabler/icons-react";
-import { IconTrashFilled } from "@tabler/icons-react";
-
-
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import react-toastify styles
 import * as request from "views/utilities/httpRequest";
+
+const { Option } = Select;
 
 function Collar() {
     const [collarList, setCollarList] = useState([]);
@@ -127,7 +126,8 @@ function Collar() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name,
+            ten: record.ten,
+            trangThai: record.trangThai,
         });
     };
 
@@ -197,23 +197,12 @@ function Collar() {
                             <>
                                 <Tooltip placement="top" title="Chỉnh sửa">
                                     <Button
-
                                         onClick={() => handleEdit(record)}
-
                                     >
                                         <IconEdit />
                                     </Button>
                                 </Tooltip>
-                                <Tooltip placement="top" title="Xóa">
-                                    <Button
 
-
-                                        onClick={() => showDeleteConfirm(record)}
-
-                                    >
-                                        <IconTrashFilled />
-                                    </Button>
-                                </Tooltip>
                             </>
                         ),
                     },
@@ -259,6 +248,7 @@ function Collar() {
                     >
                         <Input placeholder="Nhập tên cổ áo..." />
                     </Form.Item>
+
                 </Form>
             </Modal>
 
@@ -283,11 +273,12 @@ function Collar() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Cổ áo"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên cổ áo!" }]}
                     >
                         <Input placeholder="Nhập tên cổ áo..." />
                     </Form.Item>
+
                 </Form>
             </Modal>
         </div>

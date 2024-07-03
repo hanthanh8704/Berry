@@ -19,6 +19,17 @@ import java.util.List;
 
 @Service
 public class SanPhamImpl implements SanPhamService {
+
+    private String genCode() {
+        String prefix = "SP00";
+        int x = 1;
+        String code = prefix + x;
+        while (sanPhamRepository.existsByMa(code)) {
+            x++;
+            code = prefix + x;
+        }
+        return code;
+    }
     private final SanPhamRepository sanPhamRepository;
     private final ProductConverter productConverter;
 
@@ -31,7 +42,6 @@ public class SanPhamImpl implements SanPhamService {
     @Override
     public PageableObject<SanPhamReponse> getAll(SanPhamSearchRequest request) {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSizePage());
-
         SanPhamSearchRequest customRequest = SanPhamSearchRequest.builder()
                 .ten(request.getTen())
                 .mauSac(request.getMauSac())
@@ -56,7 +66,10 @@ public class SanPhamImpl implements SanPhamService {
 
     @Override
     public SanPham create(SanPhamRequest request) {
-        return null;
+        request.setMa(genCode());
+        SanPham sanPham = productConverter.convertRequestToEntity(request);
+        return sanPhamRepository.save(sanPham);
+
     }
 
     @Override

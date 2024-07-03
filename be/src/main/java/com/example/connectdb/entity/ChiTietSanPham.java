@@ -21,7 +21,8 @@ public class ChiTietSanPham {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    @Column(name = "maCTSP")
+    private String maCTSP;
     @ManyToOne
     @JoinColumn(name = "id_mau_sac")
     private MauSac mauSac;
@@ -83,5 +84,10 @@ public class ChiTietSanPham {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
+
+
 
 }

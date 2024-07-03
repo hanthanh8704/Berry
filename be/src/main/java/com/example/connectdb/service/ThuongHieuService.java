@@ -12,7 +12,7 @@ import com.example.connectdb.util.common.PageableObject;
 public interface ThuongHieuService {
     PageableObject<ThuongHieuResponse> getAll(ThuongHieuRequest request);
 
-    ThuongHieu findByMa(String ma);
+
 
     ThuongHieu getOne(Integer id);
 

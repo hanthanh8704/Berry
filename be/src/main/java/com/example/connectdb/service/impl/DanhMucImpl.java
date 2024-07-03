@@ -38,10 +38,7 @@ public class DanhMucImpl implements DanhMucService {
         return new PageableObject<>(danhMucRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public DanhMuc findByMa(String ma) {
-        return danhMucRepository.findByMa(ma);
-    }
+
 
     @Override
     public DanhMuc getOne(Integer id) {
@@ -50,7 +47,7 @@ public class DanhMucImpl implements DanhMucService {
 
     @Override
     public DanhMuc create(DanhMucRequest request) {
-        if (danhMucRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (danhMucRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Danh mục " + request.getTen() + " đã tồn tại!");
         }
         DanhMuc category = categoryConverter.convertRequestToEntity(request);
@@ -60,7 +57,7 @@ public class DanhMucImpl implements DanhMucService {
     @Override
     public DanhMuc update(Integer id, DanhMucRequest request) {
         DanhMuc oldCategory = danhMucRepository.findById(id).get();
-        if (danhMucRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (danhMucRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldCategory.getTen().equals(request.getTen())) {
                 return danhMucRepository.save(categoryConverter.convertRequestToEntity(oldCategory, request));
             }

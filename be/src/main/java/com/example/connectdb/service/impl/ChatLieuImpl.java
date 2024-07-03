@@ -34,10 +34,7 @@ public class ChatLieuImpl implements ChatLieuService {
         return new PageableObject<>(chatLieuRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public ChatLieu findByMa(String ma) {
-        return chatLieuRepository.findByMa(ma);
-    }
+
 
     @Override
     public ChatLieu getOne(Integer id) {
@@ -46,7 +43,7 @@ public class ChatLieuImpl implements ChatLieuService {
 
     @Override
     public ChatLieu create(ChatLieuRequest request) {
-        if (chatLieuRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (chatLieuRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Màu " + request.getTen() + " đã tồn tại!");
         }
         ChatLieu chatLieu = materialConverter.convertRequestToEntity(request);
@@ -56,7 +53,7 @@ public class ChatLieuImpl implements ChatLieuService {
     @Override
     public ChatLieu update(Integer id, ChatLieuRequest request) {
         ChatLieu oldColor = chatLieuRepository.findById(id).get();
-        if (chatLieuRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (chatLieuRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldColor.getTen().equals(request.getTen())) {
                 return chatLieuRepository.save(materialConverter.convertRequestToEntity(oldColor, request));
             }

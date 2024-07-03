@@ -27,7 +27,7 @@ public interface TayAoRepository extends JpaRepository<TayAo, Integer> {
             """, nativeQuery = true)
     Page<TayAoReponse> findAllByCriteria(@Param("req") TayAoRequest request, Pageable pageable);
 
-    TayAo findByMa(String ma);
 
-    boolean existsByMaIgnoreCase(String ma);
+
+    boolean existsByTenIgnoreCase(String ten);
 }

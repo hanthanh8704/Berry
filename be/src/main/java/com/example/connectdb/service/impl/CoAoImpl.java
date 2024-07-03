@@ -31,10 +31,7 @@ public class CoAoImpl implements CoAoService {
         return new PageableObject<>(coAoRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public CoAo findByMa(String ma) {
-        return coAoRepository.findByMa(ma);
-    }
+
 
     @Override
     public CoAo getOne(Integer id) {
@@ -43,7 +40,7 @@ public class CoAoImpl implements CoAoService {
 
     @Override
     public CoAo create(CoAoRequest request) {
-        if (coAoRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (coAoRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Cổ áo " + request.getTen() + " đã tồn tại!");
         }
         CoAo coAo = collarConverter.convertRequestToEntity(request);
@@ -56,7 +53,7 @@ public class CoAoImpl implements CoAoService {
         if (oldCoAo == null) {
             throw new RestApiException("Không tìm thấy cổ áo với ID " + id);
         }
-        if (coAoRepository.existsByMaIgnoreCase(request.getTen()) && !oldCoAo.getTen().equalsIgnoreCase(request.getTen())) {
+        if (coAoRepository.existsByTenIgnoreCase(request.getTen()) && !oldCoAo.getTen().equalsIgnoreCase(request.getTen())) {
             throw new RestApiException("Cổ áo " + request.getTen() + " đã tồn tại!");
         }
         return coAoRepository.save(collarConverter.convertRequestToEntity(oldCoAo, request));
@@ -64,6 +61,6 @@ public class CoAoImpl implements CoAoService {
 
     @Override
     public boolean existsByMaIgnoreCase(String ma) {
-        return coAoRepository.existsByMaIgnoreCase(ma);
+        return coAoRepository.existsByTenIgnoreCase(ma);
     }
 }

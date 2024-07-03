@@ -7,7 +7,7 @@ import com.example.connectdb.util.common.PageableObject;
 
 public interface CoAoService {
     PageableObject<CoAoResponse> getAll(CoAoRequest request);
-    CoAo findByMa(String ma);
+
     CoAo getOne(Integer id);
 
     CoAo create(CoAoRequest coAoRequest);

@@ -25,7 +25,6 @@ public interface KichCoRepository extends JpaRepository<KichCo, Integer> {
             """, nativeQuery = true)
     Page<KichCoResponse> findAllByCriteria(@Param("req") KichCoRequest request, Pageable pageable);
 
-    KichCo findByMa(String ma);
 
-    boolean existsByMaIgnoreCase(String ma);
+    boolean existsByTenIgnoreCase(String ten);
 }

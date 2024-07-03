@@ -7,7 +7,7 @@ import com.example.connectdb.util.common.PageableObject;
 
 public interface TayAoService {
     PageableObject<TayAoReponse> getAll(TayAoRequest request);
-    TayAo findByMa(String ma);
+
     TayAo getOne(Integer id);
 
     TayAo create(TayAoRequest tayAoRequest);

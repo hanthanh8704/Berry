@@ -85,6 +85,7 @@ function TayAo() {
         });
     };
 
+
     const handleUpdate = (values) => {
         Modal.confirm({
             title: "Xác nhận",
@@ -124,7 +125,7 @@ function TayAo() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name, // Adjust according to your form field names
+            ten: record.ten, // Điều chỉnh tên trường theo tên trường của bạn
         });
     };
 
@@ -266,12 +267,13 @@ function TayAo() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Tên tay áo"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên tay áo!" }]}
                     >
                         <Input placeholder="Nhập tên tay áo..." />
                     </Form.Item>
                 </Form>
+
             </Modal>
         </div>
     );

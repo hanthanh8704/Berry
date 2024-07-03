@@ -8,21 +8,15 @@ import java.math.BigDecimal;
 
 @Projection(types = {SanPham.class})
 public interface SanPhamReponse {
-
     @Value("#{target.indexs}")
     Integer getIndex();
     Integer getId();
     String getMa();
     String getTen();
-    String getKichCo();
-    String getMauSac();
-    String getThuongHieu();
     String getDanhMuc();
     Integer getSoLuong ();
     String getTrangThai();
-    BigDecimal getMaxPrice();
-    BigDecimal getMinPrice();
-    String getImages();
+
 
 
 }

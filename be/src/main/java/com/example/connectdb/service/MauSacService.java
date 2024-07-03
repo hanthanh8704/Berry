@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface MauSacService {
     PageableObject<MauSacResponse> getAll(MauSacRequest request);
-    MauSac findByMa(String ma);
+
     MauSac getOne(Integer id);
 
     MauSac create(MauSacRequest mauSacRequest);

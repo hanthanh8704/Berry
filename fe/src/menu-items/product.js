@@ -36,7 +36,7 @@ const product = {
         },
         {
           id: 'size',
-          title: 'Kích Thước',
+          title: 'Kích Cỡ',
           type: 'item',
           url: '/products/size',
           target: false

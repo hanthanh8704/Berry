@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Col, Input, Radio, Row, Select, Switch, Table, Tooltip, Card } from "antd";
 import { toast, ToastContainer } from "react-toastify";
@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { IconEdit } from "@tabler/icons-react";
 import * as request from "views/utilities/httpRequest";
-import debounce from "lodash/debounce"; // Import debounce function
+import debounce from "lodash/debounce";
 
 function Product() {
     const [productList, setProductList] = useState([]);
@@ -23,23 +23,23 @@ function Product() {
     const [searchBrand, setSearchBrand] = useState('');
 
     useEffect(() => {
-        request.get("/category", { params: { name: searchCate, status: false } }).then((response) => {
-            setListCate(response.data);
-        }).catch((error) => { console.log(error); });
-        request.get("/brand", { params: { name: searchBrand, status: false } }).then((response) => {
-            setListBrand(response.data);
-        }).catch((error) => { console.log(error); });
+        request.get("/category", { params: { name: searchCate, status: false } })
+            .then((response) => {
+                setListCate(response.data);
+            }).catch((error) => { console.log(error); });
+        request.get("/brand", { params: { name: searchBrand, status: false } })
+            .then((response) => {
+                setListBrand(response.data);
+            }).catch((error) => { console.log(error); });
     }, [searchCate, searchBrand]);
 
     useEffect(() => {
-        // Debounce searchValue changes to reduce API calls
         const delayedSearch = debounce(() => {
             loadData();
-        }, 300); // Adjust debounce delay as needed (in milliseconds)
+        }, 300);
 
         delayedSearch();
 
-        // Cancel debounce on component unmount
         return () => {
             delayedSearch.cancel();
         };
@@ -95,17 +95,13 @@ function Product() {
             dataIndex: 'danhMuc',
             key: 'danhMuc',
         },
-        {
-            title: 'Thương hiệu',
-            dataIndex: 'thuongHieu',
-            key: 'thuongHieu',
-        },
+
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (x, record) => (
-                <Tooltip title={`${x ? "Ngừng bán" : "Đang bán"}`}>
+                <Tooltip title={x ? "Ngừng bán" : "Đang bán"}>
                     <Switch defaultChecked={!x} onChange={() => handleChangeStatus(record.id)} />
                 </Tooltip>
             ),
@@ -117,7 +113,7 @@ function Product() {
             key: 'action',
             render: (x) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link to={`/products/${x}`} className="btn btn-sm btn-primary me-1">
+                    <Link to={`/products/ShirtInfo/${x}`} className="btn btn-sm btn-primary me-1">
                         <IconEdit />
                     </Link>
                 </Tooltip>
@@ -166,30 +162,13 @@ function Product() {
                         >
                             <Select.Option value="">Chọn danh mục</Select.Option>
                             {listCate.map((item) => (
-                                <Select.Option key={item.ten} value={item.ten}>
-                                    {item.name}
+                                <Select.Option key={item.id} value={item.id}>
+                                    {item.ten}
                                 </Select.Option>
                             ))}
                         </Select>
                     </Col>
-                    <Col span={8}>
-                        <label className="mb-2">Thương hiệu</label>
-                        <Select
-                            showSearch
-                            onChange={setSelectedBrand}
-                            placeholder="Chọn thương hiệu..."
-                            optionFilterProp="children"
-                            style={{ width: "100%" }}
-                            onSearch={setSearchBrand}
-                        >
-                            <Select.Option value="">Chọn thương hiệu</Select.Option>
-                            {listBrand.map((item) => (
-                                <Select.Option key={item.ten} value={item.ten}>
-                                    {item.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Col>
+
                 </Row>
             </Card>
             <Card>

@@ -25,7 +25,7 @@ public interface CoAoRepository extends JpaRepository<CoAo,Integer> {
             """, nativeQuery = true)
     Page<CoAoResponse> findAllByCriteria(@Param("req") CoAoRequest request, Pageable pageable);
 
-    CoAo findByMa(String ma);
+    boolean existsByTenIgnoreCase(String ten);
 
-    boolean existsByMaIgnoreCase(String ma);
+
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DanhMucService {
     PageableObject<DanhMucResponse> getAll(DanhMucRequest request);
-    DanhMuc findByMa(String ma);
+
     DanhMuc getOne(Integer id);
     DanhMuc create(DanhMucRequest danhMucRequest);
     DanhMuc update(Integer id, DanhMucRequest danhMucRequest);

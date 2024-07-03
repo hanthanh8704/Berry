@@ -36,10 +36,6 @@ public class ThuongHieuImpl implements ThuongHieuService {
 
 
 
-    @Override
-    public ThuongHieu findByMa(String ma) {
-        return thuongHieuRepository.findByMa(ma);
-    }
 
     @Override
     public ThuongHieu getOne(Integer id) {
@@ -48,7 +44,7 @@ public class ThuongHieuImpl implements ThuongHieuService {
 
     @Override
     public ThuongHieu create(ThuongHieuRequest request) {
-        if (thuongHieuRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (thuongHieuRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Thương hiệu " + request.getTen() + " đã tồn tại!");
         }
         ThuongHieu brand = brandConverter.convertRequestToEntity(request);
@@ -58,7 +54,7 @@ public class ThuongHieuImpl implements ThuongHieuService {
     @Override
     public ThuongHieu update(Integer id, ThuongHieuRequest request) {
         ThuongHieu oldBrand = thuongHieuRepository.findById(id).orElse(null);
-        if (thuongHieuRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (thuongHieuRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldBrand != null && oldBrand.getTen().equals(request.getTen())) {
                 return thuongHieuRepository.save(brandConverter.convertRequestToEntity(oldBrand, request));
             }

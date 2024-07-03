@@ -16,9 +16,7 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
     @Query(value = """
             SELECT
                 c.id AS id,
-                c.ma AS ma,
                 c.ten AS ten,
-                c.mota AS mota,
                 c.ngay_tao AS ngayTao,
                 c.ngay_sua AS ngaySua,
                 c.trang_thai AS trangThai,
@@ -29,7 +27,7 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
             """, nativeQuery = true)
     Page<ChatLieuResponse> findAllByCriteria(@Param("req") ChatLieuRequest request, Pageable pageable);
 
-    ChatLieu findByMa(String ma);
 
-    boolean existsByMaIgnoreCase(String ma);
+
+    boolean existsByTenIgnoreCase(String ten);
 }

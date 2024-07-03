@@ -26,7 +26,7 @@ public interface ThuongHieuRepository extends JpaRepository<ThuongHieu, Integer>
             """, nativeQuery = true)
     Page<ThuongHieuResponse> findAllByCriteria(@Param("req") ThuongHieuRequest request, Pageable pageable);
 
-    ThuongHieu findByMa(String ma);
 
-    boolean existsByMaIgnoreCase(String ma);
+
+    boolean existsByTenIgnoreCase(String ten);
 }

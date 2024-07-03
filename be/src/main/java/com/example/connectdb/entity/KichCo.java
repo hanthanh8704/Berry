@@ -20,24 +20,14 @@ public class KichCo {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "ma")
-    private String ma;
-
     @Column(name = "ten")
     private String ten;
-
-    @Column(name = "mota")
-    private String mota;
-
     @Column(name = "ngay_tao")
     @CreationTimestamp
     private Timestamp ngayTao;
-
     @Column(name = "ngay_sua")
     @UpdateTimestamp
     private Timestamp ngaySua;
-
     @Column(name = "trang_thai")
     private String trangThai;
 }

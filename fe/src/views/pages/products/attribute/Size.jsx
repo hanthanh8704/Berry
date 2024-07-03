@@ -1,30 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Modal,
-    Row,
-    Table,
-    Tooltip,
-    Radio,
-    Switch,
-} from "antd";
-import { IconEdit } from "@tabler/icons-react";
+import { Button, Col, Input, Modal, Row, Table, Tooltip, Form } from "antd";
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
+import 'react-toastify/dist/ReactToastify.css';
 import * as request from "views/utilities/httpRequest";
 
 function Size() {
     const [sizeList, setSizeList] = useState([]);
+    const [filteredSizeList, setFilteredSizeList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const [searchValue, setSearchValue] = useState("");
-    const [statusSize, setStatusSize] = useState(null);
     const [pageSize, setPageSize] = useState(5);
+    const [searchValue, setSearchValue] = useState("");
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
     const [formAdd] = Form.useForm();
@@ -32,16 +19,17 @@ function Size() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, statusSize);
-    }, [currentPage, pageSize, searchValue, statusSize]);
+        loadData();
+    }, []);
 
-    const loadData = async (page, size, search, trangThai) => {
+    useEffect(() => {
+        handleSearch(searchValue);
+    }, [sizeList, searchValue]);
+
+    const loadData = async () => {
         try {
-            const response = await request.get("/size", {
-                params: { name: search, page, sizePage: size, trangThai },
-            });
+            const response = await request.get("/size");
             setSizeList(response.data);
-            setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -50,7 +38,7 @@ function Size() {
     const showDeleteConfirm = (item) => {
         Modal.confirm({
             title: "Xác nhận",
-            icon: <IconEdit />,
+            icon: <EditOutlined />,
             content: "Bạn có chắc muốn xóa kích cỡ này?",
             okText: "Xác nhận",
             okType: "danger",
@@ -64,7 +52,7 @@ function Size() {
     const handleDelete = async (id) => {
         try {
             await request.remove(`/size/${id}`);
-            loadData(currentPage, pageSize, searchValue, statusSize);
+            loadData();
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -75,7 +63,7 @@ function Size() {
     const handleAdd = (values) => {
         Modal.confirm({
             title: "Xác nhận",
-            icon: <IconEdit />,
+            icon: <EditOutlined />,
             content: "Bạn có chắc muốn thêm kích cỡ này?",
             okText: "Xác nhận",
             okType: "primary",
@@ -87,7 +75,7 @@ function Size() {
                         toast.success("Thêm kích cỡ thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusSize);
+                        loadData();
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
@@ -100,19 +88,19 @@ function Size() {
     const handleUpdate = (values) => {
         Modal.confirm({
             title: "Xác nhận",
-            icon: <IconEdit />,
+            icon: <EditOutlined />,
             content: "Bạn có chắc muốn cập nhật kích cỡ này?",
             okText: "Xác nhận",
             okType: "primary",
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const response = await request.put(`/size/${item.id}`, values);
+                    const response = await request.put(`/size/update/${item.id}`, values);
                     if (response.status === 200) {
                         toast.success("Cập nhật kích cỡ thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData(currentPage, pageSize, searchValue, statusSize);
+                        loadData();
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
@@ -136,14 +124,20 @@ function Size() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            name: record.name,
+            ten: record.ten,
         });
     };
 
     const handleSearch = (value) => {
         setSearchValue(value);
+        const filteredData = sizeList.filter((item) =>
+            item.ten.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredSizeList(filteredData);
         setCurrentPage(1);
     };
+
+    const paginatedData = filteredSizeList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
         <div>
@@ -153,7 +147,7 @@ function Size() {
                 <Col span={13}>
                     <label className="mb-1">Kích cỡ</label>
                     <Input
-                        onChange={(event) => setSearchValue(event.target.value)}
+                        onChange={(event) => handleSearch(event.target.value)}
                         placeholder="Tìm kiếm kích cỡ theo tên..."
                     />
                 </Col>
@@ -165,18 +159,19 @@ function Size() {
                         onClick={() => setIsModalAddOpen(true)}
                         className="bg-primary w-100"
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm kích cỡ
+                        <PlusOutlined /> Thêm kích cỡ
                     </Button>
                 </Col>
             </Row>
             <Table
-                dataSource={sizeList}
+                dataSource={paginatedData}
                 columns={[
                     {
                         title: "#",
                         dataIndex: "index",
                         key: "index",
                         className: "text-center",
+                        render: (text, record, index) => index + 1 + (currentPage - 1) * pageSize,
                     },
                     {
                         title: "Tên Kích Cỡ",
@@ -204,10 +199,8 @@ function Size() {
                         className: "text-center",
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
-                                <Button
-                                    onClick={() => handleEdit(record)}
-                                >
-                                    <IconEdit />
+                                <Button onClick={() => handleEdit(record)}>
+                                    <EditOutlined />
                                 </Button>
                             </Tooltip>
                         ),
@@ -219,7 +212,7 @@ function Size() {
                     pageSize: pageSize,
                     pageSizeOptions: ["5", "10", "20", "50", "100"],
                     showQuickJumper: true,
-                    total: totalPages * pageSize,
+                    total: filteredSizeList.length,
                     onChange: (page, pageSize) => {
                         setCurrentPage(page);
                         setPageSize(pageSize);
@@ -236,12 +229,7 @@ function Size() {
                     <Button key="cancel" onClick={handleCancelAdd}>
                         Hủy
                     </Button>,
-                    <Button
-                        key="submit"
-                        type="primary"
-                        onClick={() => formAdd.submit()}
-                        loading={false}
-                    >
+                    <Button key="submit" type="primary" onClick={() => formAdd.submit()}>
                         Thêm
                     </Button>,
                 ]}
@@ -265,12 +253,7 @@ function Size() {
                     <Button key="cancel" onClick={handleCancelUpdate}>
                         Hủy
                     </Button>,
-                    <Button
-                        key="submit"
-                        type="primary"
-                        onClick={() => formUpdate.submit()}
-                        loading={false}
-                    >
+                    <Button key="submit" type="primary" onClick={() => formUpdate.submit()}>
                         Cập nhật
                     </Button>,
                 ]}
@@ -278,7 +261,7 @@ function Size() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Kích cỡ"
-                        name="name"
+                        name="ten"
                         rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
                     >
                         <Input placeholder="Nhập tên kích cỡ..." />

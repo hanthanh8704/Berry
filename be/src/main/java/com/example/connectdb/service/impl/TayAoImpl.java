@@ -31,10 +31,7 @@ public class TayAoImpl  implements TayAoService {
         return new PageableObject<>(tayAoRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public TayAo findByMa(String ma) {
-        return tayAoRepository.findByMa(ma);
-    }
+
 
     @Override
     public TayAo getOne(Integer id) {
@@ -43,7 +40,7 @@ public class TayAoImpl  implements TayAoService {
 
     @Override
     public TayAo create(TayAoRequest request) {
-        if (tayAoRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (tayAoRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Tay áo " + request.getTen() + " đã tồn tại!");
         }
         TayAo tayAo = tayAoConverter.convertRequestToEntity(request);
@@ -56,7 +53,7 @@ public class TayAoImpl  implements TayAoService {
         if (oldTayAo == null) {
             throw new RestApiException("Không tìm thấy tay áo với ID " + id);
         }
-        if (tayAoRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (tayAoRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldTayAo.getTen().equals(request.getTen())) {
                 return tayAoRepository.save(tayAoConverter.convertRequestToEntity(oldTayAo, request));
             }

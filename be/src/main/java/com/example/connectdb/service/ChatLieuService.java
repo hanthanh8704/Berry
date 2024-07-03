@@ -7,7 +7,7 @@ import com.example.connectdb.util.common.PageableObject;
 
 public interface ChatLieuService {
     PageableObject<ChatLieuResponse> getAll(ChatLieuRequest request);
-    ChatLieu findByMa(String ma);
+
     ChatLieu getOne(Integer id);
 
     ChatLieu create(ChatLieuRequest chatLieuRequest);

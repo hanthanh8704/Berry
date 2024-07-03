@@ -21,7 +21,7 @@ function AddProperties({ name, placeholder, onSuccess }) {
                 <Form.Item name={"ten"} rules={[{ required: true, message: "Không được để trống!" },]} className='me-1 p-0 m-0'>
                     <Input placeholder={`Thêm ${placeholder}`} />
                 </Form.Item>
-                <Button type="primary" htmlType="submit" style={{ backgroundColor: "#FFC107" }} icon={<i className="fas fa-plus"></i>}>Thêm</Button>
+                <Button type="primary" htmlType="submit" style={{ backgroundColor: "blue" }} icon={<i className="fas fa-plus"></i>}>Thêm</Button>
             </Form>
         </>
     )

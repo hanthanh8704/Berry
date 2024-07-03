@@ -31,10 +31,7 @@ public class KichCoImpl implements KichCoService {
         return new PageableObject<>(kichCoRepository.findAllByCriteria(request, pageable));
     }
 
-    @Override
-    public KichCo findByMa(String ma) {
-        return kichCoRepository.findByMa(ma);
-    }
+
 
 
     @Override
@@ -44,7 +41,7 @@ public class KichCoImpl implements KichCoService {
 
     @Override
     public KichCo create(KichCoRequest request) {
-        if (kichCoRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (kichCoRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Kích cỡ " + request.getTen() + " đã tồn tại!");
         }
         KichCo size = sizeConverter.convertRequestToEntity(request);
@@ -54,7 +51,7 @@ public class KichCoImpl implements KichCoService {
     @Override
     public KichCo update(Integer id, KichCoRequest request) {
         KichCo oldSize = kichCoRepository.findById(id).get();
-        if (kichCoRepository.existsByMaIgnoreCase(request.getTen())) {
+        if (kichCoRepository.existsByTenIgnoreCase(request.getTen())) {
             if (oldSize.getTen().equals(request.getTen())) {
                 return kichCoRepository.save(sizeConverter.convertRequestToEntity(oldSize, request));
             }

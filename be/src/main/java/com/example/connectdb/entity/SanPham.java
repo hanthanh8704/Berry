@@ -24,6 +24,7 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
+
     @Column(name = "ma")
     private String ma;
 
@@ -32,9 +33,6 @@ public class SanPham {
 
     @Column(name = "so_luong")
     private Integer soLuong;
-
-    @Column(name = "mota")
-    private String mota;
 
     @Column(name = "ngay_tao")
     @CreationTimestamp
@@ -53,4 +51,8 @@ public class SanPham {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
+
 }
