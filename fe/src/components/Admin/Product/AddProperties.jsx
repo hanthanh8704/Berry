@@ -3,7 +3,7 @@ import React from 'react'
 import { toast } from 'react-toastify';
 import * as request from "views/utilities/httpRequest"
 
-function AddProperties({ name, placeholder, onSuccess }) {
+function AddProperties({ ten, placeholder, onSuccess }) {
     const [form] = Form.useForm();
     const handleSubmit = (data) => {
         request.post(`/${ten}`, { name: data.ten }).then(response => {

@@ -1,411 +1,327 @@
-import React, { useState } from 'react';
-import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap styles
-import { Modal, Button, Form } from 'react-bootstrap'; // Import components from React Bootstrap
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button, Col, Input, Radio, Row, Select, Switch, Table, Tooltip, Card, Modal, Form } from "antd";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { IconEdit } from "@tabler/icons-react";
+import * as request from "views/utilities/httpRequest";
+import debounce from "lodash/debounce";
 
-function AddShirt() {
-    const [productName, setProductName] = useState('KAPPA GIÀY SNEAKERS 123');
-    const [description, setDescription] = useState('Giày Sneakers thời trang');
-    const [brand, setBrand] = useState('KAPPA');
-    const [status, setStatus] = useState('Kinh Doanh');
-    const [material, setMaterial] = useState('Da');
-    const [sole, setSole] = useState('Cao su');
-    const [gender, setGender] = useState('Nam');
-    const [category, setCategory] = useState('Giày Sneakers');
+function Product() {
+    const [productList, setProductList] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [listCate, setListCate] = useState([]);
+    const [listBrand, setListBrand] = useState([]);
+    const [selectedCate, setSelectedCate] = useState(null);
+    const [selectedBrand, setSelectedBrand] = useState(null);
+    const [searchValue, setSearchValue] = useState("");
+    const [statusProduct, setStatusProduct] = useState(null);
+    const [pageSize, setPageSize] = useState(5);
+    const [searchCate, setSearchCate] = useState('');
+    const [searchBrand, setSearchBrand] = useState('');
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+    const [formAdd] = Form.useForm();
+    const [formUpdate] = Form.useForm();
+    const [item, setItem] = useState(null);
 
-    const [sizes, setSizes] = useState(['39', '40', '41']);
-    const [colors, setColors] = useState(['Đen', 'Trắng', 'Đỏ']);
-    const [products, setProducts] = useState([
-        { size: '39', color: 'Đen', quantity: 10, price: 1000000, image: '' },
-        { size: '40', color: 'Trắng', quantity: 15, price: 1000000, image: '' }
-    ]);
+    useEffect(() => {
+        request.get("/category", { params: { name: searchCate, status: false } })
+            .then((response) => {
+                setListCate(response.data);
+            }).catch((error) => { console.log(error); });
+        request.get("/brand", { params: { name: searchBrand, status: false } })
+            .then((response) => {
+                setListBrand(response.data);
+            }).catch((error) => { console.log(error); });
+    }, [searchCate, searchBrand]);
 
-    const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState('');
-    const [newAttribute, setNewAttribute] = useState('');
+    useEffect(() => {
+        const delayedSearch = debounce(() => {
+            loadData();
+        }, 300);
 
-    const handleShowModal = (type) => {
-        setModalType(type);
-        setShowModal(true);
-    };
+        delayedSearch();
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setNewAttribute('');
-    };
+        return () => {
+            delayedSearch.cancel();
+        };
+    }, [searchValue, currentPage, selectedCate, selectedBrand, pageSize, statusProduct]);
 
-    const handleAddAttribute = () => {
-        if (modalType === 'brand') {
-            // Logic to add new brand
-            // Example: setBrands([...brands, newAttribute]);
-        } else if (modalType === 'material') {
-            // Logic to add new material
-            // Example: setMaterials([...materials, newAttribute]);
-        }
-        handleCloseModal();
-    };
-
-    const handleProductNameChange = (e) => {
-        setProductName(e.target.value);
-    };
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleBrandChange = (e) => {
-        setBrand(e.target.value);
-    };
-
-    const handleStatusChange = (e) => {
-        setStatus(e.target.value);
-    };
-
-    const handleMaterialChange = (e) => {
-        setMaterial(e.target.value);
-    };
-
-    const handleSoleChange = (e) => {
-        setSole(e.target.value);
-    };
-
-    const handleGenderChange = (e) => {
-        setGender(e.target.value);
-    };
-
-    const handleCategoryChange = (e) => {
-        setCategory(e.target.value);
-    };
-
-    const handleAddSize = () => {
-        const newSize = prompt('Enter new size:');
-        if (newSize && !sizes.includes(newSize)) {
-            setSizes([...sizes, newSize]);
-        }
-    };
-
-    const handleRemoveSize = (sizeToRemove) => {
-        setSizes(sizes.filter(size => size !== sizeToRemove));
-    };
-
-    const handleAddColor = () => {
-        const newColor = prompt('Enter new color:');
-        if (newColor && !colors.includes(newColor)) {
-            setColors([...colors, newColor]);
-        }
-    };
-
-    const handleRemoveColor = (colorToRemove) => {
-        setColors(colors.filter(color => color !== colorToRemove));
-    };
-
-    const handleAddProduct = () => {
-        setProducts([...products, { size: '', color: '', quantity: 1, price: 1000000, image: '' }]);
-    };
-
-    const handleProductChange = (index, field, value) => {
-        const updatedProducts = products.map((product, i) => {
-            if (i === index) {
-                return { ...product, [field]: value };
-            }
-            return product;
+    const loadData = () => {
+        request.get("/shirt", {
+            params: { name: searchValue, page: currentPage, sizePage: pageSize, category: selectedCate, brand: selectedBrand, status: statusProduct },
+        }).then((response) => {
+            setProductList(response.data);
+            setTotalPages(response.totalPages);
+        }).catch((error) => {
+            console.log(error);
         });
-        setProducts(updatedProducts);
-    };
+    }
 
-    const handleRemoveProduct = (index) => {
-        setProducts(products.filter((_, i) => i !== index));
-    };
+    const handleChangeStatus = async (id) => {
+        await request.remove(`/shirt/${id}`).then(response => {
+            toast.success("Đã cập nhật trạng thái!");
+            loadData();
+        }).catch(e => {
+            console.log(e);
+        })
+    }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission logic here
-        console.log({
-            productName,
-            description,
-            brand,
-            status,
-            material,
-            sole,
-            gender,
-            category,
-            sizes,
-            colors,
-            products,
+    const handleAdd = (values) => {
+        Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có chắc muốn thêm sản phẩm này?",
+            okText: "Xác nhận",
+            okType: "primary",
+            cancelText: "Hủy",
+            async onOk() {
+                try {
+                    const response = await request.post("/shirt/create", values);
+                    if (response.status === 200) {
+                        toast.success("Thêm sản phẩm thành công!");
+                        setIsModalAddOpen(false);
+                        formAdd.resetFields();
+                        loadData();
+                    }
+                } catch (error) {
+                    console.error("Error adding data:", error);
+                    toast.error("Thêm sản phẩm thất bại!");
+                }
+            },
         });
     };
+
+    const handleUpdate = (values) => {
+        Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có chắc muốn cập nhật sản phẩm này?",
+            okText: "Xác nhận",
+            okType: "primary",
+            cancelText: "Hủy",
+            async onOk() {
+                try {
+                    const response = await request.put(`/shirt/update/${item.id}`, values);
+                    if (response.status === 200) {
+                        toast.success("Cập nhật sản phẩm thành công!");
+                        setIsModalUpdateOpen(false);
+                        formUpdate.resetFields();
+                        loadData();
+                    }
+                } catch (error) {
+                    console.error("Error updating data:", error);
+                    toast.error("Cập nhật sản phẩm thất bại!");
+                }
+            },
+        });
+    };
+
+    const handleCancelAdd = () => {
+        setIsModalAddOpen(false);
+        formAdd.resetFields();
+    };
+
+    const handleCancelUpdate = () => {
+        setIsModalUpdateOpen(false);
+        formUpdate.resetFields();
+    };
+
+    const handleEdit = (record) => {
+        setItem(record);
+        setIsModalUpdateOpen(true);
+        formUpdate.setFieldsValue({
+            ma: record.ma,
+            ten: record.ten,
+            soLuong: record.soLuong,
+            danhMuc: record.danhMuc,
+            // Thêm các trường khác nếu cần
+        });
+    };
+
+    const columns = [
+        {
+            title: '#',
+            dataIndex: 'index',
+            key: 'index',
+            width: 50,
+            align: 'center',
+        },
+        {
+            title: 'Mã',
+            dataIndex: 'ma',
+            key: 'ma',
+        },
+        {
+            title: 'Tên',
+            dataIndex: 'ten',
+            key: 'ten',
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'soLuong',
+            key: 'soLuong',
+            render: (x) => x == null ? 0 : x,
+            align: 'center',
+        },
+        {
+            title: 'Danh mục',
+            dataIndex: 'danhMuc',
+            key: 'danhMuc',
+        },
+
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            key: 'status',
+            render: (x, record) => (
+                <Tooltip title={x ? "Ngừng bán" : "Đang bán"}>
+                    <Switch defaultChecked={!x} onChange={() => handleChangeStatus(record.id)} />
+                </Tooltip>
+            ),
+            align: 'center',
+        },
+        {
+            title: 'Hành động',
+            dataIndex: 'id',
+            key: 'action',
+            render: (x, record) => (
+                <Tooltip title="Chỉnh sửa">
+                    <Button onClick={() => handleEdit(record)}>
+                        <IconEdit />
+                    </Button>
+                </Tooltip>
+            ),
+            align: 'center',
+        },
+    ];
 
     return (
-        <div className="container">
-            <div className="bg-white p-4 mt-3">
-                <h1 style={{ textAlign: 'center' }}>THÊM SẢN PHẨM</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group mt-3">
-                        <label htmlFor="productName" className='fw-bold'>* Tên sản phẩm:</label>
-                        <input
-                            type="text"
-                            id="productName"
-                            className="form-control"
-                            value={productName}
-                            onChange={handleProductNameChange}
-                        />
-                    </div>
-                    <div className="form-group mt-3">
-                        <label htmlFor="description" className='fw-bold'>* Mô tả:</label>
-                        <textarea
-                            id="description"
-                            className="form-control"
-                            value={description}
-                            onChange={handleDescriptionChange}
-                        />
-                    </div>
-                    <div className="row mt-3">
-                        <div className="col-md-6">
-                            <div className="form-group">
-                                <label htmlFor="brand" className='fw-bold'>* Thương hiệu:</label>
-                                <div className="input-group">
-                                    <select
-                                        id="brand"
-                                        className="form-control"
-                                        value={brand}
-                                        onChange={handleBrandChange}
-                                    >
-                                        <option value="">Chọn thương hiệu</option>
-                                        {/* Add more options here */}
-                                    </select>
-                                    <div className="input-group-append">
-                                        <Button className="btn btn-outline-secondary" onClick={() => handleShowModal('brand')}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="form-group">
-                                <label htmlFor="status" className='fw-bold'>* Tay áo:</label>
-                                <select
-                                    id="status"
-                                    className="form-control"
-                                    value={status}
-                                    onChange={handleStatusChange}
-                                >
-                                    <option value="Kinh Doanh">Kinh Doanh</option>
-                                    {/* Add more options here */}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-md-6 mt-3">
-                            <div className="form-group">
-                                <label htmlFor="material" className='fw-bold'>* Chất Liệu:</label>
-                                <div className="input-group">
-                                    <select
-                                        id="material"
-                                        className="form-control"
-                                        value={material}
-                                        onChange={handleMaterialChange}
-                                    >
-                                        <option value="">Chọn chất liệu</option>
-                                        {/* Add more options here */}
-                                    </select>
-                                    <div className="input-group-append">
-                                        <Button className="btn btn-outline-secondary" onClick={() => handleShowModal('material')}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 mt-3">
-                            <div className="form-group">
-                                <label htmlFor="sole" className='fw-bold'>* Đế Giày:</label>
-                                <div className="input-group">
-                                    <select
-                                        id="sole"
-                                        className="form-control"
-                                        value={sole}
-                                        onChange={handleSoleChange}
-                                    >
-                                        <option value="">Chọn đế giày</option>
-                                        {/* Add more options here */}
-                                    </select>
-                                    <div className="input-group-append">
-                                        <Button className="btn btn-outline-secondary" onClick={() => handleShowModal('sole')}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 mt-3">
-                            <div className="form-group">
-                                <label htmlFor="gender" className='fw-bold'>* Cổ áo:</label>
-                                <div className="input-group">
-                                    <select
-                                        id="gender"
-                                        className="form-control"
-                                        value={gender}
-                                        onChange={handleGenderChange}
-                                    >
-                                        <option value="">Chọn cổ áo</option>
-                                        {/* Add more options here */}
-                                    </select>
-                                    <div className="input-group-append">
-                                        <Button className="btn btn-outline-secondary" onClick={() => handleShowModal('gender')}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 mt-3">
-                            <div className="form-group">
-                                <label htmlFor="category" className='fw-bold'>* Thể loại:</label>
-                                <div className="input-group">
-                                    <select
-                                        id="category"
-                                        className="form-control"
-                                        value={category}
-                                        onChange={handleCategoryChange}
-                                    >
-                                        <option value="">Chọn thể loại</option>
-                                        {/* Add more options here */}
-                                    </select>
-                                    <div className="input-group-append">
-                                        <Button className="btn btn-outline-secondary" onClick={() => handleShowModal('category')}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row mt-3">
-                        <div className="col-md-12">
-                            <div className="form-group">
-                                <label htmlFor="sizes" className='fw-bold'>Kích Cỡ:</label>
-                                <div className="d-flex flex-wrap">
-                                    {sizes.map((size, index) => (
-                                        <div key={index} className="btn btn-light border mr-2 mb-2">
-                                            {size} <Button variant="link" className="text-danger p-0 ml-1" onClick={() => handleRemoveSize(size)}>x</Button>
-                                        </div>
-                                    ))}
-                                    <Button className="btn btn-primary ml-2" onClick={handleAddSize}>+</Button>
-                                </div>
-                            </div>
-                            <div className="form-group mt-3">
-                                <label htmlFor="colors" className='fw-bold'>Màu Sắc:</label>
-                                <div className="d-flex flex-wrap">
-                                    {colors.map((color, index) => (
-                                        <div key={index} className="btn btn-light border mr-2 mb-2">
-                                            {color} <Button variant="link" className="text-danger p-0 ml-1" onClick={() => handleRemoveColor(color)}>x</Button>
-                                        </div>
-                                    ))}
-                                    <Button className="btn btn-primary ml-2" onClick={handleAddColor}>+</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h1 className="mt-5 mb-3" style={{ textAlign: 'center' }}>Chi tiết sản phẩm</h1>
-                    <div className="table-responsive">
-                        <table className="table table-bordered mt-3">
-                            <thead className="thead-dark">
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Tên Sản Phẩm</th>
-                                    <th>Kích Cỡ</th>
-                                    <th>Màu Sắc</th>
-                                    <th>Số Lượng</th>
-                                    <th>Giá Bán</th>
-                                    <th>Upload Ảnh</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {products.map((product, index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{productName}</td>
-                                        <td>
-                                            <select
-                                                className="form-control"
-                                                value={product.size}
-                                                onChange={(e) => handleProductChange(index, 'size', e.target.value)}
-                                            >
-                                                <option value="">Chọn kích cỡ</option>
-                                                {sizes.map((size, i) => (
-                                                    <option key={i} value={size}>{size}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select
-                                                className="form-control"
-                                                value={product.color}
-                                                onChange={(e) => handleProductChange(index, 'color', e.target.value)}
-                                            >
-                                                <option value="">Chọn màu sắc</option>
-                                                {colors.map((color, i) => (
-                                                    <option key={i} value={color}>{color}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                value={product.quantity}
-                                                onChange={(e) => handleProductChange(index, 'quantity', e.target.value)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                value={product.price}
-                                                onChange={(e) => handleProductChange(index, 'price', e.target.value)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <Button variant="outline-secondary">Upload</Button>
-                                        </td>
-                                        <td>
-                                            <Button variant="danger" onClick={() => handleRemoveProduct(index)}>Xóa</Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="text-center mt-3">
-                        <Button className="btn btn-primary" onClick={handleAddProduct}>Thêm sản phẩm</Button>
-                        <button type="submit" className="btn btn-success mt-3">
-                            Lưu
-                        </button>
-                    </div>
-                </form>
-                <ToastContainer />
-            </div>
+        <div style={{ background: '#fff', padding: '20px' }}>
+            <Card className="mb-1 p-2">
+                <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
+                <Row gutter={16} className="mb-3">
+                    <Col span={20}>
+                        <label className="mb-2">Tên sản phẩm</label>
+                        <Input onChange={(event) => setSearchValue(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
+                    </Col>
+                    <Col span={4} className="d-flex align-items-end justify-content-end">
+                        <Button type="primary" className="bg-primary" onClick={() => setIsModalAddOpen(true)}>
+                            <IconEdit /> Thêm sản phẩm
+                        </Button>
+                    </Col>
+                </Row>
+            </Card>
+            <Card className="mb-2 p-1">
+                <Row gutter={16}>
+                    <Col span={8}>
+                        <div className="mb-2">Trạng thái</div>
+                        <Radio.Group defaultValue={null} onChange={(event) => setStatusProduct(event.target.value)}>
+                            <Radio value={null}>Tất cả</Radio>
+                            <Radio value={false}>Đang bán</Radio>
+                            <Radio value={true}>Ngừng bán</Radio>
+                        </Radio.Group>
+                    </Col>
+                    <Col span={8}>
+                        <label className="mb-2">Danh mục</label>
+                        <Select
+                            showSearch
+                            onChange={setSelectedCate}
+                            placeholder="Chọn danh mục..."
+                            optionFilterProp="children"
+                            style={{ width: "100%" }}
+                            onSearch={setSearchCate}
+                        >
+                            <Select.Option value="">Chọn danh mục</Select.Option>
+                            {listCate.map((item) => (
+                                <Select.Option key={item.id} value={item.id}>
+                                    {item.ten}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Col>
 
-            {/* Modal for adding attributes */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Thêm {modalType}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formNewAttribute">
-                            <Form.Label>Tên {modalType}</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={newAttribute}
-                                onChange={(e) => setNewAttribute(e.target.value)}
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Đóng
-                    </Button>
-                    <Button variant="primary" onClick={handleAddAttribute}>
-                        Thêm
-                    </Button>
-                </Modal.Footer>
+                </Row>
+            </Card>
+            <Card>
+                <Table
+                    dataSource={productList}
+                    columns={columns}
+                    className="custom-table"
+                    pagination={{
+                        showSizeChanger: true,
+                        current: currentPage,
+                        pageSize: pageSize,
+                        pageSizeOptions: [5, 10, 20, 50, 100],
+                        showQuickJumper: true,
+                        total: totalPages * pageSize,
+                        onChange: (page, pageSize) => {
+                            setCurrentPage(page);
+                            setPageSize(pageSize);
+                        },
+                    }}
+                    scroll={{ x: 1000 }}
+                />
+            </Card>
+
+            <Modal
+                title="Thêm sản phẩm"
+                visible={isModalAddOpen}
+                onCancel={handleCancelAdd}
+                onOk={() => formAdd.submit()}
+                okText="Thêm"
+                cancelText="Hủy"
+            >
+                <Form form={formAdd} onFinish={handleAdd}>
+
+                    <Form.Item name="ten" label="Tên sản phẩm" rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
+                        <Input placeholder="Tên sản phẩm" />
+                    </Form.Item>
+
+                    <Form.Item name="danhMuc" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}>
+                        <Select placeholder="Chọn danh mục">
+                            {listCate.map((item) => (
+                                <Select.Option key={item.id} value={item.id}>
+                                    {item.ten}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Cập nhật sản phẩm"
+                visible={isModalUpdateOpen}
+                onCancel={handleCancelUpdate}
+                onOk={() => formUpdate.submit()}
+                okText="Cập nhật"
+                cancelText="Hủy"
+            >
+                <Form form={formUpdate} onFinish={handleUpdate}>
+                    <Form.Item name="ma" label="Mã sản phẩm" rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}>
+                        <Input placeholder="Mã sản phẩm" />
+                    </Form.Item>
+                    <Form.Item name="ten" label="Tên sản phẩm" rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
+                        <Input placeholder="Tên sản phẩm" />
+                    </Form.Item>
+                    <Form.Item name="soLuong" label="Số lượng" rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}>
+                        <Input type="number" placeholder="Số lượng" />
+                    </Form.Item>
+                    <Form.Item name="danhMuc" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}>
+                        <Select placeholder="Chọn danh mục">
+                            {listCate.map((item) => (
+                                <Select.Option key={item.id} value={item.id}>
+                                    {item.ten}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </Form>
             </Modal>
         </div>
     );
 }
 
-export default AddShirt;
+export default Product;

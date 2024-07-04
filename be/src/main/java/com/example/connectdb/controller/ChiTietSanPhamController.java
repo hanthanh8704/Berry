@@ -19,4 +19,26 @@ public class ChiTietSanPhamController {
     public PageableObject getAll(FindShirtDetailRequest request) {
         return chiTietSanPhamService.getAll(request);
     }
+//
+//    @GetMapping("/{id}")
+//    public ShoeDetail getOne(@PathVariable Long id) {
+//        return shoeDetailService.getOne(id);
+//    }
+//
+//    @GetMapping("/get-one/{id}")
+//    public ResponseObject getOneShoeDetail(@PathVariable Long id){
+//        return new ResponseObject(shoeDetailService.getOneShoeDetail(id));
+//    }
+//
+//
+//
+//    @PostMapping
+//    public ResponseObject create(@RequestBody List<ShoeDetailRequest> list) {
+//        return new ResponseObject(shoeDetailService.create(list));
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseObject update(@PathVariable Long id, @RequestBody @Valid UpdateShoeDetailRequest request) {
+//        return new ResponseObject(shoeDetailService.update(id, request));
+//    }
 }

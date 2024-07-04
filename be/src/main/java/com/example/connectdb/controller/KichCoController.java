@@ -1,16 +1,19 @@
 package com.example.connectdb.controller;
 
+import com.example.connectdb.dto.request.color.MauSacRequest;
 import com.example.connectdb.dto.request.size.KichCoRequest;
 import com.example.connectdb.entity.KichCo;
+import com.example.connectdb.entity.MauSac;
 import com.example.connectdb.service.KichCoService;
 import com.example.connectdb.util.common.PageableObject;
 import com.example.connectdb.util.common.ResponseObject;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/size")
+@RequestMapping("/api/size")
 public class KichCoController {
     private final KichCoService kichCoService;
 
@@ -36,8 +39,13 @@ public class KichCoController {
         return new ResponseObject(kichCoService.create(request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid KichCoRequest request) {
-        return new ResponseObject(kichCoService.update(id, request));
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseObject> update(@PathVariable Integer id, @RequestBody @Valid KichCoRequest request) {
+        KichCo updatedMauSac = kichCoService.update(id, request);
+        if (updatedMauSac != null) {
+            return ResponseEntity.ok(new ResponseObject(updatedMauSac));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

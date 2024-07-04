@@ -11,15 +11,16 @@ import java.util.List;
 @Setter
 @ToString
 public class FindShirtDetailRequest extends PageableRequest {
-  private Integer id;
+    private Integer id;
     private String mausac;
     private String kichco;
-    private String chatlieu;
-    private  String sanpham;
+    private String tayao;
+    private String sanpham;
     private List<String> sanphams;
     private List<String> mausacs;
     private List<String> kichcos;
-    private List<String> chatlieus;
+    private List<String> tayaos;
+    private Boolean deleted;
     private String ten;
 
 

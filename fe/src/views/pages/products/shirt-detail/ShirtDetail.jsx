@@ -136,7 +136,7 @@ function Product() {
                         <Input onChange={(event) => setSearchValue(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
                     </Col>
                     <Col span={4} className="d-flex align-items-end justify-content-end">
-                        <Link to={"/admin/product/add"}>
+                        <Link to={"/free/products/add-shirt"}>
                             <Button type="primary" className="bg-primary">
                                 <i className="fas fa-plus-circle me-1"></i>Thêm sản phẩm
                             </Button>
@@ -167,7 +167,7 @@ function Product() {
                             <Select.Option value="">Chọn danh mục</Select.Option>
                             {listCate.map((item) => (
                                 <Select.Option key={item.ten} value={item.ten}>
-                                    {item.name}
+                                    {item.ten}
                                 </Select.Option>
                             ))}
                         </Select>
@@ -185,7 +185,7 @@ function Product() {
                             <Select.Option value="">Chọn thương hiệu</Select.Option>
                             {listBrand.map((item) => (
                                 <Select.Option key={item.ten} value={item.ten}>
-                                    {item.name}
+                                    {item.ten}
                                 </Select.Option>
                             ))}
                         </Select>

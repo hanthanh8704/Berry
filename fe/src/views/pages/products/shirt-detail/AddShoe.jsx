@@ -173,7 +173,7 @@ function AddProduct() {
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: async () => {
-        await request.post('/shoe-detail', data).then((response) => {
+        await request.post('/shirt/create', data).then((response) => {
           toast.success("Thêm thành công!");
           navigate("/free/products");
         }).catch((e) => {

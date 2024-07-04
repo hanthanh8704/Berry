@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Input, Modal, Row, Table, Tooltip, Select } from "antd";
 import { IconEdit } from "@tabler/icons-react";
+import { EditOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import react-toastify styles
@@ -199,7 +200,7 @@ function Collar() {
                                     <Button
                                         onClick={() => handleEdit(record)}
                                     >
-                                        <IconEdit />
+                                        <EditOutlined />
                                     </Button>
                                 </Tooltip>
 

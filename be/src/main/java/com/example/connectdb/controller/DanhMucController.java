@@ -1,6 +1,7 @@
 package com.example.connectdb.controller;
 
 import com.example.connectdb.dto.request.category.DanhMucRequest;
+import com.example.connectdb.dto.request.material.ChatLieuRequest;
 import com.example.connectdb.entity.DanhMuc;
 import com.example.connectdb.entity.MauSac;
 import com.example.connectdb.service.DanhMucService;
@@ -37,13 +38,8 @@ public class DanhMucController {
         return new ResponseObject(danhMucService.create(request));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<ResponseObject> update(@PathVariable Integer id, @RequestBody @Valid DanhMucRequest request) {
-        DanhMuc uDanhMuc = danhMucService.update(id, request);
-        if (uDanhMuc != null) {
-            return ResponseEntity.ok(new ResponseObject(uDanhMuc));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{id}")
+    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid DanhMucRequest request) {
+        return new ResponseObject(danhMucService.update(id, request));
     }
 }

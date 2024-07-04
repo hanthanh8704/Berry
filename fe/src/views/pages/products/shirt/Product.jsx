@@ -4,12 +4,13 @@ import { Button, Col, Input, Radio, Row, Select, Switch, Table, Tooltip, Card } 
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { IconEdit } from "@tabler/icons-react";
+import { EditOutlined } from '@ant-design/icons';
 import * as request from "views/utilities/httpRequest";
 import debounce from "lodash/debounce";
 
 function Product() {
     const [productList, setProductList] = useState([]);
+    const [filteredProductList, setFilteredProductList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [listCate, setListCate] = useState([]);
@@ -34,16 +35,12 @@ function Product() {
     }, [searchCate, searchBrand]);
 
     useEffect(() => {
-        const delayedSearch = debounce(() => {
-            loadData();
-        }, 300);
+        loadData();
+    }, []);
 
-        delayedSearch();
-
-        return () => {
-            delayedSearch.cancel();
-        };
-    }, [searchValue, currentPage, selectedCate, selectedBrand, pageSize, statusProduct]);
+    useEffect(() => {
+        handleSearch(searchValue);
+    }, [productList, searchValue]);
 
     const loadData = () => {
         request.get("/shirt", {
@@ -55,6 +52,15 @@ function Product() {
             console.log(error);
         });
     }
+
+    const handleSearch = (value) => {
+        setSearchValue(value);
+        const filteredData = productList.filter((item) =>
+            item.ten.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredProductList(filteredData);
+        setCurrentPage(1);
+    };
 
     const handleChangeStatus = async (id) => {
         await request.remove(`/shirt/${id}`).then(response => {
@@ -72,6 +78,7 @@ function Product() {
             key: 'index',
             width: 50,
             align: 'center',
+            render: (text, record, index) => index + 1 + (currentPage - 1) * pageSize,
         },
         {
             title: 'Mã',
@@ -95,7 +102,6 @@ function Product() {
             dataIndex: 'danhMuc',
             key: 'danhMuc',
         },
-
         {
             title: 'Trạng thái',
             dataIndex: 'status',
@@ -113,14 +119,16 @@ function Product() {
             key: 'action',
             render: (x) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link to={`/products/ShirtInfo/${x}`} className="btn btn-sm btn-primary me-1">
-                        <IconEdit />
+                    <Link to={`/products/ShirtInfo/${x}`}>
+                        <EditOutlined />
                     </Link>
                 </Tooltip>
             ),
             align: 'center',
         },
     ];
+
+    const paginatedData = filteredProductList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
         <div style={{ background: '#fff', padding: '20px' }}>
@@ -129,7 +137,7 @@ function Product() {
                 <Row gutter={16} className="mb-3">
                     <Col span={20}>
                         <label className="mb-2">Tên sản phẩm</label>
-                        <Input onChange={(event) => setSearchValue(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
+                        <Input onChange={(event) => handleSearch(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
                     </Col>
                     <Col span={4} className="d-flex align-items-end justify-content-end">
                         <Link to={"/products/add-shirt"}>
@@ -168,12 +176,29 @@ function Product() {
                             ))}
                         </Select>
                     </Col>
-
+                    <Col span={8}>
+                        <label className="mb-2">Thương hiệu</label>
+                        <Select
+                            showSearch
+                            onChange={setSelectedBrand}
+                            placeholder="Chọn thương hiệu..."
+                            optionFilterProp="children"
+                            style={{ width: "100%" }}
+                            onSearch={setSearchBrand}
+                        >
+                            <Select.Option value="">Chọn thương hiệu</Select.Option>
+                            {listBrand.map((item) => (
+                                <Select.Option key={item.id} value={item.id}>
+                                    {item.ten}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Col>
                 </Row>
             </Card>
             <Card>
                 <Table
-                    dataSource={productList}
+                    dataSource={paginatedData}
                     columns={columns}
                     className="custom-table"
                     pagination={{
@@ -182,7 +207,7 @@ function Product() {
                         pageSize: pageSize,
                         pageSizeOptions: [5, 10, 20, 50, 100],
                         showQuickJumper: true,
-                        total: totalPages * pageSize,
+                        total: filteredProductList.length,
                         onChange: (page, pageSize) => {
                             setCurrentPage(page);
                             setPageSize(pageSize);

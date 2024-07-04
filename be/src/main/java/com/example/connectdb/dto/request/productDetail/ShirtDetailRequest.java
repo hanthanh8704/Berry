@@ -30,6 +30,8 @@ public class ShirtDetailRequest extends PageableRequest {
     private Integer tayAo;
     @NotNull(message = "Vui lòng chọn cổ áo!")
     private Integer coAo;
+    @NotNull(message = "Vui lòng chọn danh mục!")
+    private Integer danhMuc;
     @NotNull(message = "Vui lòng chọn thương hiệu!")
     private Integer thuongHieu;
     @NotNull(message = "Số lượng không được để trống!")

@@ -9,6 +9,7 @@ import com.example.connectdb.util.common.PageableObject;
 import com.example.connectdb.util.common.ResponseObject;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,23 +18,28 @@ import java.util.List;
 @RestController
 @RequestMapping("api/shirt")
 public class SanPhamControllers {
+
+
+    @Autowired
+    public SanPhamControllers(SanPhamService sanPhamService) {
+        this.sanPhamService = sanPhamService;
+    }
+
     @Autowired
     private SanPhamService sanPhamService;
-//    @GetMapping("/shirt-promotion")
-//    public List<SanPhamReponse> getTest(@RequestParam(required = false) Integer promotion){
-//        return sanPhamService.getAll(promotion);
-//    }
+
 
     @GetMapping("/top-sell")
     public List<SanPhamReponse> getTopSell(@RequestParam(required = false, defaultValue = "5") Integer top){
         return sanPhamService.getTopSell(top);
     }
 
+
+
     @GetMapping
     public PageableObject<SanPhamReponse> getAll(SanPhamSearchRequest request) {
         return sanPhamService.getAll(request);
     }
-
     @GetMapping("/{id}")
     public SanPham getOne(@PathVariable Integer id) {
         return sanPhamService.getOne(id);

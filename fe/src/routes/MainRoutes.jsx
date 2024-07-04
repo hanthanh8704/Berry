@@ -16,6 +16,7 @@ import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
 import AddShoe from 'views/pages/products/shirt-detail/AddShoe';
 
 
+
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));

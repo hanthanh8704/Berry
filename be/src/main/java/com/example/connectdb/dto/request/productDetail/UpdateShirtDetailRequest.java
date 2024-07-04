@@ -20,9 +20,8 @@ public class UpdateShirtDetailRequest extends PageableRequest {
     private Integer mauSac;
     @NotNull(message = "Vui lòng chọn kích cỡ!")
     private Integer kichCo;
-    @NotNull(message = "Vui lòng chọn chất liệu!")
-    private Integer chatLieu;
     @NotNull(message = "Vui lòng chọn tay áo!")
+    private Integer tayAo;
     @NotNull(message = "Số lượng không được để trống!")
     private Integer soLuong;
     @NotNull(message = "Đơn giá không được để trống!")
