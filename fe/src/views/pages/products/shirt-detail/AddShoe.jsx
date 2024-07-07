@@ -2,13 +2,16 @@
 import { Breadcrumb, Button, Col, Collapse, Modal, Row, Select, Space } from "antd";
 import { Option } from "antd/es/mentions";
 import React, { useEffect, useState } from "react";
-import { FaHome } from "react-icons/fa";
+// import { FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
 import AddProperties from "components/Admin/Product/AddProperties";
 import TableProduct from "components/Admin/Product/TableProduct";
 import AddShirtModal from "components/Admin/Product/AddShirtModal";
 import * as request from "views/utilities/httpRequest";
+
 
 function AddProduct() {
   const navigate = useNavigate();
@@ -18,6 +21,7 @@ function AddProduct() {
   const [color, setColor] = useState([]);
   const [sleeve, setSleeve] = useState([]);
   const [collar, setCollar] = useState([]);
+  const [brand, setBrand] = useState([]);
 
 
   const [selectedColors, setSelectedColors] = useState([]);
@@ -25,12 +29,14 @@ function AddProduct() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedSleeves, setSelectedSleeves] = useState([]);
   const [selectedCollars, setSelectedCollars] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
 
   const [searchSize, setSearchSize] = useState(null);
   const [searchColor, setSearchColor] = useState(null);
   const [searchMaterial, setSearchMaterial] = useState(null);
   const [searchSleeve, setSearchSleeve] = useState(null);
   const [searchCollar, setSearchCollar] = useState(null);
+  const [searchBrand, setSearchBrand] = useState(null);
 
   const [product, setProduct] = useState([]);
   const [searchProduct, setSearchProduct] = useState('');
@@ -44,14 +50,19 @@ function AddProduct() {
       selectedSizes.forEach((sizeItem) => {
 
         const option = {
-          shirt: selectedProduct,
-          color: colorItem,
-          size: sizeItem,
-          material: selectedMaterial,
-          price: 100000,
-          quantity: 10,
+          sanPham: selectedProduct,
+          mauSac: colorItem,
+          kichCo: sizeItem,
+          chatLieu: selectedMaterial,
+          thuongHieu: selectedBrands,
+          tayAo: selectedSleeves,
+
+          coAo: selectedCollars,
+          giaBan: 100000,
+          soLuong: 10,
+          trangThai: "Hoạt động",
+
           deleted: false,
-          weight: 2000,
         };
         options.push(option);
 
@@ -60,7 +71,7 @@ function AddProduct() {
     });
     setProductDetail(options);
     console.log(options);
-  }, [selectedColors, selectedSizes, selectedProduct, selectedMaterial, selectedSleeves, selectedCollars]);
+  }, [selectedColors, selectedSizes, selectedProduct, selectedMaterial, selectedBrands, selectedSleeves, selectedCollars]);
 
   const handleChangeProductDetail = (items) => {
     console.log("--- đã nhảy sang add shoe ---");
@@ -87,6 +98,14 @@ function AddProduct() {
   const loadMaterial = () => {
     request.get("/material", { params: { name: searchMaterial, status: false, sizePage: 1_000_000 } }).then((response) => {
       setMaterial(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadBrand = () => {
+    request.get("/brand", { params: { name: searchBrand, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setBrand(response.data);
     }).catch((error) => {
       console.log(error);
     });
@@ -133,6 +152,10 @@ function AddProduct() {
   }, [searchMaterial]);
 
   useEffect(() => {
+    loadBrand();
+  }, [searchBrand]);
+
+  useEffect(() => {
     loadSleeve();
   }, [searchSleeve]);
 
@@ -142,29 +165,32 @@ function AddProduct() {
 
   const handleCreate = () => {
     const data = [];
-    const colorImageErrors = [];
+    // const colorImageErrors = [];
     productDetail.forEach((item) => {
+
       const x = {
-        shirt: item.shirt.id,
-        color: item.color.id,
-        size: item.size.id,
-        material: item.material.id,
-        sleeve: item.sleeve.id,
-        collar: item.collar.id,
-        quantity: item.quantity,
-        price: item.price,
+        sanPham: item.sanPham.id,
+        mauSac: item.mauSac.id,
+        kichCo: item.kichCo.id,
+        chatLieu: item.chatLieu.id,
+        thuongHieu: item.thuongHieu.id,
+        tayAo: item.tayAo.id,
+        coAo: item.coAo.id,
+        soLuong: item.soLuong,
+        giaBan: item.giaBan,
         listImages: item.images,
       };
       data.push(x);
-      if (!item.images || item.images.length === 0) {
-        colorImageErrors.push(item.color.ten);
-      }
+      console.log(data);
+      // if (!item.anh || item.anh.length === 0) {
+      //   colorImageErrors.push(item.color.ten);
+      // }
     });
-    if (colorImageErrors.length > 0) {
-      const uniqueColorErrors = [...new Set(colorImageErrors)];
-      toast.error(`Các sản phẩm màu ${uniqueColorErrors.join(', ')} chưa chọn ảnh.`);
-      return;
-    }
+    // if (colorImageErrors.length > 0) {
+    //   const uniqueColorErrors = [...new Set(colorImageErrors)];
+    //   toast.error(`Các sản phẩm màu ${uniqueColorErrors.join(', ')} chưa chọn ảnh.`);
+    //   return;
+    // }
 
     Modal.confirm({
       title: "Xác nhận",
@@ -173,22 +199,34 @@ function AddProduct() {
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: async () => {
-        await request.post('/shirt/create', data).then((response) => {
-          toast.success("Thêm thành công!");
-          navigate("/free/products");
+
+        request.post('/shirt-detail', data).then((response) => {
+          if (response.status === 200) {
+            toast.success("Thêm thành công!", {
+              autoClose: 2000 // Thời gian thông báo sẽ hiển thị trong 2 giây (2000 milliseconds)
+            });
+            setTimeout(() => {
+              navigate("/products");
+            }, 2000);
+
+          }
         }).catch((e) => {
-          console.log(e);
+          toast.error(e.response.data);
         });
+        console.log(data);
       },
     });
+
   };
 
   return (
+
     <div className="">
+
       <Breadcrumb
         className="mb-2"
         items={[
-          { href: "/", title: <FaHome /> },
+          { href: "/" },
           { href: "/free/products", title: "Danh sách sản phẩm" },
           { title: "Thêm sản phẩm" },
         ]}
@@ -208,7 +246,7 @@ function AddProduct() {
               optionFilterProp="children"
               onSearch={setSearchProduct}
             >
-              <Option value="">Chọn áo</Option>
+
               {product.map((item) => (
                 <Option key={item.id} value={item.id}>
                   {item.ten}
@@ -218,11 +256,12 @@ function AddProduct() {
             <AddShirtModal onAddSuccess={() => loadShoe()} />
           </div>
         </Col>
+
         <Col xl={24} className="my-3">
           <Collapse defaultActiveKey={0} className="rounded-0 border-0">
             <Collapse.Panel key={0} header={"Thuộc tính"} className="border-bottom-0">
               <Row gutter={24}>
-                <Col xl={24}>
+                <Col xl={12}>
                   <label className="mb-1">Chất liệu</label>
                   <Select
                     className="me-2 w-100 mb-3"
@@ -247,7 +286,6 @@ function AddProduct() {
                       </>
                     )}
                   >
-                    <Option value="">Chọn chất liệu</Option>
                     {material.map((item) => (
                       <Option key={item.id} value={item.id}>
                         {item.ten}
@@ -255,6 +293,116 @@ function AddProduct() {
                     ))}
                   </Select>
                 </Col>
+
+                <Col xl={12}>
+                  <label className="mb-1">Thương Hiệu</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedBrands(brand.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên thương hiệu..."
+                    optionFilterProp="children"
+                    onSearch={setSearchBrand}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"thương hiệu"}
+                            name={"brand"}
+                            onSuccess={() => loadBrand()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {brand.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+
+              <Row gutter={24}>
+                <Col xl={12}>
+                  <label className="mb-1">Tay áo</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedSleeves(sleeve.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên tay áo..."
+                    optionFilterProp="children"
+                    onSearch={setSearchSleeve}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"tay áo"}
+                            name={"sleeve"}
+                            onSuccess={() => loadSleeve()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {sleeve.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+
+                <Col xl={12}>
+                  <label className="mb-1">Cổ áo</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedCollars(collar.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên cổ áo..."
+                    optionFilterProp="children"
+                    onSearch={setSearchCollar}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"cổ áo"}
+                            name={"collar"}
+                            onSuccess={() => loadCollar()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {collar.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+            </Collapse.Panel>
+          </Collapse>
+        </Col>
+
+        <Col xl={24} className="my-3">
+          <Collapse defaultActiveKey={0} className="rounded-0 border-0">
+            <Collapse.Panel key={0} header={"Kích cỡ và Màu sắc"} className="border-bottom-0">
+              <Row gutter={24}>
                 <Col xl={12}>
                   <label className="mb-1">Kích cỡ</label>
                   <Select
@@ -294,6 +442,7 @@ function AddProduct() {
                     ))}
                   </Select>
                 </Col>
+
                 <Col xl={12}>
                   <label className="mb-1">Màu sắc</label>
                   <Select
@@ -333,90 +482,13 @@ function AddProduct() {
                     ))}
                   </Select>
                 </Col>
-                <Col xl={12}>
-                  <label className="mb-1 mt-3">Tay áo</label>
-                  <Select
-                    className="me-2 w-100"
-                    size="large"
-                    showSearch
-                    mode="multiple"
-                    onChange={async (selectedValues) => {
-                      setSelectedSleeves(
-                        await Promise.all(
-                          selectedValues.map(async (item) => {
-                            return await request.get(`/sleeve/${item}`);
-                          })
-                        )
-                      );
-                    }}
-                    placeholder="Nhập tay áo..."
-                    optionFilterProp="children"
-                    onSearch={setSearchSleeve}
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <Space className="my-2 ms-2">
-                          <AddProperties
-                            placeholder={"tay áo"}
-                            name={"sleeve"}
-                            onSuccess={() => loadSleeve()}
-                          />
-                        </Space>
-                      </>
-                    )}
-                  >
-                    {sleeve.map((item) => (
-                      <Option key={item.id} value={item.id}>
-                        {item.ten}
-                      </Option>
-                    ))}
-                  </Select>
-                </Col>
-                <Col xl={12}>
-                  <label className="mb-1 mt-3">Cổ áo</label>
-                  <Select
-                    className="me-2 w-100"
-                    size="large"
-                    showSearch
-                    mode="multiple"
-                    onChange={async (selectedValues) => {
-                      setSelectedCollars(
-                        await Promise.all(
-                          selectedValues.map(async (item) => {
-                            return await request.get(`/collar/${item}`);
-                          })
-                        )
-                      );
-                    }}
-                    placeholder="Nhập cổ áo..."
-                    optionFilterProp="children"
-                    onSearch={setSearchCollar}
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <Space className="my-2 ms-2">
-                          <AddProperties
-                            placeholder={"cổ áo"}
-                            name={"collar"}
-                            onSuccess={() => loadCollar()}
-                          />
-                        </Space>
-                      </>
-                    )}
-                  >
-                    {collar.map((item) => (
-                      <Option key={item.id} value={item.id}>
-                        {item.ten}
-                      </Option>
-                    ))}
-                  </Select>
-                </Col>
               </Row>
             </Collapse.Panel>
           </Collapse>
         </Col>
       </Row>
-      {selectedProduct === null || selectedProduct === undefined || selectedSizes.length === 0 || selectedColors.length === 0 ? (
+
+      {selectedCollars === null || selectedSleeves === null || selectedMaterial === null || selectedProduct === null || selectedProduct === undefined || selectedSizes.length === 0 || selectedColors.length === 0 ? (
         ""
       ) : (
         <>
@@ -426,6 +498,10 @@ function AddProduct() {
           </Button>
         </>
       )}
+
+      <ToastContainer />
+
+
     </div>
   );
 }

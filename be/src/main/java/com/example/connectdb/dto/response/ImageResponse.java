@@ -1,11 +1,10 @@
-//package com.poly.beeshoes.dto.response;
-//
-//import com.poly.beeshoes.entity.Images;
-//import org.springframework.data.rest.core.config.Projection;
-//
-//@Projection(types = {Images.class})
-//public interface ImageResponse {
-//    Long getId();
-//
-//    String getName();
-//}
+package com.example.connectdb.dto.response;
+
+
+import com.example.connectdb.entity.Anh;
+import org.springframework.data.rest.core.config.Projection;
+@Projection(types = {Anh.class})
+public interface ImageResponse {
+    Integer getId();
+    String getName();
+}

@@ -19,11 +19,13 @@ import java.util.List;
 @Table(name = "chi_tiet_san_pham")
 public class ChiTietSanPham {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+
     @Column(name = "maCTSP")
-    private String maCTSP;
+    private String ma;
+
     @ManyToOne
     @JoinColumn(name = "id_mau_sac")
     private MauSac mauSac;
@@ -48,17 +50,10 @@ public class ChiTietSanPham {
     @JoinColumn(name = "id_san_pham")
     private SanPham sanPham;
 
-
     @ManyToOne
     @JoinColumn(name = "id_thuong_hieu")
     private ThuongHieu thuongHieu;
 
-    @ManyToOne
-    @JoinColumn(name = "id_anh")
-    private Anh anh;
-
-    @Column(name = "ma")
-    private String ma;
 
     @Column(name = "so_luong")
     private Integer soLuong;
@@ -66,8 +61,6 @@ public class ChiTietSanPham {
     @Column(name = "gia_ban")
     private BigDecimal giaBan;
 
-    @Column(name = "gia_nhap")
-    private BigDecimal giaNhap;
 
     @Column(name = "ngay_tao")
     @CreationTimestamp
@@ -89,6 +82,6 @@ public class ChiTietSanPham {
     @Column(name = "deleted")
     private Boolean deleted;
 
-
-
+    @OneToMany(mappedBy = "chiTietSanPham", fetch = FetchType.LAZY)
+    private List<Anh> images;
 }

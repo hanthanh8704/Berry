@@ -3,6 +3,7 @@ package com.example.connectdb.repositories;
 import com.example.connectdb.dto.request.label.ThuongHieuRequest;
 
 import com.example.connectdb.dto.response.ThuongHieuResponse;
+import com.example.connectdb.entity.TayAo;
 import com.example.connectdb.entity.ThuongHieu;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public interface ThuongHieuRepository extends JpaRepository<ThuongHieu, Integer>
             """, nativeQuery = true)
     Page<ThuongHieuResponse> findAllByCriteria(@Param("req") ThuongHieuRequest request, Pageable pageable);
 
-
+    ThuongHieu findByTen(String ten);
 
     boolean existsByTenIgnoreCase(String ten);
 }

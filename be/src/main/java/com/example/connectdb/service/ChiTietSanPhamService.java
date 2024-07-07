@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface ChiTietSanPhamService {
-    PageableObject<ShirtDetailRequest> getAll(FindShirtDetailRequest request);
+    PageableObject<ShirtDetailResponse> getAll(FindShirtDetailRequest request);
     ChiTietSanPham getOne(Integer id);
     String create(List<ShirtDetailRequest> list);
     ChiTietSanPham update(Integer id, UpdateShirtDetailRequest request);
-    ChiTietSanPham delete(Long id);
+    ChiTietSanPham delete(Integer id);
     ResponseObject updateFast(List<ShirtDetailRequest> list);
     Map<String, BigDecimal> findMinAndMaxPrice();
-    ShirtDetailResponse getOneShoeDetail(Long id);
+    ShirtDetailResponse getOneShoeDetail(Integer id);
 }

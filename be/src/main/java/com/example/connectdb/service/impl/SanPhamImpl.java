@@ -73,12 +73,12 @@ public class SanPhamImpl implements SanPhamService {
     }
 
     @Override
-    public SanPham update(Long id, SanPhamRequest request) {
+    public SanPham update(Integer id, SanPhamRequest request) {
         return null;
     }
 
     @Override
-    public SanPham changeStatus(Long id) {
+    public SanPham changeStatus(Integer id) {
         return null;
     }
 

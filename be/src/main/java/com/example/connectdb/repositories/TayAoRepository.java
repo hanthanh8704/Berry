@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TayAoRepository extends JpaRepository<TayAo, Integer> {
 
+    TayAo findByTen(String ten);
     @Query(value = """
             SELECT
             t.id AS id,

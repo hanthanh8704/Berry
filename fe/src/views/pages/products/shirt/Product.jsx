@@ -6,11 +6,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { EditOutlined } from '@ant-design/icons';
 import * as request from "views/utilities/httpRequest";
-import debounce from "lodash/debounce";
 
 function Product() {
     const [productList, setProductList] = useState([]);
-    const [filteredProductList, setFilteredProductList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [listCate, setListCate] = useState([]);
@@ -35,37 +33,30 @@ function Product() {
     }, [searchCate, searchBrand]);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        loadData(currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct);
+    }, [currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct]);
 
-    useEffect(() => {
-        handleSearch(searchValue);
-    }, [productList, searchValue]);
-
-    const loadData = () => {
-        request.get("/shirt", {
-            params: { name: searchValue, page: currentPage, sizePage: pageSize, category: selectedCate, brand: selectedBrand, status: statusProduct },
-        }).then((response) => {
+    const loadData = async (page, size, search, category, brand, status) => {
+        try {
+            const response = await request.get("/shirt", {
+                params: { name: search, page, sizePage: size, category, brand, status },
+            });
             setProductList(response.data);
             setTotalPages(response.totalPages);
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     const handleSearch = (value) => {
         setSearchValue(value);
-        const filteredData = productList.filter((item) =>
-            item.ten.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredProductList(filteredData);
         setCurrentPage(1);
     };
 
     const handleChangeStatus = async (id) => {
         await request.remove(`/shirt/${id}`).then(response => {
             toast.success("Đã cập nhật trạng thái!");
-            loadData();
+            loadData(currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct);
         }).catch(e => {
             console.log(e);
         })
@@ -119,7 +110,7 @@ function Product() {
             key: 'action',
             render: (x) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link to={`/products/ShirtInfo/${x}`}>
+                    <Link to={`/products/${x}`}>
                         <EditOutlined />
                     </Link>
                 </Tooltip>
@@ -128,10 +119,9 @@ function Product() {
         },
     ];
 
-    const paginatedData = filteredProductList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
     return (
         <div style={{ background: '#fff', padding: '20px' }}>
+            <ToastContainer />
             <Card className="mb-1 p-2">
                 <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
                 <Row gutter={16} className="mb-3">
@@ -198,7 +188,7 @@ function Product() {
             </Card>
             <Card>
                 <Table
-                    dataSource={paginatedData}
+                    dataSource={productList}
                     columns={columns}
                     className="custom-table"
                     pagination={{
@@ -207,7 +197,7 @@ function Product() {
                         pageSize: pageSize,
                         pageSizeOptions: [5, 10, 20, 50, 100],
                         showQuickJumper: true,
-                        total: filteredProductList.length,
+                        total: totalPages * pageSize,
                         onChange: (page, pageSize) => {
                             setCurrentPage(page);
                             setPageSize(pageSize);
@@ -215,7 +205,6 @@ function Product() {
                     }}
                 />
             </Card>
-            <ToastContainer />
         </div>
     );
 }

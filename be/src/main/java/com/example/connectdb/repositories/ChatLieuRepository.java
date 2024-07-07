@@ -3,6 +3,7 @@ package com.example.connectdb.repositories;
 import com.example.connectdb.dto.request.material.ChatLieuRequest;
 import com.example.connectdb.entity.ChatLieu;
 import com.example.connectdb.dto.response.ChatLieuResponse;
+import com.example.connectdb.entity.TayAo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +29,6 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
     Page<ChatLieuResponse> findAllByCriteria(@Param("req") ChatLieuRequest request, Pageable pageable);
 
 
-
+    ChatLieu findByTen(String ten);
     boolean existsByTenIgnoreCase(String ten);
 }

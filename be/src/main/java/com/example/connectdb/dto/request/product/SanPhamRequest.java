@@ -20,7 +20,7 @@ public class SanPhamRequest extends PageableRequest {
     private Integer id;
     private String ma;
 
-    private String tenSanPham;
+    private String ten;
     private  Integer danhMuc;
 
     private String trangThai;

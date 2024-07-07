@@ -3,6 +3,7 @@ package com.example.connectdb.repositories;
 import com.example.connectdb.dto.request.category.DanhMucRequest;
 import com.example.connectdb.entity.DanhMuc;
 import com.example.connectdb.dto.response.DanhMucResponse;
+import com.example.connectdb.entity.TayAo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +29,6 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, Integer> {
             """, nativeQuery = true)
     Page<DanhMucResponse> findAllByCriteria(@Param("req") DanhMucRequest request, Pageable pageable);
 
-
+    DanhMuc findByTen(String ten);
     boolean existsByTenIgnoreCase(String ten);
 }

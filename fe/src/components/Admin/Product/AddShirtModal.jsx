@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as request from "views/utilities/httpRequest";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 import { Button, Form, Input, Modal, Select, Space } from "antd";
 import { IconPlus } from "@tabler/icons-react";
 import AddProperties from "./AddProperties";
@@ -15,38 +16,18 @@ function AddShirtModal({ onAddSuccess }) {
         setIsModalOpen(true);
     };
 
-    const handleOk = () => {
-        form
-            .validateFields()
-            .then((values) => {
-                if (!values.category) {
-                    toast.error("Vui lòng chọn danh mục!");
-                    return;
-                }
-
-                console.log("Form values:", values); // Log form values for debugging
-
-                const data = {
-                    shirt: values.shirt,
-                    category: values.category,  // Ensure this contains the correct category ID
-                };
-
-                request
-                    .post("/shirt/create", data)
-                    .then((response) => {
-                        toast.success("Thêm thành công!");
-                        onAddSuccess();
-                        form.resetFields();
-                        setIsModalOpen(false);
-                    })
-                    .catch((error) => {
-                        console.error("Thêm thất bại:", error);
-                        toast.error("Thêm thất bại. Vui lòng thử lại!");
-                    });
-            })
-            .catch((errorInfo) => {
-                console.error("Validate Failed:", errorInfo);
-            });
+    const handleOk = (data) => {
+        console.log(data);
+        request.post('/shirt/create', data).then(response => {
+            toast.success("Thêm thành công!");
+            onAddSuccess();
+            form.resetFields();
+            setIsModalOpen(false);
+        }).catch(e => {
+            console.log(e);
+            toast.error(e.response.data);
+        })
+        // setIsModalOpen(false);
     };
 
     const handleCancel = () => {
@@ -70,6 +51,7 @@ function AddShirtModal({ onAddSuccess }) {
 
     return (
         <>
+            <ToastContainer />
             <Button type="primary" onClick={showModal} className="bg-primary" size="large">
                 <IconPlus />
             </Button>
@@ -77,14 +59,14 @@ function AddShirtModal({ onAddSuccess }) {
                 <Form form={form} onFinish={handleOk} layout="vertical">
                     <Form.Item
                         label="Tên áo"
-                        name="shirt"
+                        name="ten"
                         rules={[{ required: true, message: "Tên không được để trống!" }]}
                     >
                         <Input placeholder="Nhập tên áo..." />
                     </Form.Item>
                     <Form.Item
                         label="Danh mục"
-                        name="category"
+                        name="danhMuc"
                         rules={[{ required: true, message: "Danh mục không được để trống!" }]}
                     >
                         <Select
@@ -99,7 +81,7 @@ function AddShirtModal({ onAddSuccess }) {
                                     <Space className="my-2 ms-2">
                                         <AddProperties
                                             placeholder="danh mục"
-                                            name="category"
+                                            name="ten"
                                             onSuccess={() => loadCate()}
                                         />
                                     </Space>
@@ -121,6 +103,7 @@ function AddShirtModal({ onAddSuccess }) {
                     </div>
                 </Form>
             </Modal>
+
         </>
     );
 }

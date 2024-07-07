@@ -14,10 +14,8 @@ public interface SanPhamService {
     PageableObject<SanPhamReponse> getAll(SanPhamSearchRequest request);
     SanPham getOne(Integer id);
     SanPham create(SanPhamRequest request);
-    SanPham update(Long id,SanPhamRequest request);
-    SanPham changeStatus(Long id);
-//
-//    List<ShoePromotionResponse> getAllShoeInPromotion(Long promotion);
+    SanPham update(Integer id,SanPhamRequest request);
+    SanPham changeStatus(Integer id);
     List<SanPhamReponse> getTopSell(Integer top);
 
     }

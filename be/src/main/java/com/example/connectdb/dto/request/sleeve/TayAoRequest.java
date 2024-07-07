@@ -18,7 +18,6 @@ public class TayAoRequest extends PageableRequest {
 
     @NotEmpty(message = "Tên tay áo không được để trống!")
     private String ten;
-
     private String trangThai;
     private Timestamp ngayTao;
 }

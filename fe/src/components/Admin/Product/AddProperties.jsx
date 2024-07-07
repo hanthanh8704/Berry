@@ -1,18 +1,22 @@
-import { Button, Form, Input } from 'antd'
-import React from 'react'
+import { Button, Form, Input } from 'antd';
+import React from 'react';
 import { toast } from 'react-toastify';
-import * as request from "views/utilities/httpRequest"
+import { ToastContainer } from "react-toastify";
+import * as request from "views/utilities/httpRequest";
 
-function AddProperties({ ten, placeholder, onSuccess }) {
+function AddProperties({ name, placeholder, onSuccess }) {
     const [form] = Form.useForm();
     const handleSubmit = (data) => {
-        request.post(`/${ten}`, { name: data.ten }).then(response => {
+        request.post(`/${name}/create`, data).then(response => {
             form.resetFields();
             toast.success('Thêm thành công!');
+
             onSuccess();
         }).catch(e => {
             form.resetFields();
             toast.error(e.response.data);
+            console.log("Error: " + e.response.data);
+            console.log("theem that bai!");
         })
     }
     return (
@@ -23,6 +27,7 @@ function AddProperties({ ten, placeholder, onSuccess }) {
                 </Form.Item>
                 <Button type="primary" htmlType="submit" style={{ backgroundColor: "blue" }} icon={<i className="fas fa-plus"></i>}>Thêm</Button>
             </Form>
+            <ToastContainer />
         </>
     )
 }

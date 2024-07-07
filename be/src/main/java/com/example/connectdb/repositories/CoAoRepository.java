@@ -3,6 +3,7 @@ package com.example.connectdb.repositories;
 import com.example.connectdb.dto.request.collar.CoAoRequest;
 import com.example.connectdb.dto.response.CoAoResponse;
 import com.example.connectdb.entity.CoAo;
+import com.example.connectdb.entity.TayAo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +25,7 @@ public interface CoAoRepository extends JpaRepository<CoAo,Integer> {
             AND (:#{#req.trangThai} IS NULL OR c.trang_thai = :#{#req.trangThai})
             """, nativeQuery = true)
     Page<CoAoResponse> findAllByCriteria(@Param("req") CoAoRequest request, Pageable pageable);
-
+    CoAo findByTen(String ten);
     boolean existsByTenIgnoreCase(String ten);
 
 

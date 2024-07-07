@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ImageModal from "./ImageModal";
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { IconTrashFilled } from "@tabler/icons-react";
 function TableProduct({ props, handleChange }) {
     const [groupByColor, setGroupByColor] = useState([]);
 
@@ -29,7 +31,7 @@ function TableProduct({ props, handleChange }) {
             toast.error("Số lượng phải >= 1!");
         } else {
             const updatedItems = [...groupByColor[colorName]];
-            updatedItems[index] = { ...updatedItems[index], quantity: value };
+            updatedItems[index] = { ...updatedItems[index], soLuong: value };
             setGroupByColor({
                 ...groupByColor,
                 [colorName]: updatedItems,
@@ -49,7 +51,7 @@ function TableProduct({ props, handleChange }) {
             toast.error("Đơn giá không hợp lệ!");
         } else {
             const updatedItems = [...groupByColor[colorName]];
-            updatedItems[index] = { ...updatedItems[index], price: value };
+            updatedItems[index] = { ...updatedItems[index], giaBan: value };
             setGroupByColor({
                 ...groupByColor,
                 [colorName]: updatedItems,
@@ -84,7 +86,7 @@ function TableProduct({ props, handleChange }) {
     useEffect(() => {
         const groupedProducts = {};
         props.forEach((option) => {
-            const colorName = option.color.ten;
+            const colorName = option.mauSac.ten;
 
             if (!groupedProducts[colorName]) {
                 groupedProducts[colorName] = [];
@@ -105,7 +107,7 @@ function TableProduct({ props, handleChange }) {
                                 {Object.entries(groupByColor).map(([key, items], index) => (
                                     <React.Fragment key={index}>
                                         <tr>
-                                            <td colSpan="9" className="bg-secondary-subtle text-center fw-bold">
+                                            <td colSpan="11" className="bg-secondary-subtle text-center fw-bold">
                                                 Các sản phẩm màu <span className="text-lowercase">{key}</span>
                                             </td>
                                         </tr>
@@ -115,6 +117,10 @@ function TableProduct({ props, handleChange }) {
                                             <td>Số lượng</td>
                                             <td>Đơn giá</td>
                                             <td>Danh mục</td>
+                                            <td>Chất liệu</td>
+                                            <td>Thương hiệu</td>
+                                            <td>Tay áo</td>
+                                            <td>Cổ áo</td>
                                             <td></td>
                                             <td>Ảnh</td>
                                         </tr>
@@ -122,18 +128,18 @@ function TableProduct({ props, handleChange }) {
                                         {items.map((option, idx) => (
                                             <tr key={idx}>
                                                 <>
-                                                    {option.shirt && option.shirt !== undefined && option.shirt !== null ? (
+                                                    {option.sanPham && option.sanPham !== undefined && option.sanPham !== null ? (
                                                         <>
                                                             <td>{idx + 1}</td>
                                                             <td>
-                                                                {option.shirt === undefined || option.shirt === null
+                                                                {option.sanPham === undefined || option.sanPham === null
                                                                     ? "Vui lòng chọn sản phẩm"
-                                                                    : option.shirt.ten}{" "}
-                                                                [{option.color.ten} - {option.size.ten}]
+                                                                    : option.sanPham.ten}{" "}
+                                                                [{option.mauSac.ten} - {option.kichCo.ten}]
                                                             </td>
                                                             <td width="130px">
                                                                 <InputNumber
-                                                                    defaultValue={option.quantity}
+                                                                    defaultValue={option.soLuong}
                                                                     style={{ width: "100%" }}
                                                                     step={1}
                                                                     formatter={(value) =>
@@ -151,7 +157,7 @@ function TableProduct({ props, handleChange }) {
                                                             </td>
                                                             <td width="130px">
                                                                 <InputNumber
-                                                                    defaultValue={option.price}
+                                                                    defaultValue={option.giaBan}
                                                                     style={{ width: "100%" }}
                                                                     step={10000}
                                                                     formatter={(value) =>
@@ -167,8 +173,17 @@ function TableProduct({ props, handleChange }) {
                                                                     min={0}
                                                                 />
                                                             </td>
-                                                            <td>{option.shirt.danhMuc}</td>
-                                                            <td>{option.shirt.brand}</td>
+                                                            <td>{option.sanPham.danhMuc}</td>
+                                                            <td>{option.chatLieu.ten}</td>
+                                                            <td>{option.thuongHieu.ten}</td>
+                                                            <td>{option.tayAo.ten}</td>
+                                                            <td>{option.coAo.ten}</td>
+                                                            <td>
+                                                                <Button type="danger" onClick={() => deleteProductDetail(key, idx)}>
+                                                                    <IconTrashFilled />
+                                                                </Button>
+                                                            </td>
+
                                                             <td>
                                                                 <button className="btn btn-sm" onClick={() => deleteProductDetail(key, idx)}>
                                                                     <i className="fas fa-trash"></i>

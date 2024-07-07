@@ -23,7 +23,7 @@ public class ProductConverter {
 
         return SanPham.builder()
                 .ma(request.getMa())
-                .ten(request.getTenSanPham())
+                .ten(request.getTen())
                 .trangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động")
                 .danhMuc(danhMuc)
                 .build();
@@ -38,7 +38,7 @@ public class ProductConverter {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
 
         entity.setMa(request.getMa());
-        entity.setTen(request.getTenSanPham());
+        entity.setTen(request.getTen());
         entity.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động");
         entity.setDanhMuc(danhMuc);
 

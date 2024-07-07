@@ -33,9 +33,6 @@ public class SanPhamControllers {
     public List<SanPhamReponse> getTopSell(@RequestParam(required = false, defaultValue = "5") Integer top){
         return sanPhamService.getTopSell(top);
     }
-
-
-
     @GetMapping
     public PageableObject<SanPhamReponse> getAll(SanPhamSearchRequest request) {
         return sanPhamService.getAll(request);
@@ -51,12 +48,12 @@ public class SanPhamControllers {
     }
 
     @PutMapping("/{id}")
-    public ResponseObject update(@PathVariable Long id, @RequestBody @Valid SanPhamRequest request){
+    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid SanPhamRequest request){
         return new ResponseObject(sanPhamService.update(id,request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseObject changeStatus(@PathVariable Long id){
+    public ResponseObject changeStatus(@PathVariable Integer id){
         return new ResponseObject(sanPhamService.changeStatus(id));
     }
 }

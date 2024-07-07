@@ -54,7 +54,7 @@ const MainRoutes = {
       element: <AddShoe />
     },
     {
-      path: '/products/shirtinfo',
+      path: '/products/:id',
       element: <ShirtInfo />
     },
     {

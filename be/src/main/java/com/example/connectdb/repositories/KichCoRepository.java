@@ -3,6 +3,7 @@ package com.example.connectdb.repositories;
 import com.example.connectdb.dto.request.size.KichCoRequest;
 import com.example.connectdb.dto.response.KichCoResponse;
 import com.example.connectdb.entity.KichCo;
+import com.example.connectdb.entity.TayAo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +26,6 @@ public interface KichCoRepository extends JpaRepository<KichCo, Integer> {
             """, nativeQuery = true)
     Page<KichCoResponse> findAllByCriteria(@Param("req") KichCoRequest request, Pageable pageable);
 
-
+    KichCo findByTen(String ten);
     boolean existsByTenIgnoreCase(String ten);
 }

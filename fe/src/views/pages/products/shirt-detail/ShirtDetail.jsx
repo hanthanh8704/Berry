@@ -5,8 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { IconEdit } from "@tabler/icons-react";
-import * as request from "views/utilities/httpRequest";
-import debounce from "lodash/debounce"; // Import debounce function
+import debounce from "lodash/debounce";
+import * as request from "../utilities/httpRequest"; // Thay đổi đường dẫn tương ứng
 
 function Product() {
     const [productList, setProductList] = useState([]);
@@ -23,23 +23,30 @@ function Product() {
     const [searchBrand, setSearchBrand] = useState('');
 
     useEffect(() => {
-        request.get("/category", { params: { name: searchCate, status: false } }).then((response) => {
-            setListCate(response.data);
-        }).catch((error) => { console.log(error); });
-        request.get("/brand", { params: { name: searchBrand, status: false } }).then((response) => {
-            setListBrand(response.data);
-        }).catch((error) => { console.log(error); });
+        request.get("/category", { params: { name: searchCate, status: false } })
+            .then((response) => {
+                setListCate(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        request.get("/brand", { params: { name: searchBrand, status: false } })
+            .then((response) => {
+                setListBrand(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }, [searchCate, searchBrand]);
 
     useEffect(() => {
-        // Debounce searchValue changes to reduce API calls
         const delayedSearch = debounce(() => {
             loadData();
-        }, 300); // Adjust debounce delay as needed (in milliseconds)
+        }, 300);
 
         delayedSearch();
 
-        // Cancel debounce on component unmount
         return () => {
             delayedSearch.cancel();
         };
@@ -47,23 +54,32 @@ function Product() {
 
     const loadData = () => {
         request.get("/shirt", {
-            params: { name: searchValue, page: currentPage, sizePage: pageSize, category: selectedCate, brand: selectedBrand, status: statusProduct },
+            params: {
+                name: searchValue,
+                page: currentPage,
+                sizePage: pageSize,
+                category: selectedCate,
+                brand: selectedBrand,
+                status: statusProduct
+            },
         }).then((response) => {
-            setProductList(response.data);
-            setTotalPages(response.totalPages);
+            setProductList(response.data.content);
+            setTotalPages(response.data.totalPages);
         }).catch((error) => {
             console.log(error);
         });
-    }
+    };
 
     const handleChangeStatus = async (id) => {
-        await request.remove(`/shirt/${id}`).then(response => {
-            toast.success("Đã cập nhật trạng thái!");
-            loadData();
-        }).catch(e => {
-            console.log(e);
-        })
-    }
+        await request.remove(`/shirt/${id}`)
+            .then(response => {
+                toast.success("Đã cập nhật trạng thái!");
+                loadData();
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
 
     const columns = [
         {
@@ -72,6 +88,7 @@ function Product() {
             key: 'index',
             width: 50,
             align: 'center',
+            render: (_, __, index) => index + 1,
         },
         {
             title: 'Mã',
@@ -115,9 +132,9 @@ function Product() {
             title: 'Hành động',
             dataIndex: 'id',
             key: 'action',
-            render: (x) => (
+            render: (id) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link to={`/admin/product/${x}`} className="btn btn-sm btn-primary me-1">
+                    <Link to={`/products/${id}`} className="btn btn-sm btn-primary me-1">
                         <IconEdit />
                     </Link>
                 </Tooltip>
@@ -136,7 +153,7 @@ function Product() {
                         <Input onChange={(event) => setSearchValue(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
                     </Col>
                     <Col span={4} className="d-flex align-items-end justify-content-end">
-                        <Link to={"/free/products/add-shirt"}>
+                        <Link to={"/products/add-shirt"}>
                             <Button type="primary" className="bg-primary">
                                 <i className="fas fa-plus-circle me-1"></i>Thêm sản phẩm
                             </Button>

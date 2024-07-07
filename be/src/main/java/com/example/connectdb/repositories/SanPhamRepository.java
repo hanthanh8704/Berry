@@ -21,7 +21,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     SELECT
         sp.id AS id,
         sp.ten AS ten,
-        sp.ma,
+        sp.ma as ma,
         SUM(ctsp.so_luong) AS soLuong,
         ROW_NUMBER() OVER (ORDER BY sp.ngay_tao DESC) AS indexs,
         GROUP_CONCAT(DISTINCT ms.ten) AS mauSac,
@@ -44,27 +44,46 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     """, nativeQuery = true)
     Page<SanPhamReponse> getAllSanPham(@Param("req") SanPhamSearchRequest request, Pageable pageable);
 
-
+    @Query(value = """
+             SELECT
+                        sp.id AS id,sp.ten AS ten,sp.ma as ma
+                        ROW_NUMBER() OVER(ORDER BY sp.ngay_tao DESC) AS indexs,
+                        dm.ten AS danhMuc,
+                        dgg.gia_moi AS giaMoi
+                        FROM san_pham sp
+                        LEFT JOIN chi_tiet_san_pham spct ON sp.id = spct.id_san_pham
+                        LEFT JOIN danh_muc dm ON dm.id = sp.id_danh_muc
+                        LEFT JOIN spct_khuyen_mai spctkm ON spctkm.id_chi_tiet_san_pham = spct.id
+                        LEFT JOIN dot_giam_gia dgg ON dgg.id = spctkm.id_dot_giam_gia
+                        WHERE (:promotion IS NULL OR dgg.id = :promotion)
+            """, nativeQuery = true)
+    List<SpctKhuyenMaiResponse> getAllShoeInPromotion(@Param("promotion") Integer promotion);
 
     @Query(value = """
-          SELECT
-                                                                sp.id AS id,
-                                                                sp.ten AS ten,
-                                                                ROW_NUMBER() OVER(ORDER BY sp.ngay_tao DESC) AS indexs,
-                                                                dm.ten AS , danhMuc
-                                        
-                                                                pgg.id AS dotGiamGia
-                                                            FROM san_pham sp
-                                                            LEFT JOIN chi_tiet_san_pham cts ON sp.id = cts.id_san_pham
-                                                            LEFT JOIN danh_muc dm ON sp.id_danh_muc = dm.id
-                                                       
-                                                            LEFT JOIN spct_khuyen_mai spkm ON cts.id = spkm.id_chi_tiet_san_pham
-                                                            LEFT JOIN dot_giam_gia pgg ON spkm.id_dot_giam_gia = pgg.id
-                                                            WHERE (:promotion IS NULL OR pgg.id = :promotion);
-                                                            
+            SELECT
+            s.id AS id,s.ten AS ten,
+            ROW_NUMBER() OVER(ORDER BY SUM(bd.quantity) DESC) AS indexs,
+            SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT img.name ORDER BY img.name), ',', 1) AS images,
+            ct.ten AS danhMuc,
+            MAX(sd.gia_ban) AS maxGiaBan,
+            MIN(sd.gia_ban) AS minGiaBan,
+            SUM(bd.so_luong) AS soLuong,
+            s.deleted AS status
+            FROM shoe s
+            LEFT JOIN shoe_detail sd ON s.id = sd.shoe_id
+            LEFT JOIN category ct ON ct.id = s.category_id
+            LEFT JOIN (SELECT shoe_detail_id, 
+            GROUP_CONCAT(DISTINCT name) AS name FROM images GROUP BY shoe_detail_id
+            ) img ON sd.id = img.shoe_detail_id
+            LEFT JOIN bill_detail bd ON bd.shoe_detail_id = sd.id
+            LEFT JOIN bill b ON b.id = bd.bill_id
+            WHERE s.deleted = FALSE AND b.status = 6
+            GROUP BY s.id
+            ORDER BY SUM(bd.quantity) DESC
+            LIMIT :top
             """, nativeQuery = true)
-    List<SanPhamReponse> getAllShoeInPromotion(@Param("promotion") Integer promotion);
-
+    List<SanPhamReponse> topSell(@Param("top") Integer top);
+    Boolean existsByTenIgnoreCase(String name);
 
 
 }

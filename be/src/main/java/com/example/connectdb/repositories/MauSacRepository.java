@@ -4,6 +4,7 @@ import com.example.connectdb.dto.request.color.MauSacRequest;
 import com.example.connectdb.entity.MauSac;
 
 import com.example.connectdb.dto.response.MauSacResponse;
+import com.example.connectdb.entity.TayAo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,6 @@ public interface MauSacRepository extends JpaRepository<MauSac, Integer> {
             AND (:#{#req.trangThai} IS NULL OR c.trang_thai = :#{#req.trangThai})
             """, nativeQuery = true)
     Page<MauSacResponse> findAllByCriteria(@Param("req") MauSacRequest request, Pageable pageable);
+    MauSac findByTen(String ten);
     boolean existsByTenIgnoreCase(String ten);
 }

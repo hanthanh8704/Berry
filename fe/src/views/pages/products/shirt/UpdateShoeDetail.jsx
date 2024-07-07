@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react";
 import * as request from "views/utilities/httpRequest";
+
+import AddProperties from "components/Admin/Product/AddProperties";
 import debounce from "lodash/debounce"; // Import debounce function
 
 function UpdateShoeDetail({ props, onSuccess }) {
@@ -18,10 +20,16 @@ function UpdateShoeDetail({ props, onSuccess }) {
     const [sole, setSole] = useState([]);
     const [size, setSize] = useState([]);
     const [color, setColor] = useState([]);
+    const [collar, setCollar] = useState([]);
+    const [sleeve, setSleeve] = useState([]);
+    const [brand, setBrand] = useState([]);
 
     const [searchSize, setSearchSize] = useState(null);
     const [searchColor, setSearchColor] = useState(null);
     const [searchSole, setSearchSole] = useState(null);
+    const [searchSleeve, setSearchSleeve] = useState(null);
+    const [searchCollar, setSearchCollar] = useState(null);
+    const [searchBrand, setSearchBrand] = useState(null);
 
     const [loading, setLoading] = useState(false);
 
@@ -66,7 +74,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
                 formData.append("images", file);
                 validImages.push(file);
             } else {
-                toast.error(`Tệp ${file.name} không phải là ảnh và sẽ không được thêm.`);
+                toast.error(`Tệp ${file.ten} không phải là ảnh và sẽ không được thêm.`);
             }
         }
         if (validImages.length > 0) {
@@ -102,21 +110,23 @@ function UpdateShoeDetail({ props, onSuccess }) {
 
     const showModal = () => {
         setIsModalOpen(true);
-        // setSearchSize(props.size);
-        // setSearchColor(props.color);
-        // setSearchSole(props.sole);
+        // setSearchSize(props.kichCo.ten);
+        // setSearchColor(props.mauSac.ten);
+        // setSearchSole(props.chatLieu.ten);
         form.setFieldsValue({
-            size: props.size,
-            color: props.color,
-            sole: props.sole,
-            quantity: props.quantity,
-            price: props.price,
-            weight: props.weight
+            kichCo: props.kichCo,
+            mauSac: props.mauSac,
+            chatLieu: props.chatLieu,
+            tayAo: props.tayAo,
+            coAo: props.coAo,
+            thuongHieu: props.thuongHieu,
+            soLuong: props.soLuong,
+            giaBan: props.giaBan,
         })
     };
     const handleOk = (data) => {
         console.log(data);
-        data.shoe = props.id
+        data.id = props.id
         Modal.confirm({
             title: "Xác nhận",
             maskClosable: true,
@@ -126,6 +136,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
             onOk: async () => {
                 await request.put(`/shoe-detail/${props.id}`, data).then(response => {
                     toast.success('Cập nhật thành công!');
+                    onreset;
                     setIsModalOpen(false);
                     onSuccess();
                 }).catch(e => {
@@ -154,8 +165,29 @@ function UpdateShoeDetail({ props, onSuccess }) {
         });
     }
     const loadSole = () => {
-        request.get("/sole", { params: { name: searchSole, sizePage: 1_000_000 } }).then((response) => {
+        request.get("/material", { params: { name: searchSole, sizePage: 1_000_000 } }).then((response) => {
             setSole(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    const loadSleeve = () => {
+        request.get("/sleeve", { params: { name: searchSleeve, sizePage: 1_000_000 } }).then((response) => {
+            setSleeve(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    const loadCollar = () => {
+        request.get("/collar", { params: { name: searchCollar, sizePage: 1_000_000 } }).then((response) => {
+            setCollar(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    const loadBrand = () => {
+        request.get("/brand", { params: { name: searchBrand, sizePage: 1_000_000 } }).then((response) => {
+            setBrand(response.data);
         }).catch((error) => {
             console.log(error);
         });
@@ -170,6 +202,15 @@ function UpdateShoeDetail({ props, onSuccess }) {
     useEffect(() => {
         loadSole();
     }, [searchSole])
+    useEffect(() => {
+        loadSleeve();
+    }, [searchSleeve])
+    useEffect(() => {
+        loadCollar();
+    }, [searchCollar])
+    useEffect(() => {
+        loadBrand();
+    }, [searchBrand])
 
     const handleSelectImg = (img) => {
         console.log(img);
@@ -177,10 +218,11 @@ function UpdateShoeDetail({ props, onSuccess }) {
 
     return (
         <>
+            <ToastContainer />
             <Tooltip placement="top" title="Chỉnh sửa">
-                <Button type="text" onClick={showModal}><i className="fas fa-edit text-warning"></i></Button>
+                <Button type="text" onClick={showModal}><i className="fas fa-edit text-primary"><IconEdit /></i></Button>
             </Tooltip>
-            <Modal title={props.name} open={isModalOpen} onCancel={handleCancel} footer={
+            <Modal title={props.ten} open={isModalOpen} onCancel={handleCancel} footer={
                 <>
                     <Button type='primary' htmlType='submit' form='formUpdate' className='bg-warning'>Cập nhật</Button>
                 </>
@@ -188,7 +230,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
                 <Form layout='vertical' form={form} onFinish={handleOk} id='formUpdate'>
                     <Row gutter={24}>
                         <Col xl={8}>
-                            <Form.Item label={"Kích cỡ"} name={"size"} rules={[{ required: true, message: "Kích cỡ không được để trống!" }]}>
+                            <Form.Item label={"Kích cỡ"} name={"kichCo"} rules={[{ required: true, message: "Kích cỡ không được để trống!" }]}>
                                 <Select showSearch placeholder="Nhập kích cỡ..." optionFilterProp="children" onSearch={setSearchSize}
                                     dropdownRender={(menu) => (
                                         <>
@@ -201,15 +243,15 @@ function UpdateShoeDetail({ props, onSuccess }) {
                                 >
                                     <Option value="">Chọn kích cỡ</Option>
                                     {size.map((item) => (
-                                        <Option key={item.id} value={item.name}>
-                                            {item.name}
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col xl={8}>
-                            <Form.Item label={"Màu sắc"} name={"color"} rules={[{ required: true, message: "Màu sắc không được để trống!" }]}>
+                            <Form.Item label={"Màu sắc"} name={"mauSac"} rules={[{ required: true, message: "Màu sắc không được để trống!" }]}>
                                 <Select showSearch placeholder="Nhập màu sắc..." optionFilterProp="children" onSearch={setSearchColor}
                                     dropdownRender={(menu) => (
                                         <>
@@ -222,36 +264,99 @@ function UpdateShoeDetail({ props, onSuccess }) {
                                 >
                                     <Option value="">Chọn màu sắc</Option>
                                     {color.map((item) => (
-                                        <Option key={item.id} value={item.name}>
-                                            {item.name}
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col xl={8}>
-                            <Form.Item label={"Loại đế"} name={"sole"} rules={[{ required: true, message: "Loại đế không được để trống!" }]}>
-                                <Select showSearch placeholder="Nhập tên đế giày..." optionFilterProp="children" onSearch={setSearchSole}
+                            <Form.Item label={"Chất liệu"} name={"chatLieu"} rules={[{ required: true, message: "Chất liệu không được để trống!" }]}>
+                                <Select showSearch placeholder="Nhập tên chất liệu..." optionFilterProp="children" onSearch={setSearchSole}
                                     dropdownRender={(menu) => (
                                         <>
                                             {menu}
                                             <Space className="my-2 ms-2">
-                                                <AddProperties placeholder={"đế giày"} name={"sole"} onSuccess={() => loadSole()} />
+                                                <AddProperties placeholder={"chất liệu"} name={"material"} onSuccess={() => loadSole()} />
                                             </Space>
                                         </>
                                     )}
                                 >
-                                    <Option value="">Chọn loại đế</Option>
+                                    <Option value="">Chọn chất liệu</Option>
                                     {sole.map((item) => (
-                                        <Option key={item.id} value={item.name}>
-                                            {item.name}
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col xl={8}>
-                            <Form.Item label={"Đơn giá"} name={"price"} rules={[{ required: true, message: "Đơn giá không được để trống!" }]}>
+                            <Form.Item label={"Thương hiệu"} name={"thuongHieu"} rules={[{ required: true, message: "Thương hiệu không được để trống!" }]}>
+                                <Select showSearch placeholder="Nhập tên chất liệu..." optionFilterProp="children" onSearch={setSearchSole}
+                                    dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Space className="my-2 ms-2">
+                                                <AddProperties placeholder={"thương hiệu"} name={"brand"} onSuccess={() => loadBrand()} />
+                                            </Space>
+                                        </>
+                                    )}
+                                >
+                                    <Option value="">Chọn thương hiệu</Option>
+                                    {brand.map((item) => (
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={8}>
+                            <Form.Item label={"Tay áo"} name={"tayAo"} rules={[{ required: true, message: "Tay áo không được để trống!" }]}>
+                                <Select showSearch placeholder="Nhập tên tay áo..." optionFilterProp="children" onSearch={setSearchSleeve}
+                                    dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Space className="my-2 ms-2">
+                                                <AddProperties placeholder={"tay áo"} name={"sleeve"} onSuccess={() => loadSleeve()} />
+                                            </Space>
+                                        </>
+                                    )}
+                                >
+                                    <Option value="">Chọn tay áo</Option>
+                                    {sleeve.map((item) => (
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={8}>
+                            <Form.Item label={"Cổ áo"} name={"coAo"} rules={[{ required: true, message: "Cổ áo không được để trống!" }]}>
+                                <Select showSearch placeholder="Nhập tên cổ áo..." optionFilterProp="children" onSearch={setSearchCollar}
+                                    dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Space className="my-2 ms-2">
+                                                <AddProperties placeholder={"cổ áo"} name={"collar"} onSuccess={() => loadCollar()} />
+                                            </Space>
+                                        </>
+                                    )}
+                                >
+                                    <Option value="">Chọn cổ áo</Option>
+                                    {collar.map((item) => (
+                                        <Option key={item.id} value={item.ten}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xl={8}>
+                            <Form.Item label={"Đơn giá"} name={"giaBan"} rules={[{ required: true, message: "Đơn giá không được để trống!" }]}>
                                 {/* <Input placeholder='Nhập đơn giá...' /> */}
                                 <InputNumber
                                     className='w-100'
@@ -271,28 +376,28 @@ function UpdateShoeDetail({ props, onSuccess }) {
                             </Form.Item>
                         </Col>
                         <Col xl={8}>
-                            <Form.Item label={"Số lượng"} name={"quantity"} rules={[{ required: true, message: "Đơn giá không được để trống!" }]}>
+                            <Form.Item label={"Số lượng"} name={"soLuong"} rules={[{ required: true, message: "Đơn giá không được để trống!" }]}>
                                 <Input placeholder='Nhập số lượng...' />
                             </Form.Item>
                         </Col>
-                        <Col xl={8}>
+                        {/* <Col xl={8}>
                             <Form.Item label={"Cân nặng"} name={"weight"} rules={[{ required: true, message: "Cân nặng không được để trống!" }]}>
                                 <Input placeholder='Nhập cân nặng...' />
                             </Form.Item>
-                        </Col>
+                        </Col> */}
                         <Col xl={6}>
-                            <QRCode value={props.code} />
+                            <QRCode value={props.ma} />
                         </Col>
                         <Col xl={18}>
                             Hình ảnh sản phẩm:
                             <div className="d-flex flex-wrap">
                                 {listImages?.map((image, index) => (
                                     <div className="position-relative me-2 mt-2">
-                                        <img src={image.name} alt="images" width={100} height={100} className="object-fit-cover border border-warning" />
+                                        <img src={image.images} alt="images" width={100} height={100} className="object-fit-cover border border-warning" />
                                         <div className="position-absolute end-0 top-0">
                                             <button type="button" class="btn btn-sm border-0 text-danger" onClick={() => handleDeleteImage(image.id)}>
                                                 <Tooltip title="Xóa ảnh">
-                                                    <i className="fas fa-trash"></i>
+                                                    <i className="fas fa-trash"><IconTrash /></i>
                                                 </Tooltip>
                                             </button>
                                         </div>
@@ -313,6 +418,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
                     </Row>
                 </Form>
             </Modal>
+
         </>
     )
 }
