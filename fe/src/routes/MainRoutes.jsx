@@ -10,6 +10,7 @@ const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
 const Nhanvien = Loadable(lazy(() => import('views/pages/nhan_vien/nhanvien.jsx')));
 const AddCustomer = Loadable(lazy(() => import('views/pages/nhan_vien/addNhanVien.jsx')));
+const NhanVienDetail = Loadable(lazy(() => import('views/pages/nhan_vien/nhanVienDetail.jsx')));
 
 const Khachhang = Loadable(lazy(() => import('views/pages/khach_hang/khachhang.jsx')));
 
@@ -41,6 +42,10 @@ const MainRoutes = {
     {
       path:"/nhan-vien/add",
       element:<AddCustomer/>
+    },
+    {
+      path:"/nhan-vien/:id",
+      element:<NhanVienDetail/>
     },
     {
       path: '/khach-hang',

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
+    boolean existsBySoDienThoai(String soDienThoai);
+    boolean existsByEmail(String email);
     @Query(value = """
             select 
             a.id as id,
@@ -43,6 +45,25 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
             group by a.id
             """, nativeQuery = true)
     Page<NhanVienResponse> getAll(@Param("req") NhanVienRequest req, Pageable pageable);
+
+
+    @Query(value = """
+               SELECT a.id AS id,
+                      ROW_NUMBER() OVER(ORDER BY a.ngay_tao DESC) AS indexs,
+                      a.ten AS ten,
+                      a.ma AS ma,
+                      a.email AS email,
+                      a.anh AS anh,
+                      a.gioi_tinh AS gioiTinh,
+                      a.ngay_sinh AS ngaySinh,
+                      a.so_dien_thoai AS soDienThoai,
+                      a.cccd AS cccd,
+                      a.dia_chi AS diaChi,
+                      a.trang_thai AS trangThai
+               FROM nhan_vien a
+               WHERE a.id = :id
+               """, nativeQuery = true)
+    NhanVienResponse getOneNhanVien(@Param("id") Integer id);
 
 //    NhanVienResponse findById(Integer id)
 

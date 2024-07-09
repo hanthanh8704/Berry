@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -37,7 +38,7 @@ public class NhanVien {
     private String diaChi;
 
     @Column(name = "ngay_sinh")
-    private Timestamp ngaySinh;
+    private Date ngaySinh;
 
     @Column(name = "so_dien_thoai")
     private String soDienThoai;

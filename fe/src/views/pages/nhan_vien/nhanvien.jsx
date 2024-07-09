@@ -1,13 +1,12 @@
-import {  Col, Input, Row, Table, Tooltip } from "antd";
-import { jwtDecode } from "jwt-decode";
+import { Col, Input, Row, Table, Tooltip } from "antd";
 import MenuItem from '@mui/material/MenuItem';
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FormatDate from "views/utilities/FormatDate";
 import * as request from "views/utilities/httpRequest";
 import SearchIcon from '@mui/icons-material/Search';
-import { Grid,Box, Typography, Button, FormLabel, RadioGroup, FormControlLabel, Radio, DialogActions, TextField,IconButton,FormControl,InputLabel,Select } from '@mui/material';
-
+import { IconEdit } from '@tabler/icons-react';
+import { Grid, Box, Typography, Button, FormLabel, RadioGroup, FormControlLabel, Radio, DialogActions, TextField, IconButton, FormControl, InputLabel, Select } from '@mui/material';
 
 function Staff() {
   const [staffList, setStaffList] = useState([]);
@@ -37,11 +36,21 @@ function Staff() {
     setTrangThai(event.target.value);
     setCurrentPage(1); // Reset page when status filter changes
   };
+
   const filteredOrders = staffList.filter(order =>
-    (trangThai === 'All' || order.trangthai === trangThai) &&
-    (order.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
-      (order.soDienThoai.includes(searchValue)) )
+    (order.ma && order.ma.toLowerCase().includes(searchValue.toLowerCase())) ||
+    (order.ten && order.ten.toLowerCase().includes(searchValue.toLowerCase())) ||
+    (trangThai === 'All' || order.trangThai === trangThai)
   );
+  const FormatDate = ({ date }) => {
+    const formattedDate = new Date(date).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    return <span>{formattedDate}</span>;
+  };
+
   const columns = [
     {
       title: 'STT',
@@ -50,19 +59,29 @@ function Staff() {
       className: "text-center",
     },
     {
+      title: 'Mã ',
+      dataIndex: 'ma',
+      key: 'ma',
+    },
+    {
       title: 'Tên',
       dataIndex: 'ten',
       key: 'ten',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'cccd',
+      dataIndex: 'cccd',
+      key: 'cccd',
     },
     {
       title: 'SĐT',
       dataIndex: 'soDienThoai',
       key: 'soDienThoai',
+    },
+    {
+      title: 'giới tính',
+      dataIndex: 'gioiTinh',
+      key: 'gioiTinh',
     },
     {
       title: 'Ngày ngày sinh',
@@ -71,35 +90,33 @@ function Staff() {
       render: (x) => <FormatDate date={x} />
     },
     {
+      title: 'Chuc vu ',
+      dataIndex: 'chucVu',
+      key: 'chucVu',
+    },
+    {
       title: 'Trạng thái',
-      dataIndex: 'deleted',
-      key: 'deleted',
-      render: (x) => (
-        <span className={x ? "fw-semibold text-danger" : "fw-semibold text-success"}>
-          {x ? "Đã nghỉ" : "Đang làm"}
-        </span>
-      )
+      dataIndex: 'trangThai',
+      key: 'trangThai',
     },
     {
       title: 'Thao tác',
       dataIndex: 'id',
       key: 'action',
-      render: (x) => (
+      render: (id) => (
         <>
           <Tooltip placement="top" title="Chỉnh sửa">
-            <Link to={`/admin/customer/${x}`} className="btn btn-sm text-warning">
-              <i className="fas fa-edit"></i>
-            </Link>
+            <Link to={'/nhan-vien/' + id}><IconEdit /> </Link>
           </Tooltip>
         </>
-      )
-    },
+      ),
+    }
   ];
 
   return (
     <Grid container spacing={3}>
       {/* Search Bar */}
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={8}>
         <Box display="flex" alignItems="center">
           <TextField
             fullWidth
@@ -114,7 +131,6 @@ function Staff() {
                 </IconButton>
               )
             }}
-            
           />
         </Box>
       </Grid>
@@ -130,42 +146,42 @@ function Staff() {
             onChange={handleStatusChange}
             label="Filter by Status"
           >
-            <MenuItem value={null}>tất cả</MenuItem>
-            <MenuItem  value={false}>Đang làm</MenuItem>
-            <MenuItem value={true}>Nghỉ làm</MenuItem>
+            <MenuItem value="Tất cả">tất cả</MenuItem>
+            <MenuItem value="Hoạt động">Hoạt động</MenuItem>
+            <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
           </Select>
         </FormControl>
       </Grid>
 
       <Grid item xs={12} md={3}>
-      <Link to={"/nhan-vien/add"}>
-            <Button type="primary" className="bg-warning" icon={<i className="fas fa-plus-circle me-1"></i>}>
-              Thêm nhân viên
-            </Button>
-          </Link>
+        <Link to={"/nhan-vien/add"}>
+          <Button type="primary" className="bg-warning" icon={<i className="fas fa-plus-circle me-1"></i>}>
+            Thêm nhân viên
+          </Button>
+        </Link>
       </Grid>
-      
+
       <Grid item xs={12} >
-      <Table
-        dataSource={staffList}
-        columns={columns}
-        className="mt-3"
-        pagination={{
-          showSizeChanger: true,
-          current: currentPage,
-          pageSize: pageSize,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showQuickJumper: true,
-          total: totalPages * pageSize,
-          onChange: (page, pageSize) => {
-            setCurrentPage(page);
-            setPageSize(pageSize);
-          },
-        }}
-        rowKey="id"
-        style={{ marginTop: '20px' }}
-      />
-    </Grid>
+        <Table
+          dataSource={staffList}
+          columns={columns}
+          className="mt-3"
+          pagination={{
+            showSizeChanger: true,
+            current: currentPage,
+            pageSize: pageSize,
+            pageSizeOptions: [5, 10, 20, 50, 100],
+            showQuickJumper: true,
+            total: totalPages * pageSize,
+            onChange: (page, pageSize) => {
+              setCurrentPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          rowKey="id"
+          style={{ marginTop: '20px' }}
+        />
+      </Grid>
     </Grid>
   );
 }

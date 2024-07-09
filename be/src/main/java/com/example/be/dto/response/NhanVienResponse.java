@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 @Projection(types = {NhanVien.class})
@@ -21,7 +22,8 @@ public interface NhanVienResponse {
     String getMa();
     String getTen();
     String getDiaChi();
-    Timestamp getNgaySinh();
+    String getTaiKhoan();
+    Date getNgaySinh();
     String getSoDienThoai();
     String getGioiTinh();
     String getEmail();
