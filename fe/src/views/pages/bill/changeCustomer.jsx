@@ -82,7 +82,7 @@ function ChangeCustom({ props, onSuccess }) {
             {props?.diaChi !== null ? (
               <>
                 {props.diaChi?.split("##")[0]} ,
-                <DetailAddress war={props.diaChi?.split("##")[1]} distr={props.diaChi?.split("##")[2]} prov={props.diaChi?.split("##")[3]} />
+                {/* <DetailAddress war={props.diaChi?.split("##")[1]} distr={props.diaChi?.split("##")[2]} prov={props.diaChi?.split("##")[3]} /> */}
               </>
             ) : "Tại cửa hàng"}
           </Descriptions.Item>

@@ -1,14 +1,14 @@
 package com.example.be.util.common;
 
 public final class TrangThaiHoaDon {
-    public static final int CHO_THANH_TOAN = 0;
-    public static final int TAO_DON_HANG = 1;
-    public static final int CHO_XAC_NHAN = 2;
-    public static final int XAC_NHAN_THONG_TIN_THANH_TOAN = 3;
-    public static final int CHO_GIAO = 4;
-    public static final int DANG_GIAO = 5;
-    public static final int HOAN_THANH = 6;
-    public static final int DA_HUY = 7;
-    public static final int TRA_HANG = 8;
-    public static final int CHINH_SUA_DON_HANG = 500;
+    public static final String CHO_THANH_TOAN = "Chờ thanh toán";
+    public static final String TAO_DON_HANG = "Tạo đơn hàng";
+    public static final String CHO_XAC_NHAN = "Chờ xác nhận";
+    public static final String XAC_NHAN_THONG_TIN_THANH_TOAN = "Xác nhận thông tin thanh toán";
+    public static final String CHO_GIAO = "Chờ giao";
+    public static final String DANG_GIAO = "Đang giao";
+    public static final String HOAN_THANH = "Hoàn thành";
+    public static final String DA_HUY = "Đã hủy";
+    public static final String TRA_HANG = "Trả hàng";
+    public static final String CHINH_SUA_DON_HANG = "Chỉnh sửa hóa đơn";
 }

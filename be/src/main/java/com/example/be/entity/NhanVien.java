@@ -3,6 +3,8 @@ package com.example.be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Date;
 import java.sql.Timestamp;
 
 @Getter
@@ -21,7 +23,8 @@ public class NhanVien {
     @ManyToOne
     @JoinColumn(name = "id_chuc_vu")
     private ChucVu chucVu;
-
+    @Column(name = "anh")
+    private String anh;
     @Column(name = "ma")
     private String ma;
 
@@ -32,7 +35,7 @@ public class NhanVien {
     private String diaChi;
 
     @Column(name = "ngay_sinh")
-    private Timestamp ngaySinh;
+    private Date ngaySinh;
 
     @Column(name = "so_dien_thoai")
     private String soDienThoai;
@@ -45,9 +48,6 @@ public class NhanVien {
 
     @Column(name = "cccd")
     private String cccd;
-
-    @Column(name = "mat_khau")
-    private String matKhau;
 
     @Column(name = "trang_thai")
     private String trangThai;
@@ -63,4 +63,11 @@ public class NhanVien {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "email")
+    private Account account;
 }

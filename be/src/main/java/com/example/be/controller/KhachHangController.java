@@ -1,6 +1,6 @@
 package com.example.be.controller;
 
-import com.example.be.dto.request.customer.KhachHangRequest;
+import com.example.be.dto.request.khachHang.KhachHangRequest;
 import com.example.be.dto.response.KhachHangResponse;
 import com.example.be.entity.KhachHang;
 import com.example.be.service.KhachHangService;
@@ -23,7 +23,7 @@ public class KhachHangController {
 
     @GetMapping("/{id}")
     public KhachHang getOne(@PathVariable Integer id) {
-        return accountService.getOne(id);
+        return accountService.getOneKhachHang(id);
     }
 
     @PostMapping

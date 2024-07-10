@@ -17,9 +17,6 @@ public class ThuongHieu {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ma")
-    private String ma;
-
     @Column(name = "ten")
     private String ten;
 

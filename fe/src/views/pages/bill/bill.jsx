@@ -4,7 +4,7 @@ import FormatDate from "views/utilities/FormatDate";
 import FormatCurrency from "views/utilities/FormatCurrency";
 import { Badge, Button, DatePicker, Input, Table, Tabs, Tag, Tooltip, Select } from "antd";
 import { Link } from "react-router-dom";
-import { IconArrowsMove, IconPrinter } from "@tabler/icons-react";
+import { IconArrowsMove,IconEdit, IconPrinter, IconEye } from "@tabler/icons-react";
 import "./bill.css"; // Import file CSS để tùy chỉnh màu sắc
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +19,7 @@ const Bill = ({ onload }) => {
   const [pageSize, setPageSize] = useState(5);
   const [trangThaiHoaDon, setTrangThaiHoaDon] = useState("");
   const [tabs, setTabs] = useState([]);
+  const [billStatistics, setBillStatistics] = useState({});
   const [selectedDates, setSelectedDates] = useState({});
   const [activeTab, setActiveTab] = useState("");
   const navigate = useNavigate();
@@ -26,6 +27,11 @@ const Bill = ({ onload }) => {
   useEffect(() => {
     loadOrders();
   }, [currentPage, pageSize, ma, trangThaiHoaDon, onload, selectedDates]);
+
+  useEffect(() => {
+    const statistics = calculateBillStatistics(listHoaDon);
+    setBillStatistics(statistics);
+  }, [listHoaDon]);
 
   const loadOrders = async () => {
     try {
@@ -43,6 +49,11 @@ const Bill = ({ onload }) => {
       console.log('Bill data:', response);
       setListHoaDon(response.data);
       setTotalPages(response.totalPages);
+      
+      // Calculate statistics from all pages
+      const allData = await request.get('bill/all-data'); // Example endpoint to fetch all data
+      const statistics = calculateBillStatistics(allData);
+      setBillStatistics(statistics);
     } catch (error) {
       console.error("Lỗi", error);
     }
@@ -54,6 +65,17 @@ const Bill = ({ onload }) => {
     } catch (error) {
       console.error("Error fetching bill status:", error);
     }
+  };
+
+  const calculateBillStatistics = (bills) => {
+    return bills.reduce((acc, bill) => {
+      if (acc[bill.trangThaiHoaDon]) {
+        acc[bill.trangThaiHoaDon]++;
+      } else {
+        acc[bill.trangThaiHoaDon] = 1;
+      }
+      return acc;
+    }, {});
   };
 
   const sortTabs = (tabs) => {
@@ -92,7 +114,7 @@ const Bill = ({ onload }) => {
       label: (
         <span>
           {item.trangThai}
-          <Badge count={item.totalCount} offset={[8, 0]} style={{ backgroundColor: '#f5222d', color: '#f5222d', marginLeft: '8px' }} />
+          <Badge count={billStatistics[item.trangThai] || 0} offset={[8, 0]} style={{ backgroundColor: '#fff', color: '#f5222d', marginLeft: '8px' }} />
         </span>
       ),
       children: <div></div>
@@ -101,7 +123,7 @@ const Bill = ({ onload }) => {
 
   const columns = [
     {
-      title: '#',
+      title: 'STT',
       dataIndex: 'id',
       key: 'id',
       className: 'custom-column', // Thêm lớp CSS cho cột '#'
@@ -178,7 +200,7 @@ const Bill = ({ onload }) => {
         <>
           <Tooltip title="Xem chi tiết">
             <Link to={`/bill/${id}`}>
-              <Button type="text" icon={<IconArrowsMove />} className="custom-button" /> {/* Thêm lớp CSS cho nút */}
+              <Button type="text" icon={<IconEdit />} className="custom-button" /> {/* Thêm lớp CSS cho nút */}
             </Link>
           </Tooltip>
           {record.status !== "Tạo đơn hàng" && (
@@ -192,13 +214,14 @@ const Bill = ({ onload }) => {
   ];
 
   return (
-    <div className="custom-table">
-      {/* Bộ lọc */}
-      <div className="d-flex mb-4 flex-wrap align-items-center">
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
         <Input
+          style={{ width: '300px', marginRight: '10px' }}
+          placeholder="Tìm kiếm theo mã"
+          value={ma}
           onChange={(e) => setMa(e.target.value)}
-          placeholder="Tìm kiếm theo mã hóa đơn"
-          style={{ width: '400px', marginRight: '10px' }}
+          onPressEnter={handleSearch}
         />
         <Select
           placeholder="Chọn trạng thái"
@@ -208,17 +231,15 @@ const Bill = ({ onload }) => {
         >
           <Option value="">Tất cả</Option>
           {tabs.map(item => (
-            <Option key={item.trangThai} value={item.trangThai}>{item.trangThai}</Option>
+            <Option key={item.trangThai} value={item.trangThai}>
+              {item.trangThai} ({billStatistics[item.trangThai] || 0})
+            </Option>
           ))}
         </Select>
         <RangePicker onChange={handleDateChange} style={{ marginRight: '10px' }} />
-        <Button type="primary" onClick={handleSearch}>
-          Tìm
-        </Button>
+        <Button type="primary" onClick={handleSearch}>Tìm kiếm</Button>
       </div>
       <Tabs
-        defaultActiveKey=""
-        tabBarGutter={74}
         items={items}
         onChange={(key) => {
           setTrangThaiHoaDon(key);
@@ -249,3 +270,5 @@ const Bill = ({ onload }) => {
 };
 
 export default Bill;
+
+

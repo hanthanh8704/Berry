@@ -1,130 +1,167 @@
-import { Col, Form, Select } from "antd";
-import { Option } from "antd/es/mentions";
-import React, { useEffect, useState } from "react";
-import * as request from "views/utilities/httpRequest";
+  import React, { useEffect, useState } from "react";
+  import { Col, Form, Select, Divider } from "antd";
+  import * as request from 'views/utilities/httpRequest';
 
-const GHN = ({ dataAddress, prov, distr, war, disabledValue }) => {
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
+  const GHN = ({ dataAddress, thanhPho, phuong, huyen, disabledValue }) => {
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
 
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
+    const [selectedProvince, setSelectedProvince] = useState(null);
+    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [selectedWard, setSelectedWard] = useState(null);
 
-  const configApi = {
-    headers: {
-      Token: "aef361b5-f26a-11ed-bc91-ba0234fcde32",
-      "Content-Type": "application/json",
-      ShopId: 124173,
-    },
-  };
+    const configApi = {
+      headers: {
+        "Content-Type": "application/json",
+        Token: "693d8a79-3a3d-11ef-8e53-0a00184fe694",
+        ShopId: 192796,
+      },
+    };
 
-  useEffect(() => {
-    request.get("https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province", configApi).then((response) => {
-      setProvinces(response.data);
-    }).catch((e) => {
-      console.log(e);
-    });
-    if (distr !== undefined && war !== undefined) {
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${prov}`, configApi).then((response) => {
-        setDistricts(response.data);
-      }).catch((e) => {
-        console.log(e);
-      });
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${distr}`, configApi).then((response) => {
-        setWards(response.data);
-      }).catch((e) => {
-        console.log(e);
-      });
-    }
-  }, [prov, distr, war]);
+    useEffect(() => {
+      request.get("https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province", configApi)
+        .then((response) => {
+          setProvinces(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching provinces:', error);
+        });
+    }, []);
 
-  const handleProvinceChange = (provinceCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceCode}`, configApi).then((response) => {
-      setDistricts(response.data);
-    }).catch((e) => {
-      console.log(e);
-    });
-    setSelectedProvince(provinceCode);
-  };
+    useEffect(() => {
+      if (thanhPho && huyen) {
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${thanhPho}`, configApi)
+          .then((response) => {
+            setDistricts(response.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching districts:', error);
+          });
 
-  const handleDistrictChange = (districtCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtCode}`, configApi).then((response) => {
-      setWards(response.data);
-    }).catch((e) => {
-      console.log(e);
-    });
-    setSelectedDistrict(districtCode);
-  };
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${huyen}`, configApi)
+          .then((response) => {
+            setWards(response.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching wards:', error);
+          });
+      }
+    }, [thanhPho, huyen]);
 
-  useEffect(() => {
-    setSelectedProvince(prov);
-    setSelectedDistrict(distr);
-    setSelectedWard(war);
-    console.log(`${prov} - ${distr} - ${war}`);
-  }, [prov, distr, war]);
+    const handleProvinceChange = (provinceCode) => {
+      setSelectedProvince(provinceCode);
+      setSelectedDistrict(null);
+      setSelectedWard(null);
+      if (provinceCode) {
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceCode}`, configApi)
+          .then((response) => {
+            setDistricts(response.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching districts:', error);
+          });
+      }
+    };
 
-  const handleWardChange = (wardCode) => {
-    dataAddress({
-      province: selectedProvince,
-      district: selectedDistrict,
-      ward: wardCode,
-    });
-  };
+    const handleDistrictChange = (districtCode) => {
+      setSelectedDistrict(districtCode);
+      setSelectedWard(null);
+      if (districtCode) {
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtCode}`, configApi)
+          .then((response) => {
+            setWards(response.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching wards:', error);
+          });
+      }
+    };
 
-  return (
-    <>
-      <Col span={8}>
-        <Form.Item label="Tỉnh/thành phố" name={"province"} initialValue={!prov ? null : parseInt(prov)} rules={[{ required: true, message: "Tỉnh thành phố không được để trống!" },]}>
-          <Select showSearch onChange={handleProvinceChange} placeholder="Chọn tỉnh/thành phố..." optionFilterProp="children"
-            filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={!prov ? null : parseInt(prov)}
-            disabled={disabledValue}
+    const handleWardChange = (wardCode) => {
+      setSelectedWard(wardCode);
+    };
+
+    useEffect(() => {
+      if (dataAddress) {
+        dataAddress({
+          thanhPho: selectedProvince,
+          huyen: selectedDistrict,
+          phuong: selectedWard,
+        });
+      }
+    }, [selectedProvince, selectedDistrict, selectedWard, dataAddress]);
+
+    return (
+      <>
+        <Col span={8}>
+          <Form.Item
+            name="thanhPho"
+            label="Thành phố"
+            rules={[{ required: true, message: "Thành phố không được để trống!" }]}
           >
-            {provinces.map((province) => (
-              <Option key={province.ProvinceID} value={province.ProvinceID}>
-                {province.ProvinceName}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </Col>
-      <Col span={8}>
-        <Form.Item label="Quận/huyện" name={"district"} initialValue={!distr ? null : parseInt(distr)} rules={[{ required: true, message: "Quận huyện không được để trống!" },]}>
-          <Select showSearch onChange={handleDistrictChange} placeholder="Chọn quận/huyện..." optionFilterProp="children"
-            filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={!distr ? null : parseInt(distr)}
-            disabled={disabledValue}
+            <Select
+              showSearch
+              placeholder="Chọn thành phố"
+              optionFilterProp="children"
+              onChange={handleProvinceChange}
+              value={thanhPho}
+              filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+            >
+              {provinces.map((province) => (
+                <Select.Option key={province.ProvinceID} value={province.ProvinceID}>
+                  {province.ProvinceName}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            name="huyen"
+            label="Huyện"
+            rules={[{ required: true, message: "Huyện không được để trống!" }]}
           >
-            {districts.map((province) => (
-              <Option key={province.DistrictID} value={province.DistrictID}>
-                {province.DistrictName}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </Col>
-      <Col span={8}>
-        <Form.Item label="Xã/phường/thị trấn" initialValue={war} name={"ward"} rules={[{ required: true, message: "Xã phường không được để trống!" },]}>
-          <Select showSearch onChange={handleWardChange} placeholder="Chọn xã/phường/thị trấn..." optionFilterProp="children"
-            filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={war}
-            disabled={disabledValue}
+            <Select
+              showSearch
+              placeholder="Chọn huyện"
+              optionFilterProp="children"
+              onChange={handleDistrictChange}
+              value={huyen}
+              filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+            >
+              {districts.map((district) => (
+                <Select.Option key={district.DistrictID} value={district.DistrictID}>
+                  {district.DistrictName}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            name="phuong"
+            label="Phường"
+            rules={[{ required: true, message: "Phường không được để trống!" }]}
           >
-            {wards.map((ward) => (
-              <Option
-                key={ward.WardCode}
-                value={ward.WardCode}
-              >
-                {ward.WardName}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </Col>
-    </>
-  );
-};
+            <Select
+              showSearch
+              placeholder="Chọn phường"
+              optionFilterProp="children"
+              onChange={handleWardChange}
+              value={phuong}
+              filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+            >
+              {wards.map((ward) => (
+                <Select.Option key={ward.WardCode} value={ward.WardCode}>
+                  {ward.WardName}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </>
+    );
+  };
 
-export default GHN;
+  export default GHN;

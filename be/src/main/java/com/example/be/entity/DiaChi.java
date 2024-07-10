@@ -1,7 +1,11 @@
 package com.example.be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.sql.Timestamp;
 
 @Getter
@@ -17,43 +21,48 @@ public class DiaChi {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne
     @JoinColumn(name = "id_khach_hang")
-    private KhachHang khachHang;
+    @JsonIgnore
+    private KhachHang idKhachHang;
+
     @Column(name = "ho_ten")
     private String hoTen;
+
     @Column(name = "so_dien_thoai")
     private String soDienThoai;
-    @Column(name = "duong")
-    private String duong;
 
     @Column(name = "thanh_pho")
     private String thanhPho;
 
+    @Column(name = "huyen")
+    private String huyen;
+
     @Column(name = "phuong")
     private String phuong;
 
-    @Column(name = "tinh")
-    private String tinh;
-
-    @Column(name = "ghichu")
-    private String ghichu;
-
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
-    @Column(name = "ngay_sua_cuoi")
-    private Timestamp ngaySuaCuoi;
-
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private String trangThai;
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+    @Column(name = "dia_chi_cu_the")
+    private String diaChiCuThe;
+
+    @Column(name = "dia_chi_mac_dinh")
+    private Boolean diaChiMacDinh;
+    @Column(name = "deleted")
+    private boolean deleted;
 }

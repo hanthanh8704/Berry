@@ -20,6 +20,7 @@ import java.util.List;
 public class PhieuGiamGia {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "ma")
@@ -54,4 +55,14 @@ public class PhieuGiamGia {
 
     @Column(name = "hinh_thuc_giam")
     private String hinhThucGiam;
+
+    @Column(name = "nguoi_tao")
+    private String nguoiTao;
+
+    @Column(name = "nguoi_sua")
+    private String nguoiSua;
+    @Column(name = "loai")
+    private String loai;
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

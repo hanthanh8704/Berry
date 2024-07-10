@@ -22,7 +22,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
                     ROW_NUMBER() OVER(ORDER BY sp.ngay_tao DESC) AS indexs,
                     hdc.id AS id,
                     CONCAT(sp.ten, ' [', ms.ten, ' - ', kc.ten, ']') AS name,
-                    ctsp.ma AS maSPCT,
+                    ctsp.maCTSP AS maSPCT,
                     ms.ten AS mauSac,
                     kc.ten AS kichCo,
                     cl.ten AS chatLieu,
@@ -48,7 +48,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
                     (:#{#req.idHoaDon} IS NULL OR hdc.id_hoa_don = :#{#req.idHoaDon})
                     AND (:#{#req.trangThai} IS NULL OR hdc.trang_thai LIKE CONCAT('%', :#{#req.trangThai}, '%'))
                 GROUP BY 
-                    hdc.id, sp.ten, ms.ten, kc.ten, ctsp.ma, cl.ten, th.ten, hdc.don_gia, img.anh, hdc.so_luong, hdc.trang_thai
+                    hdc.id, sp.ten, ms.ten, kc.ten, ctsp.maCTSP, cl.ten, th.ten, hdc.don_gia, img.anh, hdc.so_luong, hdc.trang_thai
             """, nativeQuery = true)
     Page<HoaDonChiTietResponse> getAllHoaDonChiTiet(@Param("req") BillDetailRequest req, Pageable pageable);
 

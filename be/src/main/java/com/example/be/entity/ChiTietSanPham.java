@@ -52,18 +52,14 @@ public class ChiTietSanPham {
     @ManyToOne
     @JoinColumn(name = "id_anh")
     private Anh anh;
-
-    @Column(name = "ma")
-    private String ma;
+    @Column(name = "maCTSP")
+    private String maCTSP;
 
     @Column(name = "so_luong")
     private Integer soLuong;
 
     @Column(name = "gia_ban")
     private BigDecimal giaBan;
-
-    @Column(name = "gia_nhap")
-    private BigDecimal giaNhap;
 
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

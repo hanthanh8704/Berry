@@ -15,10 +15,8 @@ import java.sql.Timestamp;
 public class MauSac {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "ma")
-    private String ma;
 
     @Column(name = "ten")
     private String ten;

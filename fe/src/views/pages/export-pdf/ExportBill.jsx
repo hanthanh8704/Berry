@@ -98,6 +98,18 @@ function TemplateExportBill() {
         </table>
       </div>
 
+      <div className="total-info">
+        <h3>Thông tin thanh toán</h3>
+        {hoaDon && (
+          <div className="info-box">
+            <p><strong>Giảm giá : </strong> <FormatCurrency value={hoaDon.soTienDuocGiam} /></p>
+            <p><strong>Phí vận chuyển : </strong> <FormatCurrency value={hoaDon.phiShip} /></p>
+            <p><strong className="text-danger">Tổng tiền phải thanh toán:</strong> <FormatCurrency value={hoaDon.tongTien + hoaDon.phiShip} /></p>
+            <p><strong>Trạng thái : {hoaDon.trangThaiHoaDon}</strong></p>
+          </div>
+        )}
+      </div>
+
       {hoaDon && hoaDon.phieuGiamGia && (
         <div className="voucher-info">
           <h3>Thông tin giảm giá</h3>
@@ -111,18 +123,6 @@ function TemplateExportBill() {
           </div>
         </div>
       )}
-
-      <div className="total-info">
-        <h3>Thông tin thanh toán</h3>
-        {hoaDon && (
-          <div className="info-box">
-            <p><strong>Giảm giá : </strong> <FormatCurrency value={hoaDon.soTienDuocGiam} /></p>
-            <p><strong>Phí vận chuyển : </strong> <FormatCurrency value={hoaDon.phiShip} /></p>
-            <p><strong className="text-danger">Tổng tiền phải thanh toán:</strong> <FormatCurrency value={hoaDon.tongTien + hoaDon.phiShip} /></p>
-            <p><strong>Trạng thái : {hoaDon.trangThaiHoaDon}</strong></p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

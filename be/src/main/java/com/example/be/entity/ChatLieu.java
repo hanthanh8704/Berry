@@ -17,14 +17,8 @@ public class ChatLieu {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ma")
-    private String ma;
-
     @Column(name = "ten")
     private String ten;
-
-    @Column(name = "mota")
-    private String mota;
 
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;

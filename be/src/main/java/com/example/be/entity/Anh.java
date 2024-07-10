@@ -17,9 +17,6 @@ public class Anh {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ma")
-    private String ma;
-
     @Column(name = "anh")
     private String anh;
 
@@ -31,5 +28,4 @@ public class Anh {
 
     @Column(name = "trang_thai")
     private String trangThai;
-
 }

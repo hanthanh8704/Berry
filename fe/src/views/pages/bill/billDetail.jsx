@@ -14,7 +14,7 @@ import TextArea from "antd/es/input/TextArea";
 import Title from "antd/es/typography/Title";
 import InfoBill from "./changeCustomer";
 import changeBill from "./changeBill";
-import { FaRegFileAlt, FaTruck, FaEdit } from 'react-icons/fa';
+import { FaRegFileAlt, FaTruck, FaEdit,FaRegFlushed,FaRegEyeSlash } from 'react-icons/fa';
 import { MdOutlineConfirmationNumber, MdPayment, MdOutlineCancelPresentation, MdOutlineChangeCircle } from 'react-icons/md';
 import { GiConfirmed } from 'react-icons/gi';
 import * as request from "views/utilities/httpRequest";
@@ -298,16 +298,16 @@ const BillDetail = () => {
         <h2 className="breadcrumb-item">Mã đơn hàng : {bill.ma}</h2>
       </nav>
       <div className="container overflow-x-auto mb-3">
-        <Timeline minEvents={8} placeholder maxEvents={billHistory.length} style={{ height: "400px" }}>
+        <Timeline minEvents={6} placeholder maxEvents={billHistory.length} style={{ height: "400px" }}>
           {billHistory.map((item, index) => (
             <TimelineEvent
               key={index}
               icon={
-                item.trangThai === "Chờ thanh toán" ? FaRegFileAlt
+                item.trangThai === "Chờ thanh toán" ? FaRegEyeSlash
                   : item.trangThai === "Tạo đơn hàng" ? FaRegFileAlt
                     : item.trangThai === "Chờ xác nhận" ? MdOutlineConfirmationNumber
                       : item.trangThai === "Xác nhận thanh toán" ? MdPayment
-                        : item.trangThai === "Chờ giao" ? FaTruck
+                        : item.trangThai === "Chờ giao" ? FaRegFlushed
                           : item.trangThai === "Đang giao" ? FaTruck
                             : item.trangThai === "Hoàn thành" ? GiConfirmed
                               : item.trangThai === "Hủy" ? MdOutlineCancelPresentation : ""
