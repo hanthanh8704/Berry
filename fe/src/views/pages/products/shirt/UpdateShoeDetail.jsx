@@ -36,6 +36,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
     const loadImages = () => {
         request.get(`/images/${props.id}`).then(response => {
             setListImages(response);
+            console.log(response.data);
         }).catch(e => {
             console.log(e);
         })
@@ -55,6 +56,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
             onOk: async () => {
                 await request.remove(`/images/${id}`).then(response => {
                     toast.success("Xóa thành công!");
+                    onSuccess();
                     loadImages();
                 }).catch(e => {
                     console.log(e);
@@ -126,17 +128,16 @@ function UpdateShoeDetail({ props, onSuccess }) {
     };
     const handleOk = (data) => {
         console.log(data);
-        data.id = props.id
+        data.shirt = props.id
         Modal.confirm({
             title: "Xác nhận",
             maskClosable: true,
-            content: `Xác nhận thêm ảnh?`,
+            content: `Xác nhận cập nhật?`,
             okText: "Xác nhận",
             cancelText: "Hủy",
             onOk: async () => {
-                await request.put(`/shoe-detail/${props.id}`, data).then(response => {
+                await request.put(`/shirt-detail/${props.id}`, data).then(response => {
                     toast.success('Cập nhật thành công!');
-                    onreset;
                     setIsModalOpen(false);
                     onSuccess();
                 }).catch(e => {
@@ -149,6 +150,18 @@ function UpdateShoeDetail({ props, onSuccess }) {
     const handleCancel = () => {
         setIsModalOpen(false);
     };
+
+    // useEffect(() => {
+    //     loadShoeDetail();
+    // }, [])
+
+    // const loadShoeDetail = () => {
+    //     request.get('/shirt-detail', {
+    //     }).then(response => {
+    //         setListProductDetail(response.data);
+
+    //     })
+    // }
 
     const loadSize = () => {
         request.get("/size", { params: { name: searchSize, sizePage: 1_000_000 } }).then((response) => {
@@ -224,7 +237,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
             </Tooltip>
             <Modal title={props.ten} open={isModalOpen} onCancel={handleCancel} footer={
                 <>
-                    <Button type='primary' htmlType='submit' form='formUpdate' className='bg-warning'>Cập nhật</Button>
+                    <Button type='primary' htmlType='submit' form='formUpdate' className='bg-primary'>Cập nhật</Button>
                 </>
             } width={800}>
                 <Form layout='vertical' form={form} onFinish={handleOk} id='formUpdate'>
@@ -393,18 +406,19 @@ function UpdateShoeDetail({ props, onSuccess }) {
                             <div className="d-flex flex-wrap">
                                 {listImages?.map((image, index) => (
                                     <div className="position-relative me-2 mt-2">
-                                        <img src={image.images} alt="images" width={100} height={100} className="object-fit-cover border border-warning" />
+                                        <img src={image.ten} alt="images" width={100} height={100} className="object-fit-cover border border-primary" />
                                         <div className="position-absolute end-0 top-0">
                                             <button type="button" class="btn btn-sm border-0 text-danger" onClick={() => handleDeleteImage(image.id)}>
                                                 <Tooltip title="Xóa ảnh">
                                                     <i className="fas fa-trash"><IconTrash /></i>
                                                 </Tooltip>
                                             </button>
+
                                         </div>
                                     </div>
                                 ))}
                                 {listImages?.length < 3 &&
-                                    <div style={{ width: "100px", height: "100px" }} className="position-relative rounded-0 border border-warning d-flex align-items-center justify-content-center mt-2">
+                                    <div style={{ width: "100px", height: "100px" }} className="position-relative rounded-0 border border-primary d-flex align-items-center justify-content-center mt-2">
                                         <input
                                             type="file"
                                             accept="image/*"

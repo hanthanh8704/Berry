@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +55,9 @@ public class CloudinaryUtils {
             List<Map> images = (List<Map>) response.get("resources");
 
             images.sort((image1, image2) -> {
-                String createdAt1 = (String) image1.get("ngay_tao");
-                String createdAt2 = (String) image2.get("ngay_tao");
-                return createdAt2.compareTo(createdAt1);
+                String createdAt1 = (String) image1.get("created_at");
+                String createdAt2 = (String) image2.get("created_at");
+                return Comparator.nullsFirst(String::compareTo).compare(createdAt2, createdAt1);
             });
 
             return images;
@@ -65,5 +66,4 @@ public class CloudinaryUtils {
             return null;
         }
     }
-
 }

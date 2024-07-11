@@ -26,6 +26,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
         ROW_NUMBER() OVER (ORDER BY sp.ngay_tao DESC) AS indexs,
         GROUP_CONCAT(DISTINCT ms.ten) AS mauSac,
         GROUP_CONCAT(DISTINCT kc.ten) AS kichCo,
+        SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT img.anh ORDER BY img.anh), ',', 1) AS images,
         dm.ten AS danhMuc,
         MIN(ctsp.gia_ban) AS minPrice,
         MAX(ctsp.gia_ban) AS maxPrice,
@@ -35,6 +36,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     LEFT JOIN mau_sac ms ON ctsp.id_mau_sac = ms.id
     LEFT JOIN kich_co kc ON ctsp.id_kich_co = kc.id
     LEFT JOIN danh_muc dm ON sp.id_danh_muc = dm.id
+    LEFT JOIN (SELECT id_chi_tiet_san_pham, 
+               GROUP_CONCAT(DISTINCT anh) AS anh FROM anh GROUP BY id_chi_tiet_san_pham) img 
+    ON ctsp.id = img.id_chi_tiet_san_pham
     GROUP BY
         sp.id,
         sp.ma,
@@ -43,6 +47,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
         sp.trang_thai
     """, nativeQuery = true)
     Page<SanPhamReponse> getAllSanPham(@Param("req") SanPhamSearchRequest request, Pageable pageable);
+
 
     @Query(value = """
              SELECT

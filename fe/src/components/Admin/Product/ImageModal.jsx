@@ -1,16 +1,16 @@
 import { Empty, Modal } from "antd";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import swal from "sweetalert";
-import * as request from "views/utilities/httpRequest"
-
+import * as request from "views/utilities/httpRequest";
+import { IconPhotoFilled } from "@tabler/icons-react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ImageModal({ colorName, sttModal, handleChange }) {
     const [selectedImages, setSelectedImages] = useState([]);
     const [listImage, setListImage] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // State for loading indicator
+
     useEffect(() => {
         loadImage(colorName);
     }, [colorName]);
@@ -24,6 +24,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
     }
 
     const handleImageSelect = (event) => {
+
         const imageUrl = event.target.value;
         if (event.target.checked) {
             if (selectedImages.length >= 3) {
@@ -41,7 +42,6 @@ function ImageModal({ colorName, sttModal, handleChange }) {
             );
         }
     };
-
     useEffect(() => {
         handleChange(colorName, sttModal, selectedImages);
 
@@ -68,53 +68,58 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                 dangerMode: true,
             }).then(async (willDelete) => {
                 if (willDelete) {
-                    setLoading(true);
+                    setLoading(true); // Set loading state to true when uploading
                     formData.append("folder", colorName);
-                    await request.post('/image-gallery', formData, { headers: { "Content-Type": "multipart/form-data", }, }).then(response => {
-                        toast.success("Thêm thành công!");
-                        loadImage(colorName);
-                        setLoading(false);
-                    }).catch(e => {
-                        console.log(e);
-                    })
+                    await request.post('/image-gallery', formData, { headers: { "Content-Type": "multipart/form-data" } })
+                        .then(response => {
+                            toast.success("Thêm thành công!");
+                            loadImage(colorName);
+                        })
+                        .catch(e => {
+                            console.log(e);
+                        })
+                        .finally(() => {
+                            setLoading(false); // Set loading state to false when done
+                        });
                 }
             });
         } else {
             toast.error("Không tìm thấy ảnh hợp lệ!");
         }
     }
+
     return (
         <>
             <button
                 type="button"
-                class="btn border-0 btn-sm"
+                className="btn border-0 btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target={`#exampleModal${sttModal}`}
             >
-                <i className="fas fa-image"></i>
+                <IconPhotoFilled />
             </button>
 
             <div
-                class="modal fade modal-lg"
+                className="modal fade modal-lg"
                 id={`exampleModal${sttModal}`}
-                tabindex="-1"
+                tabIndex="-1"
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
             >
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">
                                 Chọn hình ảnh
                             </h1>
                             <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                             ></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             <div className="">
                                 <h6>Danh sách ảnh của sản phẩm</h6>
                                 <div className="row overflow-auto text-center">
@@ -145,7 +150,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                                     <div className="">
                                         <button
                                             className="position-relative d-flex align-items-center 
-                            justify-content-center btn btn-warning btn-sm"
+                                            justify-content-center btn btn-primary btn-sm"
                                         >
                                             <i className="fas fa-plus"></i> Thêm ảnh vào hệ thống
                                             <input
@@ -159,7 +164,12 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                                         </button>
                                     </div>
                                 </div>
-                                {loading ? <Loading /> : (
+                                {loading ? (
+                                    <div className="text-center my-4">
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
+                                ) : (
                                     <div
                                         className="row overflow-auto text-center"
                                         style={{ height: "250px" }}
@@ -190,10 +200,10 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                                 )}
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             <button
                                 type="button"
-                                class="btn btn-secondary"
+                                className="btn btn-secondary"
                                 data-bs-dismiss="modal"
                             >
                                 Close

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as request from "views/utilities/httpRequest";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 import { Button, Form, Input, Modal, Select, Space } from "antd";
 import { IconPlus } from "@tabler/icons-react";
@@ -23,6 +24,7 @@ function AddShirtModal({ onAddSuccess }) {
             onAddSuccess();
             form.resetFields();
             setIsModalOpen(false);
+            onSuccess();
         }).catch(e => {
             console.log(e);
             toast.error(e.response.data);
@@ -51,7 +53,7 @@ function AddShirtModal({ onAddSuccess }) {
 
     return (
         <>
-            <ToastContainer />
+
             <Button type="primary" onClick={showModal} className="bg-primary" size="large">
                 <IconPlus />
             </Button>
@@ -88,11 +90,11 @@ function AddShirtModal({ onAddSuccess }) {
                                 </>
                             )}
                         >
-                            <Option value="">-- Chọn danh mục --</Option>
+                            <Select.Option value="">-- Chọn danh mục --</Select.Option>
                             {cateList.map((item) => (
-                                <Option key={item.id} value={item.id}>
+                                <Select.Option key={item.id} value={item.id}>
                                     {item.ten}
-                                </Option>
+                                </Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
@@ -102,8 +104,9 @@ function AddShirtModal({ onAddSuccess }) {
                         </Button>
                     </div>
                 </Form>
-            </Modal>
 
+            </Modal>
+            <ToastContainer />
         </>
     );
 }

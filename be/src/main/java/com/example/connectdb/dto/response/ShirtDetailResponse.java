@@ -11,6 +11,7 @@ public interface ShirtDetailResponse {
     @Value("#{target.indexs}")
     Integer getIndex();
     Integer getId();
+    Integer getSanPham();
     String getMa();
     String getTen();
     String getMauSac();

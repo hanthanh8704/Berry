@@ -120,7 +120,7 @@ function Product() {
     ];
 
     return (
-        <div style={{ background: '#fff', padding: '20px' }}>
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '10px' }}>
             <ToastContainer />
             <Card className="mb-1 p-2">
                 <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
@@ -166,24 +166,7 @@ function Product() {
                             ))}
                         </Select>
                     </Col>
-                    <Col span={8}>
-                        <label className="mb-2">Thương hiệu</label>
-                        <Select
-                            showSearch
-                            onChange={setSelectedBrand}
-                            placeholder="Chọn thương hiệu..."
-                            optionFilterProp="children"
-                            style={{ width: "100%" }}
-                            onSearch={setSearchBrand}
-                        >
-                            <Select.Option value="">Chọn thương hiệu</Select.Option>
-                            {listBrand.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Col>
+
                 </Row>
             </Card>
             <Card>

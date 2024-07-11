@@ -8,10 +8,10 @@ import * as request from "views/utilities/httpRequest";
 
 function Color() {
     const [colorList, setColorList] = useState([]);
-    const [filteredColorList, setFilteredColorList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
+    const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
     const [formAdd] = Form.useForm();
@@ -19,17 +19,16 @@ function Color() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        loadData(currentPage, pageSize, searchValue);
+    }, [currentPage, pageSize, searchValue]);
 
-    useEffect(() => {
-        handleSearch(searchValue);
-    }, [colorList, searchValue]);
-
-    const loadData = async () => {
+    const loadData = async (page, size, search) => {
         try {
-            const response = await request.get("/color");
+            const response = await request.get("/color", {
+                params: { name: search, page, sizePage: size },
+            });
             setColorList(response.data);
+            setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -52,7 +51,7 @@ function Color() {
     const handleDelete = async (id) => {
         try {
             await request.remove(`/color/${id}`);
-            loadData();
+            loadData(currentPage, pageSize, searchValue);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -75,7 +74,7 @@ function Color() {
                         toast.success("Thêm màu sắc thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData();
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
@@ -100,7 +99,7 @@ function Color() {
                         toast.success("Cập nhật màu sắc thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData();
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
@@ -130,14 +129,8 @@ function Color() {
 
     const handleSearch = (value) => {
         setSearchValue(value);
-        const filteredData = colorList.filter((item) =>
-            item.ten.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredColorList(filteredData);
         setCurrentPage(1);
     };
-
-    const paginatedData = filteredColorList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
         <div>
@@ -147,7 +140,7 @@ function Color() {
                 <Col span={13}>
                     <label className="mb-1">Màu sắc</label>
                     <Input
-                        onChange={(event) => handleSearch(event.target.value)}
+                        onChange={(event) => setSearchValue(event.target.value)}
                         placeholder="Tìm kiếm màu sắc theo tên..."
                     />
                 </Col>
@@ -164,7 +157,7 @@ function Color() {
                 </Col>
             </Row>
             <Table
-                dataSource={paginatedData}
+                dataSource={colorList}
                 columns={[
                     {
                         title: "#",
@@ -212,7 +205,7 @@ function Color() {
                     pageSize: pageSize,
                     pageSizeOptions: ["5", "10", "20", "50", "100"],
                     showQuickJumper: true,
-                    total: filteredColorList.length,
+                    total: totalPages * pageSize,
                     onChange: (page, pageSize) => {
                         setCurrentPage(page);
                         setPageSize(pageSize);

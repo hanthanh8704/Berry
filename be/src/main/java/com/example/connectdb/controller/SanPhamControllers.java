@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/shirt")
+@RequestMapping("/api/shirt")
 public class SanPhamControllers {
 
 

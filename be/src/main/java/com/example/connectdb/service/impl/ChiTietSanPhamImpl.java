@@ -97,13 +97,13 @@ public class ChiTietSanPhamImpl  implements ChiTietSanPhamService {
                 ChiTietSanPham shoeDetailSave = chiTietSanPhamRepository.save(convert);
                 SanPham shoe = shoeDetailSave.getSanPham();
                 sanPhamRepository.save(shoe);
-//                if (request.getListImages().size() >= 5)
-//                    throw new RestApiException("Chỉ được thêm tối đa 5 hình ảnh!");
-//                if (shoeDetailSave != null) {
-//                    for (String x : request.getListImages()) {
-//                        anhRepository.save(Anh.builder().build());
-//                    }
-//                }
+                if (request.getListImages().size() >= 5)
+                    throw new RestApiException("Chỉ được thêm tối đa 5 hình ảnh!");
+                if (shoeDetailSave != null) {
+                    for (String x : request.getListImages()) {
+                        anhRepository.save(Anh.builder().chiTietSanPham(shoeDetailSave).ten(x).trangThai("Hoạt động").build());
+                    }
+                }
             }
         }
         return "Thêm thành công!";
@@ -112,11 +112,8 @@ public class ChiTietSanPhamImpl  implements ChiTietSanPhamService {
     @Override
     @Transactional
     public ChiTietSanPham update(Integer id, UpdateShirtDetailRequest request) {
-        ChiTietSanPham old = chiTietSanPhamRepository.findById(id).get();
-//        if(chiTietSanPhamRepository.existsByMaAndMaNot(old.getMa(), GenCode.genCodeByName(old.getSanPham().getTen()
-//                + request.getMauSac() + request.getKichCo() + request.getTayAo()))){
-//            throw new RestApiException("Phiên bản này đã tồn tại!");
-//        }
+        ChiTietSanPham old = chiTietSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RestApiException("ChiTietSanPham not found with id " + id));
         old.setGiaBan(request.getGiaBan());
         old.setSoLuong(request.getSoLuong());
         old.setKichCo(kichCoRepository.findByTen(request.getKichCo()));
@@ -129,6 +126,7 @@ public class ChiTietSanPhamImpl  implements ChiTietSanPhamService {
                 + request.getMauSac() + request.getKichCo() + request.getTayAo()));
         return chiTietSanPhamRepository.save(old);
     }
+
 
     @Override
     public ChiTietSanPham delete(Integer id) {

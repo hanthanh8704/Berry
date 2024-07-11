@@ -9,7 +9,7 @@ function ImagesGallery() {
     const apiKey = "196417276159844";
     const apiSecret = "IylYoqd3ilVXExMcEfd7yg8VDQI";
     const cloudName = "dqvs7ak1u";
-    const folder = "Pỉctures"; // Tên thư mục chứa ảnh bạn muốn lấy.
+    const folder = "Berry"; // Tên thư mục chứa ảnh bạn muốn lấy.
 
     // Gọi API của Cloudinary để lấy danh sách ảnh từ thư mục cụ thể
     axios

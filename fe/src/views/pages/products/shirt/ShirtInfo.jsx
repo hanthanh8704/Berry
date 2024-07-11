@@ -14,9 +14,11 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { Option } from "antd/es/mentions";
 import { IconEdit, IconTrash, IconSettings } from "@tabler/icons-react";
+import { IconLibraryPhoto, IconQrcode } from "@tabler/icons-react";
 import QRCode from 'qrcode-generator';
 import download from 'downloadjs';
 import JSZip from "jszip";
+import Category from "../attribute/Category";
 
 
 function ShoeInfo() {
@@ -102,16 +104,6 @@ function ShoeInfo() {
     };
 
 
-    //   const handleWeightChange = (value, id) => {
-    //     const x = listProductDetail.find((detail) => detail.id === id);
-    //     const index = listUpdate.findIndex((item) => item.id === id);
-    //     if (index !== -1) {
-    //       listUpdate[index].weight = value;
-    //     } else {
-    //       listUpdate.push({ id: id, soLuong: x.soLuong, giaBan: x.giaBan, weight: value });
-    //     }
-    //     console.log(listUpdate);
-    //   }
     const handleQuantityChange = (value, id) => {
         const x = listProductDetail.find((detail) => detail.id === id);
         const index = listUpdate.findIndex((item) => item.id === id);
@@ -172,11 +164,7 @@ function ShoeInfo() {
             dataIndex: 'index',
             key: 'index',
         },
-        {
-            title: 'Mã',
-            dataIndex: 'ma',
-            key: 'ma',
-        },
+
         {
             title: 'Tên',
             dataIndex: 'ten',
@@ -253,27 +241,8 @@ function ShoeInfo() {
                 </>
             )
         },
-        // {
-        //   title: 'Cân nặng',
-        //   dataIndex: 'weight',
-        //   key: 'weight',
-        //   render: (x, record) => (
-        //     <>
-        //       {selectedRowKeys.includes(record.id) ? (
-        //         <InputNumber defaultValue={x} formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        //           parser={(value) => value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : ""}
-        //           controls={false}
-        //           min={0}
-        //           onChange={(value) => handleWeightChange(value, record.id)}
-        //         />
-        //       ) : (
-        //         <>{x}</>
-        //       )}
-        //     </>
-        //   )
-        // },
         {
-            title: (<i className="fas fa-image"></i>),
+            title: (<IconLibraryPhoto />),
             dataIndex: 'images',
             key: 'images',
             render: (images) => {
@@ -297,7 +266,7 @@ function ShoeInfo() {
             key: 'action',
             render: (x, record) => (
                 <>
-                    <UpdateShoeDetail props={record} onSuccess={() => loadShoeDetail()} />
+                    <UpdateShoeDetail props={record} onSuccess={() => loadShoeDetail(id, currentPage, pageSize)} />
                     <Tooltip placement="bottom" title="Xóa">
                         <Button type="text"><i className="fas fa-trash text-danger"><IconTrash /></i></Button>
                     </Tooltip>
@@ -312,18 +281,31 @@ function ShoeInfo() {
         return () => clearTimeout(timeout);
     }, []);
 
+    // const loadData = async (id) => {
+    //     const response = await request.get(`/shirt/${id}`,).then(response => {
+    //         // if (response.status === 200) {
+    //         setProduct(response.data);
+    //         // Cập nhật người tạo và người sửa thành 'Đạt Thành'
+    //         responseData.nguoiTao = 'Đạt Thành';
+    //         responseData.nguoiSua = 'Đạt Thành';
+
+    //         // Cập nhật ngày tạo và ngày sửa thành ngày hiện tại
+    //         responseData.ngayTao = new Date(new Date().getTime)
+    //         responseData.ngaySua = '2024'
+
+    //         console.log(response.data);
+    //         console.log(product.danhMuc.ten);
+    //         setLoading(false);
+    //         // }
+    //     }).catch(e => {
+    //         // toast.error(e.response.data);
+    //         console.log(e);
+    //     })
+    // }
     const loadData = async (id) => {
         const response = await request.get(`/shirt/` + id,).then(response => {
             // if (response.status === 200) {
             setProduct(response.data);
-            // Cập nhật người tạo và người sửa thành 'Đạt Thành'
-            responseData.nguoiTao = 'Đạt Thành';
-            responseData.nguoiSua = 'Đạt Thành';
-
-            // Cập nhật ngày tạo và ngày sửa thành ngày hiện tại
-            responseData.ngayTao = new Date(new Date().getTime)
-            responseData.ngaySua = '2024'
-
             console.log(response.data);
             console.log(product.danhMuc.ten);
             setLoading(false);
@@ -333,7 +315,6 @@ function ShoeInfo() {
             console.log(e);
         })
     }
-
     useEffect(() => {
         loadShoeDetail(id, currentPage, pageSize);
     }, [id, currentPage, pageSize, dataFilter])
@@ -348,11 +329,14 @@ function ShoeInfo() {
                 tayAo: dataFilter.tayAo,
                 coAo: dataFilter.coAo,
                 thuongHieu: dataFilter.thuongHieu,
-                id: id,
+                sanpham: id,
                 page: currentPage,
                 sizePage: pageSize,
             }
         }).then(response => {
+
+            console.log(id);
+            console.log(response.data);
             setListProductDetail(response.data.data);
             setTotalPages(response.data.totalPages);
         })
@@ -380,166 +364,167 @@ function ShoeInfo() {
 
     return (
         <>
-
-            <Breadcrumb className="mb-2"
-                items={[{ href: "/" }, { href: "/free/products", title: "Danh sách sản phẩm" }, { title: `${product.ten}` },]}
-            />
-            {/* Thông tin chung sản phẩm */}
-            <Row gutter={24}>
-                <Col xl={24} className="d-flex align-items-center py-1 mb-3" style={{ backgroundColor: "#F2F2F2" }}>
-                    <div className="flex-grow-1">
-                        <Title level={5} className="my-2">Thông tin sản phẩm</Title>
-                    </div>
-                    <div className="">
-                        <UpdateShoe props={product} onSuccess={() => { loadData(id); loadShoeDetail(id, currentPage, pageSize) }} />
-                    </div>
-                </Col>
-                <Col xl={8}>
-                    <ul className="list-unstyled">
-                        <li>
-                            Danh mục : hihih {/* Danh mục: <span className="float-end fw-semibold">{product.ten}</span> */}
-                        </li>
-                        <li>
-                            {/* Thương hiệu: <span className="float-end fw-semibold">{product.b}</span> */}
-                        </li>
-                    </ul>
-                </Col>
-                <Col xl={8}>
-                    <ul className="list-unstyled">
-                        <li>
-                            Người tạo: <span className="float-end fw-semibold">{product.nguoiTao ? product.nguoiTao : 'Đạt Thành'}</span>
-                        </li>
-                        <li>
-                            Người chỉnh sửa: <span className="float-end fw-semibold">{product.nguoiSua ? product.nguoiSua : 'Đạt Thành'}</span>
-                        </li>
-                    </ul>
-                </Col>
-                <Col xl={8}>
-                    <ul className="list-unstyled">
-                        <li>
-                            Ngày tạo: <span className="float-end fw-semibold"><FormatDate date={product.ngayTao ? product.ngayTao : new Date()} /></span>
-                        </li>
-                        <li>
-                            Ngày cập nhật cuối: <span className="float-end fw-semibold"><FormatDate date={product.ngaySua ? product.ngaySua : new Date()} /></span>
-                        </li>
-                    </ul>
-                </Col>
-
-
-                <Divider />
-            </Row>
-            {/* Thông tin chi tiết */}
-            <div className="d-flex">
-                <div className="flex-grow-1">
-                    <Title level={5}>Chi tiết sản phẩm</Title>
-                </div>
-                {selectedRowKeys.length > 0 && (
-                    <>
-                        <div className="me-2">
-                            <Button type="primary" onClick={() => downloadAllQRCode()}><i class="fa-solid fa-download me-2"></i> Tải QR</Button>
+            <div className="bg-white rounded-3">
+                <Breadcrumb className="mt-1 m-2"
+                    items={[{ href: "/" }, { href: "/free/products", title: "Danh sách sản phẩm" }, { title: `${product.ten}` },]}
+                />
+                {/* Thông tin chung sản phẩm */}
+                <Row gutter={24} >
+                    <Col xl={24} className="d-flex align-items-center py-1 m-1" >
+                        <div className="flex-grow-1">
+                            <Title level={4} className="m-2">Thông tin sản phẩm</Title>
                         </div>
-                        <div className="">
-                            <Button type="primary" onClick={() => handleUpdateFast()} className="bg-warning"><IconEdit /> Cập nhật {selectedRowKeys.length} sản phẩm</Button>
+                        <div className="me-4">
+                            <UpdateShoe props={product} onSuccess={() => { loadData(id); loadShoeDetail(id, currentPage, pageSize) }} />
                         </div>
-                    </>
-                )}
-            </div>
-            <Form layout='vertical' onFinish={(data) => setDataFilter(data)} form={formFilter}>
-                <Row gutter={10}>
-                    <Col span={8}>
-                        <Form.Item label="Kích cỡ" name={"size"}>
-                            <Select showSearch placeholder="Chọn kích cỡ..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn kích cỡ</Option>
-                                {listSize.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
                     </Col>
-                    <Col span={8}>
-                        <Form.Item label="Màu sắc" name={"color"}>
-                            <Select showSearch placeholder="Chọn màu sắc..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn màu sắc</Option>
-                                {listColor.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
+                    <Col xl={8}>
+                        <ul className="list-unstyled">
+                            <li className="my-2 ms-3">
+                                Danh mục : <span className="float-end fw-semibold me-5">Áo</span>
+                            </li>
+                            <li>
+                                {/* Thương hiệu: <span className="float-end fw-semibold">{product.b}</span> */}
+                            </li>
+                        </ul>
                     </Col>
-                    <Col span={8}>
-                        <Form.Item label="Chất liệu" name={"chatLieu"}>
-                            <Select showSearch placeholder="Chọn chất liệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn chất liệu</Option>
-                                {listSole.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
+                    <Col xl={8}>
+                        <ul className="list-unstyled me-3" >
+                            <li>
+                                Người tạo: <span className="float-end fw-semibold">{product.nguoiTao ? product.nguoiTao : 'Đạt Thành'}</span>
+                            </li>
+                            <li>
+                                Người chỉnh sửa: <span className="float-end fw-semibold">{product.nguoiSua ? product.nguoiSua : 'Đạt Thành'}</span>
+                            </li>
+                        </ul>
                     </Col>
-                    <Col span={8}>
-                        <Form.Item label="Thương hiệu" name={"thuongHieu"}>
-                            <Select showSearch placeholder="Chọn thương hiệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn thương hiệu</Option>
-                                {listBrand.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
+                    <Col xl={8}>
+                        <ul className="list-unstyled me-3">
+                            <li>
+                                Ngày tạo: <span className="float-end fw-semibold "><FormatDate date={product.ngayTao ? product.ngayTao : new Date()} /></span>
+                            </li>
+                            <li>
+                                Ngày cập nhật cuối: <span className="float-end fw-semibold"><FormatDate date={product.ngaySua ? product.ngaySua : new Date()} /></span>
+                            </li>
+                        </ul>
                     </Col>
-                    <Col span={8}>
-                        <Form.Item label="Tay áo" name={"tayAo"}>
-                            <Select showSearch placeholder="Chọn tay áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn tay áo</Option>
-                                {listSleeve.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                        <Form.Item label="Cổ áo" name={"coAo"}>
-                            <Select showSearch placeholder="Chọn cổ áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
-                                <Option value="">Chọn cổ áo</Option>
-                                {listCollar.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                        {item.ten}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </Col>
+
+
+                    <Divider />
                 </Row>
-                <div className="text-center">
-                    <Button className='me-1 bg-danger' onClick={() => { formFilter.resetFields() }} type='primary' icon={<i class="fa-solid fa-rotate-left"></i>}>Làm mới</Button>
-                    <Button htmlType='submit' className='bg-warning text-dark' type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
+                {/* Thông tin chi tiết */}
+                <div className="d-flex m-3" style={{ backgroundColor: "white" }}>
+                    <div className="flex-grow-1">
+                        <Title level={5}>Chi tiết sản phẩm</Title>
+                    </div>
+                    {selectedRowKeys.length > 0 && (
+                        <>
+                            <div className="me-2">
+                                <Button type="primary" onClick={() => downloadAllQRCode()}><IconQrcode /> Tải QR</Button>
+                            </div>
+                            <div className="">
+                                <Button type="primary" onClick={() => handleUpdateFast()} className="bg-primary"><IconEdit /> Cập nhật {selectedRowKeys.length} sản phẩm</Button>
+                            </div>
+                        </>
+                    )}
                 </div>
-            </Form>
-            <Table dataSource={listProductDetail} columns={columns} className="mt-3"
-                rowKey={"id"}
-                rowSelection={rowSelection}
-                pagination={{
-                    showSizeChanger: true,
-                    current: currentPage,
-                    pageSize: pageSize,
-                    pageSizeOptions: [5, 10, 20, 50, 100],
-                    showQuickJumper: true,
-                    total: totalPages * pageSize,
-                    onChange: (page, pageSize) => {
-                        setCurrentPage(page);
-                        setPageSize(pageSize);
-                    },
-                }} />
-            <ToastContainer />
+                <Form className="m-2" layout='vertical' onFinish={(data) => setDataFilter(data)} form={formFilter} style={{ backgroundColor: "white" }}>
+                    <Row gutter={10}>
+                        <Col span={8}>
+                            <Form.Item label="Kích cỡ" name={"size"}>
+                                <Select showSearch placeholder="Chọn kích cỡ..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn kích cỡ</Option>
+                                    {listSize.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item label="Màu sắc" name={"color"}>
+                                <Select showSearch placeholder="Chọn màu sắc..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn màu sắc</Option>
+                                    {listColor.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item label="Chất liệu" name={"chatLieu"}>
+                                <Select showSearch placeholder="Chọn chất liệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn chất liệu</Option>
+                                    {listSole.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item label="Thương hiệu" name={"thuongHieu"}>
+                                <Select showSearch placeholder="Chọn thương hiệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn thương hiệu</Option>
+                                    {listBrand.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item label="Tay áo" name={"tayAo"}>
+                                <Select showSearch placeholder="Chọn tay áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn tay áo</Option>
+                                    {listSleeve.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item label="Cổ áo" name={"coAo"}>
+                                <Select showSearch placeholder="Chọn cổ áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
+                                    <Option value="">Chọn cổ áo</Option>
+                                    {listCollar.map((item) => (
+                                        <Option key={item.id} value={item.id}>
+                                            {item.ten}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <div className="text-center">
+                        <Button className='me-1 bg-secondary' onClick={() => { formFilter.resetFields() }} type='primary' icon={<i class="fa-solid fa-rotate-left"></i>}>Làm mới</Button>
+                        <Button htmlType='submit' className='bg-primary text-white' type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
+                    </div>
+                </Form>
+                <Table dataSource={listProductDetail} columns={columns} className="mt-3"
+                    rowKey={"id"}
+                    rowSelection={rowSelection}
+                    pagination={{
+                        showSizeChanger: true,
+                        current: currentPage,
+                        pageSize: pageSize,
+                        pageSizeOptions: [5, 10, 20, 50, 100],
+                        showQuickJumper: true,
+                        total: totalPages * pageSize,
+                        onChange: (page, pageSize) => {
+                            setCurrentPage(page);
+                            setPageSize(pageSize);
+                        },
+                    }} />
+                <ToastContainer />
+            </div>
         </>
     );
 }

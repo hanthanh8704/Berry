@@ -31,4 +31,5 @@ public class SanPhamSearchRequest extends PageableRequest {
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private String trangThai;
+
 }

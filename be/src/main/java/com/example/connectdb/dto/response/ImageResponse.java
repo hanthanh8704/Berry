@@ -6,5 +6,5 @@ import org.springframework.data.rest.core.config.Projection;
 @Projection(types = {Anh.class})
 public interface ImageResponse {
     Integer getId();
-    String getName();
+    String getTen();
 }

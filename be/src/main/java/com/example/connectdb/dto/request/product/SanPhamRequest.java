@@ -19,10 +19,8 @@ public class SanPhamRequest extends PageableRequest {
     // DTO Data Transfer Object
     private Integer id;
     private String ma;
-
     private String ten;
     private  Integer danhMuc;
-
     private String trangThai;
 
 

@@ -11,6 +11,7 @@ import AddProperties from "components/Admin/Product/AddProperties";
 import TableProduct from "components/Admin/Product/TableProduct";
 import AddShirtModal from "components/Admin/Product/AddShirtModal";
 import * as request from "views/utilities/httpRequest";
+import { IconHome } from "@tabler/icons-react";
 
 
 function AddProduct() {
@@ -56,7 +57,6 @@ function AddProduct() {
           chatLieu: selectedMaterial,
           thuongHieu: selectedBrands,
           tayAo: selectedSleeves,
-
           coAo: selectedCollars,
           giaBan: 100000,
           soLuong: 10,
@@ -65,8 +65,6 @@ function AddProduct() {
           deleted: false,
         };
         options.push(option);
-
-
       });
     });
     setProductDetail(options);
@@ -74,6 +72,7 @@ function AddProduct() {
   }, [selectedColors, selectedSizes, selectedProduct, selectedMaterial, selectedBrands, selectedSleeves, selectedCollars]);
 
   const handleChangeProductDetail = (items) => {
+    debugger
     console.log("--- đã nhảy sang add shoe ---");
     setProductDetail(items);
     console.log(items);
@@ -163,11 +162,12 @@ function AddProduct() {
     loadCollar();
   }, [searchCollar]);
 
+  //Thêm sản phẩm
   const handleCreate = () => {
-    const data = [];
-    // const colorImageErrors = [];
-    productDetail.forEach((item) => {
 
+    const data = [];
+    const colorImageErrors = [];
+    productDetail.forEach((item) => {
       const x = {
         sanPham: item.sanPham.id,
         mauSac: item.mauSac.id,
@@ -178,19 +178,20 @@ function AddProduct() {
         coAo: item.coAo.id,
         soLuong: item.soLuong,
         giaBan: item.giaBan,
-        listImages: item.images,
+        listImages: item.images
       };
+
       data.push(x);
       console.log(data);
-      // if (!item.anh || item.anh.length === 0) {
-      //   colorImageErrors.push(item.color.ten);
-      // }
+      if (!item.images || item.images.length === 0) {
+        colorImageErrors.push(item.mauSac.ten);
+      }
     });
-    // if (colorImageErrors.length > 0) {
-    //   const uniqueColorErrors = [...new Set(colorImageErrors)];
-    //   toast.error(`Các sản phẩm màu ${uniqueColorErrors.join(', ')} chưa chọn ảnh.`);
-    //   return;
-    // }
+    if (colorImageErrors.length > 0) {
+      const uniqueColorErrors = [...new Set(colorImageErrors)];
+      toast.error(`Các sản phẩm màu ${uniqueColorErrors.join(', ')} chưa chọn ảnh.`);
+      return;
+    }
 
     Modal.confirm({
       title: "Xác nhận",
@@ -221,17 +222,17 @@ function AddProduct() {
 
   return (
 
-    <div className="">
+    <div className="bg-white rounded-3">
 
       <Breadcrumb
-        className="mb-2"
+        className="mb-2 ms-2"
         items={[
           { href: "/" },
           { href: "/free/products", title: "Danh sách sản phẩm" },
           { title: "Thêm sản phẩm" },
         ]}
       />
-      <Row gutter={24}>
+      <Row gutter={24} className="m-2">
         <Col xl={24}>
           <label className="mb-1">Tên sản phẩm</label>
           <div className="d-flex">

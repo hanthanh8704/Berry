@@ -21,7 +21,7 @@ public class Anh {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "ten")
+    @Column(name = "anh")
     private String ten;
 
     @ManyToOne

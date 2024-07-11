@@ -61,7 +61,7 @@ public class SanPhamImpl implements SanPhamService {
 
     @Override
     public SanPham getOne(Integer id) {
-        return null;
+        return sanPhamRepository.findById(id).orElse(null);
     }
 
     @Override

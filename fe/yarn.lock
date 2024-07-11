@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@ant-design/colors@^7.0.0", "@ant-design/colors@^7.0.2":
-  version "7.0.2"
-  resolved "https://registry.npmjs.org/@ant-design/colors/-/colors-7.0.2.tgz"
-  integrity sha512-7KJkhTiPiLHSu+LmMJnehfJ6242OCxSlR3xHVBecYxnMW8MS/878NXct1GqYARyL59fyeFdKRxXTfvR9SnDgJg==
+"@ant-design/colors@^7.0.0", "@ant-design/colors@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.npmjs.org/@ant-design/colors/-/colors-7.1.0.tgz"
+  integrity sha512-MMoDGWn1y9LdQJQSHiCC20x3uZ3CwQnv9QMz6pCmJOrqdgM9YxsoVVY0wtrdXbmfSgnV0KNk6zi09NAhMR2jvg==
   dependencies:
     "@ctrl/tinycolor" "^3.6.1"
 
@@ -1385,6 +1385,11 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-2.0.3.tgz"
   integrity sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==
 
+"@icons/material@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/@icons/material/-/material-0.2.4.tgz"
+  integrity sha512-QPcGmICAPbGLGb6F/yNf/KzKqvFx8z5qx3D1yFqVAjoFmXK35EgyW+cJ57Te3CNsmzblwtzakLGFqHPqrfb4Tw==
+
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz"
@@ -2001,12 +2006,12 @@ ansi-styles@^6.1.0:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.1.tgz"
   integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
-antd@^5.19.0:
-  version "5.19.0"
-  resolved "https://registry.npmjs.org/antd/-/antd-5.19.0.tgz"
-  integrity sha512-+w+3zJUKqwU1GSXUxnKhzSGuWUqwwpHQm/voJr2X0JBdYxr9gkLhKR0HBhQjVSSJzSb86rB48fUbByHKrN05Xg==
+antd@^5.19.1:
+  version "5.19.1"
+  resolved "https://registry.npmjs.org/antd/-/antd-5.19.1.tgz"
+  integrity sha512-ogGEUPaamSZ2HFGvlyLBNfxZ0c4uX5aqEIwMtmqRTPNjcLY/k+qdMmdWrMMiY1CDJ3j1in5wjzQTvREG+do65g==
   dependencies:
-    "@ant-design/colors" "^7.0.2"
+    "@ant-design/colors" "^7.1.0"
     "@ant-design/cssinjs" "^1.21.0"
     "@ant-design/icons" "^5.3.7"
     "@ant-design/react-slick" "~1.1.2"
@@ -2035,7 +2040,7 @@ antd@^5.19.0:
     rc-motion "^2.9.2"
     rc-notification "~5.6.0"
     rc-pagination "~4.2.0"
-    rc-picker "~4.6.6"
+    rc-picker "~4.6.7"
     rc-progress "~4.0.0"
     rc-rate "~2.13.0"
     rc-resize-observer "^1.4.0"
@@ -3720,6 +3725,11 @@ jackspeak@^2.3.6:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
+jquery@^3.7.1:
+  version "3.7.1"
+  resolved "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz"
+  integrity sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
@@ -3847,7 +3857,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.21:
+lodash-es@^4.17.15, lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
@@ -3862,7 +3872,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.17.21:
+lodash@^4.0.1, lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -3892,6 +3902,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+material-colors@^1.2.1:
+  version "1.2.6"
+  resolved "https://registry.npmjs.org/material-colors/-/material-colors-1.2.6.tgz"
+  integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
 
 material-ui-popup-state@^5.0.10:
   version "5.1.0"
@@ -4181,6 +4196,11 @@ pirates@^4.0.1:
   resolved "https://registry.npmjs.org/pirates/-/pirates-4.0.6.tgz"
   integrity sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==
 
+popper.js@^1.16.1:
+  version "1.16.1"
+  resolved "https://registry.npmjs.org/popper.js/-/popper.js-1.16.1.tgz"
+  integrity sha512-Wb4p1J4zyFTbM+u6WuO4XstYx4Ky9Cewe4DWrel7B0w6VVICvPwdOpotjzcf6eD8TsckVnIMNONQyPIUFOUbCQ==
+
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/possible-typed-array-names/-/possible-typed-array-names-1.0.0.tgz"
@@ -4230,7 +4250,7 @@ prop-types-extra@^1.1.0:
     react-is "^16.3.2"
     warning "^4.0.0"
 
-prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.5.10, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -4431,10 +4451,10 @@ rc-pagination@~4.2.0:
     classnames "^2.3.2"
     rc-util "^5.38.0"
 
-rc-picker@~4.6.6:
-  version "4.6.6"
-  resolved "https://registry.npmjs.org/rc-picker/-/rc-picker-4.6.6.tgz"
-  integrity sha512-sEWARCNlodubP7/IM6nXHDDIuKZ3gYd5CpS2cYcNORa2telX3nAfllqnGSGjGEFvdtyW+IqGAVatLOmFT0lKYg==
+rc-picker@~4.6.7:
+  version "4.6.7"
+  resolved "https://registry.npmjs.org/rc-picker/-/rc-picker-4.6.7.tgz"
+  integrity sha512-ZntxLH863jdNPZq2i6e2+1iXpRfYKHjNfUGgoObA1YExuWAnTCHpZzOkBuS43GnVcnp2MPDp78pH9OZJFd2hLw==
   dependencies:
     "@babel/runtime" "^7.24.7"
     "@rc-component/trigger" "^2.0.0"
@@ -4640,6 +4660,19 @@ react-bootstrap@^2.10.4:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
+react-color@^2.19.3:
+  version "2.19.3"
+  resolved "https://registry.npmjs.org/react-color/-/react-color-2.19.3.tgz"
+  integrity sha512-LEeGE/ZzNLIsFWa1TMe8y5VYqr7bibneWmvJwm1pCn/eNmrabWDh659JSPn9BuaMpEfU83WTOJfnCcjDZwNQTA==
+  dependencies:
+    "@icons/material" "^0.2.4"
+    lodash "^4.17.15"
+    lodash-es "^4.17.15"
+    material-colors "^1.2.1"
+    prop-types "^15.5.10"
+    reactcss "^1.2.0"
+    tinycolor2 "^1.4.1"
+
 react-device-detect@^2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/react-device-detect/-/react-device-detect-2.2.3.tgz"
@@ -4761,6 +4794,13 @@ react@*, "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^1
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
   dependencies:
     loose-envify "^1.1.0"
+
+reactcss@^1.2.0:
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/reactcss/-/reactcss-1.2.3.tgz"
+  integrity sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==
+  dependencies:
+    lodash "^4.0.1"
 
 readable-stream@~2.3.6:
   version "2.3.8"
@@ -5349,6 +5389,11 @@ tiny-warning@^1.0.2:
   version "1.0.3"
   resolved "https://registry.npmjs.org/tiny-warning/-/tiny-warning-1.0.3.tgz"
   integrity sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==
+
+tinycolor2@^1.4.1:
+  version "1.6.0"
+  resolved "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.6.0.tgz"
+  integrity sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==
 
 to-fast-properties@^2.0.0:
   version "2.0.0"

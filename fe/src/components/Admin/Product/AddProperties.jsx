@@ -1,7 +1,8 @@
 import { Button, Form, Input } from 'antd';
 import React from 'react';
-import { toast } from 'react-toastify';
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 import * as request from "views/utilities/httpRequest";
 
 function AddProperties({ name, placeholder, onSuccess }) {
@@ -10,7 +11,6 @@ function AddProperties({ name, placeholder, onSuccess }) {
         request.post(`/${name}/create`, data).then(response => {
             form.resetFields();
             toast.success('Thêm thành công!');
-
             onSuccess();
         }).catch(e => {
             form.resetFields();

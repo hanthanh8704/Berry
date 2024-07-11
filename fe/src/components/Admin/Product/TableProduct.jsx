@@ -3,12 +3,18 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ImageModal from "./ImageModal";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-import { IconTrashFilled } from "@tabler/icons-react";
+import { IconTrashFilled, IconPhotoScan } from "@tabler/icons-react";
 function TableProduct({ props, handleChange }) {
+    console.log('lolo');
+
     const [groupByColor, setGroupByColor] = useState([]);
 
     const handleImageSelect = (colorName, index, files) => {
+
         const updatedItems = [...groupByColor[colorName]];
         for (let i = 0; i < updatedItems.length; i++) {
             updatedItems[i] = { ...updatedItems[i], images: files };
@@ -27,43 +33,38 @@ function TableProduct({ props, handleChange }) {
     };
 
     const handleChangeQuantity = (value, colorName, index) => {
-        if (value < 1) {
-            toast.error("Số lượng phải >= 1!");
-        } else {
-            const updatedItems = [...groupByColor[colorName]];
-            updatedItems[index] = { ...updatedItems[index], soLuong: value };
-            setGroupByColor({
+        const updatedItems = [...groupByColor[colorName]];
+        updatedItems[index] = { ...updatedItems[index], soLuong: value };
+        setGroupByColor({
+            ...groupByColor,
+            [colorName]: updatedItems,
+        });
+        handleChange(
+            Object.values({
                 ...groupByColor,
-                [colorName]: updatedItems,
-            });
-            handleChange(
-                Object.values({
-                    ...groupByColor,
-                    [colorName]: [...updatedItems],
-                }).flat()
-            );
-        }
+                [colorName]: [...updatedItems],
+            }).flat()
+        );
     };
+
+
 
     const handleChangePrice = (event, colorName, index) => {
         const value = parseInt(event);
-        if (value < 1) {
-            toast.error("Đơn giá không hợp lệ!");
-        } else {
-            const updatedItems = [...groupByColor[colorName]];
-            updatedItems[index] = { ...updatedItems[index], giaBan: value };
-            setGroupByColor({
+        const updatedItems = [...groupByColor[colorName]];
+        updatedItems[index] = { ...updatedItems[index], giaBan: value };
+        setGroupByColor({
+            ...groupByColor,
+            [colorName]: updatedItems,
+        });
+        handleChange(
+            Object.values({
                 ...groupByColor,
-                [colorName]: updatedItems,
-            });
-            handleChange(
-                Object.values({
-                    ...groupByColor,
-                    [colorName]: [...updatedItems],
-                }).flat()
-            );
-        }
+                [colorName]: [...updatedItems],
+            }).flat()
+        );
     };
+
 
     const deleteProductDetail = (colorName, index) => {
         const items = groupByColor[colorName];
@@ -121,7 +122,7 @@ function TableProduct({ props, handleChange }) {
                                             <td>Thương hiệu</td>
                                             <td>Tay áo</td>
                                             <td>Cổ áo</td>
-                                            <td></td>
+                                            <td>Hành Động</td>
                                             <td>Ảnh</td>
                                         </tr>
 
@@ -179,14 +180,11 @@ function TableProduct({ props, handleChange }) {
                                                             <td>{option.tayAo.ten}</td>
                                                             <td>{option.coAo.ten}</td>
                                                             <td>
-                                                                <Button type="danger" onClick={() => deleteProductDetail(key, idx)}>
+                                                                <button
+                                                                    className="btn btn-sm"
+                                                                    onClick={() => deleteProductDetail(key, idx)}
+                                                                >
                                                                     <IconTrashFilled />
-                                                                </Button>
-                                                            </td>
-
-                                                            <td>
-                                                                <button className="btn btn-sm" onClick={() => deleteProductDetail(key, idx)}>
-                                                                    <i className="fas fa-trash"></i>
                                                                 </button>
                                                             </td>
                                                             {idx === 0 ? (
@@ -203,14 +201,13 @@ function TableProduct({ props, handleChange }) {
                                                                 ""
                                                             )}
                                                         </>
-                                                    ) : (
-                                                        ""
-                                                    )}
+                                                    ) : ""}
                                                 </>
                                             </tr>
                                         ))}
                                         <tr>
-                                            <td colSpan={8} className="text-center">
+
+                                            <td colSpan={9} className="text-center">
                                                 {items.length > 0 && items[0].images !== undefined && items[0].images.length !== 0 ? (
                                                     items[0].images.map((image, stt) => (
                                                         <img
@@ -233,7 +230,9 @@ function TableProduct({ props, handleChange }) {
                         </table>
                     </div>
                 </Collapse.Panel>
+
             </Collapse>
+            <ToastContainer />
         </>
     );
 }
