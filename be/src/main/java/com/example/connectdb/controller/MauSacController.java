@@ -15,23 +15,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/color")
 public class MauSacController {
-private final MauSacService mauSacService;
+    private final MauSacService mauSacService;
 
     @Autowired
     public MauSacController(MauSacService mauSacService) {
         this.mauSacService = mauSacService;
     }
 
-    // Hiển thị các danh sách hóa đơn
+
     @GetMapping
     public PageableObject getAll(MauSacRequest request) {
         return mauSacService.getAll(request);
     }
 
-    // Hàm này dùng để hiển thị những danh sách hóa đơn theo trạng thái
 
 
-    // Hàm này hiển thị detail của hóa đơn
+
+
     @GetMapping("/{id}")
     public MauSac getOne(@PathVariable Integer id) {
         return mauSacService.getOne(id);
@@ -52,7 +52,6 @@ private final MauSacService mauSacService;
             return ResponseEntity.notFound().build();
         }
     }
-
 
 
 }

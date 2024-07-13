@@ -9,12 +9,12 @@ import com.example.connectdb.repositories.SanPhamRepository;
 import com.example.connectdb.service.SanPhamService;
 import com.example.connectdb.util.common.PageableObject;
 import com.example.connectdb.util.converter.ProductConverter;
+import com.example.connectdb.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -32,6 +32,11 @@ public class SanPhamImpl implements SanPhamService {
     }
     private final SanPhamRepository sanPhamRepository;
     private final ProductConverter productConverter;
+
+    @Override
+    public boolean existsByTenIgnoreCase(String ten) {
+        return sanPhamRepository.existsByTenIgnoreCase(ten);
+    }
 
     @Autowired
     public SanPhamImpl(SanPhamRepository sanPhamRepository, ProductConverter productConverter) {
@@ -61,11 +66,14 @@ public class SanPhamImpl implements SanPhamService {
 
     @Override
     public SanPham getOne(Integer id) {
-        return sanPhamRepository.findById(id).orElse(null);
+        return sanPhamRepository.findByIdSp(id);
     }
 
     @Override
     public SanPham create(SanPhamRequest request) {
+        if (sanPhamRepository.existsByTenIgnoreCase(request.getTen())) {
+            throw new RestApiException(request.getTen() + " đã tồn tại!");
+        }
         request.setMa(genCode());
         SanPham sanPham = productConverter.convertRequestToEntity(request);
         return sanPhamRepository.save(sanPham);

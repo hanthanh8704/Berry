@@ -1,6 +1,7 @@
 import { Empty, Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import swal from "sweetalert";
 import * as request from "views/utilities/httpRequest";
 import { IconPhotoFilled } from "@tabler/icons-react";
@@ -151,6 +152,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                                         <button
                                             className="position-relative d-flex align-items-center 
                                             justify-content-center btn btn-primary btn-sm"
+                                            style={{ backgroundColor: '#5e35b1' }}
                                         >
                                             <i className="fas fa-plus"></i> Thêm ảnh vào hệ thống
                                             <input

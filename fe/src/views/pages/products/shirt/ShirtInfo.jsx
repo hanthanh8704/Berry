@@ -6,8 +6,8 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import FormatDate from "views/utilities/FormatDate.jsx";
 import request from "views/utilities/httpRequest.js";
-import UpdateShoe from "./UpdateShoe";
-import UpdateShoeDetail from "./UpdateShoeDetail";
+import UpdateShirt from "./UpdateShirt";
+import UpdateShirtDetail from "./UpdateShirtDetail";
 import FormatCurrency from "views/utilities/FormatCurrency.jsx";
 import Title from "antd/es/typography/Title";
 import { toast, ToastContainer } from "react-toastify";
@@ -21,7 +21,7 @@ import JSZip from "jszip";
 import Category from "../attribute/Category";
 
 
-function ShoeInfo() {
+function ShirtInfo() {
     const [formFilter] = Form.useForm();
     const { id } = useParams();
     const [product, setProduct] = useState({});
@@ -51,6 +51,8 @@ function ShoeInfo() {
         selectedRowKeys,
         onChange: onSelectChange,
     };
+
+    //QRCODE
     const downloadAllQRCode = () => {
         if (!shoeDetailSelect || shoeDetailSelect.length === 0) {
             console.error('shoeDetailSelect is empty or undefined');
@@ -103,7 +105,7 @@ function ShoeInfo() {
         });
     };
 
-
+    //Hàm thay đổi só lượng
     const handleQuantityChange = (value, id) => {
         const x = listProductDetail.find((detail) => detail.id === id);
         const index = listUpdate.findIndex((item) => item.id === id);
@@ -125,38 +127,49 @@ function ShoeInfo() {
         console.log(listUpdate);
     }
 
+
+    //Hàm call api của TTSP
     useEffect(() => {
-        request.get('/size', { params: { name: searchSize } }).then(response => {
+        request.get('/size', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListSize(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/color', { params: { name: searchSize } }).then(response => {
+        request.get('/color', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListColor(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/material', { params: { name: searchSize } }).then(response => {
+        request.get('/material', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListSole(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/sleeve', { params: { name: searchSize } }).then(response => {
+        request.get('/sleeve', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListSleeve(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/collar', { params: { name: searchSize } }).then(response => {
+        request.get('/collar', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListCollar(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/brand', { params: { name: searchSize } }).then(response => {
+        request.get('/brand', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
             setListBrand(response.data.data);
         }).catch(e => {
             console.log(e);
         })
     }, [searchSize])
+
+    const validateInput = (value) => {
+        // Hàm validate để không nhập khoảng trắng và chỉ nhập số
+        if (/\s/.test(value)) {
+            // Kiểm tra nếu có khoảng trắng
+            return false;
+        }
+        return true;
+    };
 
     const columns = [
         {
@@ -204,11 +217,18 @@ function ShoeInfo() {
             render: (x, record) => (
                 <>
                     {selectedRowKeys.includes(record.id) ? (
-                        <InputNumber defaultValue={x} formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                            parser={(value) => value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : ""}
+                        <InputNumber
+                            defaultValue={x}
+                            formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            parser={(value) => (value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : "")}
                             controls={false}
                             min={0}
                             onChange={(value) => handleQuantityChange(value, record.id)}
+                            onBlur={() => {
+                                if (isNaN(x)) {
+                                    handleQuantityChange(0, record.id); // Reset to 0 if non-numeric value entered
+                                }
+                            }}
                         />
                     ) : (
                         <>{x}</>
@@ -223,15 +243,24 @@ function ShoeInfo() {
             render: (x, record) => (
                 <>
                     {selectedRowKeys.includes(record.id) ? (
-                        <InputNumber defaultValue={x} formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                            parser={(value) => value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : ""}
+                        <InputNumber
+                            defaultValue={x}
+                            formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            parser={(value) => (value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : "")}
                             controls={false}
                             min={0}
                             onChange={(value) => handlePriceChange(value, record.id)}
+                            onBlur={() => {
+                                if (isNaN(x)) {
+                                    handlePriceChange(0, record.id); // Reset to 0 if non-numeric value entered
+                                }
+                            }}
                         />
                     ) : (
                         <>
-                            {record.discountValue == null ? <FormatCurrency value={x} /> : (
+                            {record.discountValue == null ? (
+                                <FormatCurrency value={x} />
+                            ) : (
                                 <>
                                     <span className="text-danger"><FormatCurrency value={record.discountValue} /></span> <span className="text-decoration-line-through text-secondary"><FormatCurrency value={record.price} /></span>
                                 </>
@@ -266,7 +295,7 @@ function ShoeInfo() {
             key: 'action',
             render: (x, record) => (
                 <>
-                    <UpdateShoeDetail props={record} onSuccess={() => loadShoeDetail(id, currentPage, pageSize)} />
+                    <UpdateShirtDetail props={record} onSuccess={() => loadShoeDetail(id, currentPage, pageSize)} />
                     <Tooltip placement="bottom" title="Xóa">
                         <Button type="text"><i className="fas fa-trash text-danger"><IconTrash /></i></Button>
                     </Tooltip>
@@ -281,27 +310,6 @@ function ShoeInfo() {
         return () => clearTimeout(timeout);
     }, []);
 
-    // const loadData = async (id) => {
-    //     const response = await request.get(`/shirt/${id}`,).then(response => {
-    //         // if (response.status === 200) {
-    //         setProduct(response.data);
-    //         // Cập nhật người tạo và người sửa thành 'Đạt Thành'
-    //         responseData.nguoiTao = 'Đạt Thành';
-    //         responseData.nguoiSua = 'Đạt Thành';
-
-    //         // Cập nhật ngày tạo và ngày sửa thành ngày hiện tại
-    //         responseData.ngayTao = new Date(new Date().getTime)
-    //         responseData.ngaySua = '2024'
-
-    //         console.log(response.data);
-    //         console.log(product.danhMuc.ten);
-    //         setLoading(false);
-    //         // }
-    //     }).catch(e => {
-    //         // toast.error(e.response.data);
-    //         console.log(e);
-    //     })
-    // }
     const loadData = async (id) => {
         const response = await request.get(`/shirt/` + id,).then(response => {
             // if (response.status === 200) {
@@ -319,6 +327,8 @@ function ShoeInfo() {
         loadShoeDetail(id, currentPage, pageSize);
     }, [id, currentPage, pageSize, dataFilter])
 
+
+    //Hàm load CTSP
     const loadShoeDetail = (id, currentPage, pageSize) => {
         request.get('/shirt-detail', {
             params: {
@@ -342,6 +352,7 @@ function ShoeInfo() {
         })
     }
 
+    //Hàm update nhanh CTSP 
     const handleUpdateFast = () => {
         Modal.confirm({
             title: "Xác nhận",
@@ -351,7 +362,7 @@ function ShoeInfo() {
             cancelText: "Hủy",
             onOk: () => {
                 request.put('/shirt-detail/update-fast', listUpdate).then(response => {
-                    toast.success("Cập nhật thành công!");
+                    toast.success('Cập nhật thành công!', { autoClose: 3000, closeOnClick: true });
                     loadShoeDetail(id, currentPage, pageSize);
                     setSelectedRowKeys([]);
                 }).catch(e => {
@@ -364,7 +375,8 @@ function ShoeInfo() {
 
     return (
         <>
-            <div className="bg-white rounded-3">
+            <ToastContainer />
+            <div className="bg-white rounded-3 p-1">
                 <Breadcrumb className="mt-1 m-2"
                     items={[{ href: "/" }, { href: "/free/products", title: "Danh sách sản phẩm" }, { title: `${product.ten}` },]}
                 />
@@ -375,17 +387,15 @@ function ShoeInfo() {
                             <Title level={4} className="m-2">Thông tin sản phẩm</Title>
                         </div>
                         <div className="me-4">
-                            <UpdateShoe props={product} onSuccess={() => { loadData(id); loadShoeDetail(id, currentPage, pageSize) }} />
+                            <UpdateShirt props={product} onSuccess={() => { loadData(id); loadShoeDetail(id, currentPage, pageSize) }} />
                         </div>
                     </Col>
                     <Col xl={8}>
                         <ul className="list-unstyled">
                             <li className="my-2 ms-3">
-                                Danh mục : <span className="float-end fw-semibold me-5">Áo</span>
+                                Danh mục: <span className="float-end fw-semibold">Áo</span>
                             </li>
-                            <li>
-                                {/* Thương hiệu: <span className="float-end fw-semibold">{product.b}</span> */}
-                            </li>
+
                         </ul>
                     </Col>
                     <Col xl={8}>
@@ -505,7 +515,7 @@ function ShoeInfo() {
                     </Row>
                     <div className="text-center">
                         <Button className='me-1 bg-secondary' onClick={() => { formFilter.resetFields() }} type='primary' icon={<i class="fa-solid fa-rotate-left"></i>}>Làm mới</Button>
-                        <Button htmlType='submit' className='bg-primary text-white' type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
+                        <Button htmlType='submit' className=' text-white' style={{ backgroundColor: '#5e35b1' }} type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
                     </div>
                 </Form>
                 <Table dataSource={listProductDetail} columns={columns} className="mt-3"
@@ -523,10 +533,10 @@ function ShoeInfo() {
                             setPageSize(pageSize);
                         },
                     }} />
-                <ToastContainer />
+
             </div>
         </>
     );
 }
 
-export default ShoeInfo;
+export default ShirtInfo;

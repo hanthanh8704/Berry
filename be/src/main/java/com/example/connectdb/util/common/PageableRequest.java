@@ -1,7 +1,6 @@
 package com.example.connectdb.util.common;
 
 
-
 import com.example.connectdb.util.constant.PaginationConstant;
 import lombok.Getter;
 import lombok.Setter;

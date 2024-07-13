@@ -33,12 +33,12 @@ public class ChiTietSanPhamController {
     }
 
     @GetMapping("/get-one/{id}")
-    public ResponseObject getOneShoeDetail(@PathVariable Integer id){
+    public ResponseObject getOneShoeDetail(@PathVariable Integer id) {
         return new ResponseObject(shoeDetailService.getOneShoeDetail(id));
     }
 
     @GetMapping("/find-min-max-price")
-    public Map<String, BigDecimal> findMinAndMaxPrice(){
+    public Map<String, BigDecimal> findMinAndMaxPrice() {
         return shoeDetailService.findMinAndMaxPrice();
     }
 

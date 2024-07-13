@@ -32,7 +32,6 @@ public class CoAoImpl implements CoAoService {
     }
 
 
-
     @Override
     public CoAo getOne(Integer id) {
         return coAoRepository.findById(id).orElse(null);

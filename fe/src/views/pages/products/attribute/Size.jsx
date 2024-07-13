@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Col, Input, Modal, Row, Table, Tooltip, Form } from "antd";
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,10 +9,10 @@ import * as request from "views/utilities/httpRequest";
 
 function Size() {
     const [sizeList, setSizeList] = useState([]);
-    const [filteredSizeList, setFilteredSizeList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
     const [searchValue, setSearchValue] = useState("");
+    const [pageSize, setPageSize] = useState(5);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
     const [formAdd] = Form.useForm();
@@ -19,17 +20,16 @@ function Size() {
     const [item, setItem] = useState(null);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        loadData(currentPage, pageSize, searchValue);
+    }, [currentPage, pageSize, searchValue]);
 
-    useEffect(() => {
-        handleSearch(searchValue);
-    }, [sizeList, searchValue]);
-
-    const loadData = async () => {
+    const loadData = async (page, size, search) => {
         try {
-            const response = await request.get("/size");
+            const response = await request.get("/size", {
+                params: { name: search, page, sizePage: size },
+            });
             setSizeList(response.data);
+            setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -52,7 +52,7 @@ function Size() {
     const handleDelete = async (id) => {
         try {
             await request.remove(`/size/${id}`);
-            loadData();
+            loadData(currentPage, pageSize, searchValue);
             toast.success("Xóa thành công!");
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -70,12 +70,18 @@ function Size() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+
+                    const duplicate = sizeList.some(size => size.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên kích cỡ đã tồn tại!");
+                        return;
+                    }
                     const response = await request.post("/size/create", values);
                     if (response.status === 200) {
                         toast.success("Thêm kích cỡ thành công!");
                         setIsModalAddOpen(false);
                         formAdd.resetFields();
-                        loadData();
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error adding data:", error);
@@ -95,12 +101,17 @@ function Size() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = sizeList.some(size => size.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên kích cỡ đã tồn tại!");
+                        return;
+                    }
                     const response = await request.put(`/size/update/${item.id}`, values);
                     if (response.status === 200) {
                         toast.success("Cập nhật kích cỡ thành công!");
                         setIsModalUpdateOpen(false);
                         formUpdate.resetFields();
-                        loadData();
+                        loadData(currentPage, pageSize, searchValue);
                     }
                 } catch (error) {
                     console.error("Error updating data:", error);
@@ -130,24 +141,18 @@ function Size() {
 
     const handleSearch = (value) => {
         setSearchValue(value);
-        const filteredData = sizeList.filter((item) =>
-            item.ten.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredSizeList(filteredData);
         setCurrentPage(1);
     };
 
-    const paginatedData = filteredSizeList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
     return (
-        <div>
+        <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách kích cỡ</h6>
-            <Row gutter={10}>
+            <h6 className="fw-semibold m-2">Danh sách kích cỡ</h6>
+            <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Kích cỡ</label>
                     <Input
-                        onChange={(event) => handleSearch(event.target.value)}
+                        onChange={(event) => setSearchValue(event.target.value)}
                         placeholder="Tìm kiếm kích cỡ theo tên..."
                     />
                 </Col>
@@ -157,14 +162,15 @@ function Size() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-primary w-100"
+                        className=" w-100"
+                        style={{ backgroundColor: '#5e35b1' }}
                     >
                         <PlusOutlined /> Thêm kích cỡ
                     </Button>
                 </Col>
             </Row>
             <Table
-                dataSource={paginatedData}
+                dataSource={sizeList}
                 columns={[
                     {
                         title: "#",
@@ -199,8 +205,8 @@ function Size() {
                         className: "text-center",
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
-                                <Button onClick={() => handleEdit(record)}>
-                                    <EditOutlined />
+                                <Button style={{ color: '#5e35b1' }} type="text" onClick={() => handleEdit(record)}>
+                                    <i className="fas fa-edit "><IconEdit /></i>
                                 </Button>
                             </Tooltip>
                         ),
@@ -212,7 +218,7 @@ function Size() {
                     pageSize: pageSize,
                     pageSizeOptions: ["5", "10", "20", "50", "100"],
                     showQuickJumper: true,
-                    total: filteredSizeList.length,
+                    total: totalPages * pageSize,
                     onChange: (page, pageSize) => {
                         setCurrentPage(page);
                         setPageSize(pageSize);
@@ -238,11 +244,20 @@ function Size() {
                     <Form.Item
                         label="Kích cỡ"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên kích cỡ!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ0-9\s'-]+$/,
+                                message: "Tên kích cỡ chỉ được chứa các ký tự chữ cái, số và không được là khoảng trắng!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên kích cỡ..." />
                     </Form.Item>
                 </Form>
+
+
             </Modal>
 
             <Modal
@@ -262,7 +277,14 @@ function Size() {
                     <Form.Item
                         label="Kích cỡ"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên kích cỡ!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên kích cỡ!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên kích cỡ chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên kích cỡ..." />
                     </Form.Item>

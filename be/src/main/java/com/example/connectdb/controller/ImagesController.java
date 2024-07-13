@@ -24,8 +24,9 @@ public class ImagesController {
     private IImagesRepository imagesRepository;
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
     @GetMapping
-    public ResponseObject create(@RequestParam String name, @RequestParam Integer shoeDetail){
+    public ResponseObject create(@RequestParam String name, @RequestParam Integer shoeDetail) {
         Anh images = new Anh();
         images.setTen(name);
         images.setChiTietSanPham(chiTietSanPhamRepository.findById(shoeDetail).get());
@@ -33,12 +34,12 @@ public class ImagesController {
     }
 
     @GetMapping("/{id}")
-    public List<ImageResponse> getImagesByShoeDetail(@PathVariable Integer id){
+    public List<ImageResponse> getImagesByShoeDetail(@PathVariable Integer id) {
         return imagesRepository.getImagesByShoeDetail(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id){
+    public void delete(@PathVariable Integer id) {
         imagesRepository.deleteById(id);
     }
 }

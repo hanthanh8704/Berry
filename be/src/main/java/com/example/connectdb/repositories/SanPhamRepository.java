@@ -12,11 +12,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
-    boolean existsByMaIgnoreCase(String ma);
+
     boolean existsByMa(String ma);
+    @Query("""
+select sp from SanPham sp where sp.id=:id
+""")
+    public SanPham findByIdSp(Integer id);
+
     @Query(value = """
     SELECT
         sp.id AS id,
@@ -39,6 +45,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     LEFT JOIN (SELECT id_chi_tiet_san_pham, 
                GROUP_CONCAT(DISTINCT anh) AS anh FROM anh GROUP BY id_chi_tiet_san_pham) img 
     ON ctsp.id = img.id_chi_tiet_san_pham
+    WHERE (:#{#req.ten} IS NULL OR sp.ten LIKE CONCAT(%:#{#req.ten}%)\s
+                      OR sp.ma LIKE CONCAT(%:#{#req.ten}%))  AND (:#{#req.danhMuc} IS NULL OR sp.id_danh_muc =:#{#req.danhMuc})
+                    
     GROUP BY
         sp.id,
         sp.ma,
@@ -88,7 +97,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
             LIMIT :top
             """, nativeQuery = true)
     List<SanPhamReponse> topSell(@Param("top") Integer top);
-    Boolean existsByTenIgnoreCase(String name);
+    Boolean existsByTenIgnoreCase(String ten);
+    SanPham findByTen(String ten);
 
 
 }

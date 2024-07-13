@@ -15,10 +15,8 @@ import java.sql.Timestamp;
 @Setter
 public class ChatLieuRequest extends PageableRequest {
     private Integer id;
-
     @NotEmpty(message = "Tên chất liệu không được để trống!")
     private String ten;
-
     private String trangThai;
     private Timestamp ngayTao;
 }

@@ -9,6 +9,7 @@ public class ResponseObject {
     private boolean isSuccess = false;
     private Object data;
     private String message;
+
     public <T> ResponseObject(T obj) {
         processResponseObject(obj);
     }
@@ -18,7 +19,7 @@ public class ResponseObject {
             this.isSuccess = true;
             this.data = obj;
             this.message = "Thành công!";
-        }else {
+        } else {
             this.message = "Thất bại!";
         }
     }

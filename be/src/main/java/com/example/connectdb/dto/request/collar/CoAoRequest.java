@@ -15,10 +15,8 @@ import java.sql.Timestamp;
 @Setter
 public class CoAoRequest extends PageableRequest {
     private Integer id;
-
     @NotEmpty(message = "Tên cổ áo không được để trống!")
     private String ten;
-
     private String trangThai;
     private Timestamp ngayTao;
 }

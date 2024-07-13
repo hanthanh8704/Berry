@@ -35,7 +35,6 @@ public class ChatLieuImpl implements ChatLieuService {
     }
 
 
-
     @Override
     public ChatLieu getOne(Integer id) {
         return chatLieuRepository.findById(id).orElse(null);

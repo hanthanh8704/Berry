@@ -20,25 +20,25 @@ public class CoAoController {
         this.coAoService = coAoService;
     }
 
-    // Endpoint to retrieve all collars with pagination and filtering
+
     @GetMapping
     public PageableObject getAll(CoAoRequest request) {
         return coAoService.getAll(request);
     }
 
-    // Endpoint to retrieve details of a specific collar by ID
+
     @GetMapping("/{id}")
     public CoAo getOne(@PathVariable Integer id) {
         return coAoService.getOne(id);
     }
 
-    // Endpoint to create a new collar
+
     @PostMapping("create")
     public ResponseObject create(@RequestBody @Valid CoAoRequest request) {
         return new ResponseObject(coAoService.create(request));
     }
 
-    // Endpoint to update an existing collar by ID
+
     @PutMapping("/{id}")
     public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid CoAoRequest request) {
         return new ResponseObject(coAoService.update(id, request));

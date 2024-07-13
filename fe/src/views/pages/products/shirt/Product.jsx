@@ -5,41 +5,48 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { EditOutlined } from '@ant-design/icons';
+import { IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react";
+import { PlusOutlined } from '@ant-design/icons';
 import * as request from "views/utilities/httpRequest";
+import { HelpOutline } from "@mui/icons-material";
 
 function Product() {
     const [productList, setProductList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [listCate, setListCate] = useState([]);
-    const [listBrand, setListBrand] = useState([]);
     const [selectedCate, setSelectedCate] = useState(null);
-    const [selectedBrand, setSelectedBrand] = useState(null);
     const [searchValue, setSearchValue] = useState("");
     const [statusProduct, setStatusProduct] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [searchCate, setSearchCate] = useState('');
-    const [searchBrand, setSearchBrand] = useState('');
+
+
 
     useEffect(() => {
-        request.get("/category", { params: { name: searchCate, status: false } })
+        request.get("/category", { params: { ten: searchCate, status: false, sizePage: 1_000_000 } })
             .then((response) => {
                 setListCate(response.data);
             }).catch((error) => { console.log(error); });
-        request.get("/brand", { params: { name: searchBrand, status: false } })
-            .then((response) => {
-                setListBrand(response.data);
-            }).catch((error) => { console.log(error); });
-    }, [searchCate, searchBrand]);
+    }, [searchCate]);
 
     useEffect(() => {
-        loadData(currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct);
-    }, [currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct]);
+        loadData(currentPage, pageSize, searchValue, selectedCate, statusProduct);
+    }, [currentPage, pageSize, searchValue, selectedCate, statusProduct]);
 
-    const loadData = async (page, size, search, category, brand, status) => {
+
+    //Hàm Load dữ liệu
+    const loadData = async (page, size, searchValue, danhMuc, status) => {
         try {
             const response = await request.get("/shirt", {
-                params: { name: search, page, sizePage: size, category, brand, status },
+                params: {
+                    ma: searchValue ? `%${searchValue}%` : null,
+                    ten: searchValue ? `%${searchValue}%` : null,
+                    page,
+                    sizePage: size,
+                    danhMuc: danhMuc !== 'All' ? danhMuc : null,
+                    status,
+                },
             });
             setProductList(response.data);
             setTotalPages(response.totalPages);
@@ -48,19 +55,34 @@ function Product() {
         }
     };
 
-    const handleSearch = (value) => {
+
+
+    //Hàm tìm kiếm
+    const handleSearch = (event) => {
+        const value = event.target.value;
         setSearchValue(value);
         setCurrentPage(1);
+        loadData(1, pageSize, value, selectedCate, statusProduct);
+    };
+
+
+    const handleCategoryChange = (value) => {
+        setSelectedCate(value);
+        setCurrentPage(1);
+        loadData(1, pageSize, searchValue, value, statusProduct);
     };
 
     const handleChangeStatus = async (id) => {
-        await request.remove(`/shirt/${id}`).then(response => {
-            toast.success("Đã cập nhật trạng thái!");
-            loadData(currentPage, pageSize, searchValue, selectedCate, selectedBrand, statusProduct);
-        }).catch(e => {
-            console.log(e);
-        })
-    }
+        try {
+            await request.remove(`/shirt/${id}`);
+            toast.success("Đã cập nhật trạng thái!", {
+                autoClose: 3000, // Close after 3 seconds
+            });
+            loadData(currentPage, pageSize, searchValue, selectedCate, statusProduct);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const columns = [
         {
@@ -94,12 +116,17 @@ function Product() {
             key: 'danhMuc',
         },
         {
+
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (x, record) => (
-                <Tooltip title={x ? "Ngừng bán" : "Đang bán"}>
-                    <Switch defaultChecked={!x} onChange={() => handleChangeStatus(record.id)} />
+                <Tooltip title={x ? "Ngừng bán" : "Đang bán"} color="#5e35b1">
+                    <Switch
+                        className="custom-switch"
+                        defaultChecked={!x}
+                        onChange={() => handleChangeStatus(record.id)}
+                    />
                 </Tooltip>
             ),
             align: 'center',
@@ -110,8 +137,8 @@ function Product() {
             key: 'action',
             render: (x) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link to={`/products/${x}`}>
-                        <EditOutlined />
+                    <Link style={{ color: '#5e35b1' }} to={`/products/${x}`}>
+                        <i className="fas fa-edit "><IconEdit /></i>
                     </Link>
                 </Tooltip>
             ),
@@ -121,18 +148,19 @@ function Product() {
 
     return (
         <div style={{ background: '#fff', padding: '20px', borderRadius: '10px' }}>
-            <ToastContainer />
+            <ToastContainer autoClose={3000} /> {/* Set autoClose property */}
             <Card className="mb-1 p-2">
                 <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
                 <Row gutter={16} className="mb-3">
                     <Col span={20}>
                         <label className="mb-2">Tên sản phẩm</label>
-                        <Input onChange={(event) => handleSearch(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
+                        <Input onChange={(e) => setSearchValue(e.target.value)} value={searchValue} placeholder="Tìm kiếm sản phẩm theo tên..." />
                     </Col>
                     <Col span={4} className="d-flex align-items-end justify-content-end">
                         <Link to={"/products/add-shirt"}>
-                            <Button type="primary" className="bg-primary">
-                                <i className="fas fa-plus-circle me-1"></i>Thêm sản phẩm
+                            <Button type="primary" className=" w-100"
+                                style={{ backgroundColor: '#5e35b1' }}>
+                                <PlusOutlined /> Thêm sản phẩm
                             </Button>
                         </Link>
                     </Col>
@@ -152,13 +180,14 @@ function Product() {
                         <label className="mb-2">Danh mục</label>
                         <Select
                             showSearch
-                            onChange={setSelectedCate}
+                            onChange={handleCategoryChange}
                             placeholder="Chọn danh mục..."
                             optionFilterProp="children"
                             style={{ width: "100%" }}
                             onSearch={setSearchCate}
+                            value={selectedCate}
                         >
-                            <Select.Option value="">Chọn danh mục</Select.Option>
+                            <Select.Option value="All">Chọn danh mục</Select.Option>
                             {listCate.map((item) => (
                                 <Select.Option key={item.id} value={item.id}>
                                     {item.ten}
@@ -166,7 +195,6 @@ function Product() {
                             ))}
                         </Select>
                     </Col>
-
                 </Row>
             </Card>
             <Card>

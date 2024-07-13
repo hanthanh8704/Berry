@@ -9,6 +9,9 @@ public interface KichCoService {
     PageableObject<KichCoResponse> getAll(KichCoRequest request);
 
     KichCo getOne(Integer id);
+
     KichCo create(KichCoRequest kichCoRequest);
+
     KichCo update(Integer id, KichCoRequest kichCoRequest);
+
 }

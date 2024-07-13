@@ -14,11 +14,18 @@ import java.util.Map;
 
 public interface ChiTietSanPhamService {
     PageableObject<ShirtDetailResponse> getAll(FindShirtDetailRequest request);
+
     ChiTietSanPham getOne(Integer id);
+
     String create(List<ShirtDetailRequest> list);
+
     ChiTietSanPham update(Integer id, UpdateShirtDetailRequest request);
+
     ChiTietSanPham delete(Integer id);
+
     ResponseObject updateFast(List<ShirtDetailRequest> list);
+
     Map<String, BigDecimal> findMinAndMaxPrice();
+
     ShirtDetailResponse getOneShoeDetail(Integer id);
 }

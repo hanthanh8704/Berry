@@ -56,4 +56,9 @@ public class SanPhamControllers {
     public ResponseObject changeStatus(@PathVariable Integer id){
         return new ResponseObject(sanPhamService.changeStatus(id));
     }
+    @GetMapping("/existsByTenIgnoreCase")
+    public ResponseEntity<Boolean> existsByTenIgnoreCase(@RequestParam String ten) {
+        boolean exists = sanPhamService.existsByTenIgnoreCase(ten);
+        return ResponseEntity.ok(exists);
+    }
 }

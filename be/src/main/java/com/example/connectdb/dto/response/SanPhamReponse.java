@@ -10,13 +10,18 @@ import java.math.BigDecimal;
 public interface SanPhamReponse {
     @Value("#{target.indexs}")
     Integer getIndex();
-    Integer getId();
-    String getMa();
-    String getTen();
-    String getDanhMuc();
-    Integer getSoLuong ();
-    String getTrangThai();
 
+    Integer getId();
+
+    String getMa();
+
+    String getTen();
+
+    String getDanhMuc();
+
+    Integer getSoLuong();
+
+    String getTrangThai();
 
 
 }

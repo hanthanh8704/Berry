@@ -145,6 +145,7 @@ function Product() {
 
     return (
         <div style={{ background: '#fff', padding: '20px' }}>
+            <ToastContainer />
             <Card className="mb-1 p-2">
                 <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
                 <Row gutter={16} className="mb-3">
@@ -228,7 +229,7 @@ function Product() {
                     }}
                 />
             </Card>
-            <ToastContainer />
+
         </div>
     );
 }

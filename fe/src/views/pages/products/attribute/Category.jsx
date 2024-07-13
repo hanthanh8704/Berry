@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
-import { EditOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
+
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
@@ -70,6 +71,11 @@ function Category() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = categoryList.some(category => category.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên danh mục đã tồn tại!");
+                        return;
+                    }
                     const response = await request.post("/category/create", values);
                     if (response.status === 200) {
                         toast.success("Thêm danh mục thành công!");
@@ -95,6 +101,11 @@ function Category() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = categoryList.some(category => category.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên danh mục đã tồn tại!");
+                        return;
+                    }
                     const response = await request.put(`/category/${item.id}`, values);
                     if (response.status === 200) {
                         toast.success("Cập nhật danh mục thành công!");
@@ -134,10 +145,10 @@ function Category() {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách danh mục</h6>
-            <Row gutter={10}>
+            <h6 className=" m-2 fw-semibold">Danh sách danh mục</h6>
+            <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Danh mục</label>
                     <Input
@@ -151,9 +162,10 @@ function Category() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-primary w-100"
+                        className=" w-100"
+                        style={{ backgroundColor: '#5e35b1' }}
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm danh mục
+                        <PlusOutlined /> Thêm danh mục
                     </Button>
                 </Col>
             </Row>
@@ -186,12 +198,11 @@ function Category() {
                         className: "text-center",
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
-                                <Button
-                                    onClick={() => handleEdit(record)}
-                                >
-                                    <EditOutlined />
+                                <Button style={{ color: '#5e35b1' }} type="text" onClick={() => handleEdit(record)}>
+                                    <i className="fas fa-edit "><IconEdit /></i>
                                 </Button>
                             </Tooltip>
+
                         ),
                     },
                 ]}
@@ -232,11 +243,20 @@ function Category() {
                     <Form.Item
                         label="Danh mục"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên danh mục!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên danh mục chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên danh mục..." />
                     </Form.Item>
                 </Form>
+
+
             </Modal>
 
             <Modal
@@ -261,7 +281,14 @@ function Category() {
                     <Form.Item
                         label="Danh mục"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên danh mục!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên danh mục chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên danh mục..." />
                     </Form.Item>

@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TayAoImpl  implements TayAoService {
+public class TayAoImpl implements TayAoService {
     private final TayAoRepository tayAoRepository;
     private final SleeveConverter tayAoConverter;
 
@@ -30,7 +30,6 @@ public class TayAoImpl  implements TayAoService {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSizePage());
         return new PageableObject<>(tayAoRepository.findAllByCriteria(request, pageable));
     }
-
 
 
     @Override

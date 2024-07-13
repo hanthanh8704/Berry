@@ -24,10 +24,6 @@ public enum Message {
     NOT_PAYMENT("Đơn hàng không thể tiếp tục thanh toán");
 
 
-
-
-
-
     private String message;
 
     Message(String message) {

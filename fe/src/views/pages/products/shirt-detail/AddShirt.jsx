@@ -1,327 +1,507 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button, Col, Input, Radio, Row, Select, Switch, Table, Tooltip, Card, Modal, Form } from "antd";
+/* eslint-disable eqeqeq */
+import { Breadcrumb, Button, Col, Collapse, Modal, Row, Select, Space } from "antd";
+import { Option } from "antd/es/mentions";
+import React, { useEffect, useState } from "react";
+// import { FaHome } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { IconEdit } from "@tabler/icons-react";
+import AddProperties from "components/Admin/Product/AddProperties";
+import TableProduct from "components/Admin/Product/TableProduct";
+import AddShirtModal from "components/Admin/Product/AddShirtModal";
 import * as request from "views/utilities/httpRequest";
-import debounce from "lodash/debounce";
+import { IconHome } from "@tabler/icons-react";
 
-function Product() {
-    const [productList, setProductList] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const [listCate, setListCate] = useState([]);
-    const [listBrand, setListBrand] = useState([]);
-    const [selectedCate, setSelectedCate] = useState(null);
-    const [selectedBrand, setSelectedBrand] = useState(null);
-    const [searchValue, setSearchValue] = useState("");
-    const [statusProduct, setStatusProduct] = useState(null);
-    const [pageSize, setPageSize] = useState(5);
-    const [searchCate, setSearchCate] = useState('');
-    const [searchBrand, setSearchBrand] = useState('');
-    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
-    const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
-    const [formAdd] = Form.useForm();
-    const [formUpdate] = Form.useForm();
-    const [item, setItem] = useState(null);
 
-    useEffect(() => {
-        request.get("/category", { params: { name: searchCate, status: false } })
-            .then((response) => {
-                setListCate(response.data);
-            }).catch((error) => { console.log(error); });
-        request.get("/brand", { params: { name: searchBrand, status: false } })
-            .then((response) => {
-                setListBrand(response.data);
-            }).catch((error) => { console.log(error); });
-    }, [searchCate, searchBrand]);
+function AddProduct() {
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const delayedSearch = debounce(() => {
-            loadData();
-        }, 300);
+  const [material, setMaterial] = useState([]);
+  const [size, setSize] = useState([]);
+  const [color, setColor] = useState([]);
+  const [sleeve, setSleeve] = useState([]);
+  const [collar, setCollar] = useState([]);
+  const [brand, setBrand] = useState([]);
 
-        delayedSearch();
 
-        return () => {
-            delayedSearch.cancel();
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [selectedSleeves, setSelectedSleeves] = useState([]);
+  const [selectedCollars, setSelectedCollars] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+
+  const [searchSize, setSearchSize] = useState(null);
+  const [searchColor, setSearchColor] = useState(null);
+  const [searchMaterial, setSearchMaterial] = useState(null);
+  const [searchSleeve, setSearchSleeve] = useState(null);
+  const [searchCollar, setSearchCollar] = useState(null);
+  const [searchBrand, setSearchBrand] = useState(null);
+
+  const [product, setProduct] = useState([]);
+  const [searchProduct, setSearchProduct] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productDetail, setProductDetail] = useState([]);
+
+  useEffect(() => {
+    const options = [];
+    selectedColors.forEach((colorItem) => {
+      selectedSizes.forEach((sizeItem) => {
+
+        const option = {
+          sanPham: selectedProduct,
+          mauSac: colorItem,
+          kichCo: sizeItem,
+          chatLieu: selectedMaterial,
+          thuongHieu: selectedBrands,
+          tayAo: selectedSleeves,
+          coAo: selectedCollars,
+          giaBan: 100000,
+          soLuong: 10,
+          trangThai: "Hoạt động",
+          deleted: false,
         };
-    }, [searchValue, currentPage, selectedCate, selectedBrand, pageSize, statusProduct]);
+        options.push(option);
+      });
+    });
+    setProductDetail(options);
+    console.log(options);
+  }, [selectedColors, selectedSizes, selectedProduct, selectedMaterial, selectedBrands, selectedSleeves, selectedCollars]);
 
-    const loadData = () => {
-        request.get("/shirt", {
-            params: { name: searchValue, page: currentPage, sizePage: pageSize, category: selectedCate, brand: selectedBrand, status: statusProduct },
-        }).then((response) => {
-            setProductList(response.data);
-            setTotalPages(response.totalPages);
-        }).catch((error) => {
-            console.log(error);
-        });
+  const handleChangeProductDetail = (items) => {
+    debugger
+    console.log("--- đã nhảy sang add shoe ---");
+    setProductDetail(items);
+    console.log(items);
+  };
+
+  const loadShoe = () => {
+    request.get("/shirt", { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setProduct(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadSize = () => {
+    request.get("/size", { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setSize(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadMaterial = () => {
+    request.get("/material", { params: { name: searchMaterial, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setMaterial(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadBrand = () => {
+    request.get("/brand", { params: { name: searchBrand, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setBrand(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadColor = () => {
+    request.get("/color", { params: { name: searchColor, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setColor(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadSleeve = () => {
+    request.get("/sleeve", { params: { name: searchSleeve, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setSleeve(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const loadCollar = () => {
+    request.get("/collar", { params: { name: searchCollar, status: false, sizePage: 1_000_000 } }).then((response) => {
+      setCollar(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  useEffect(() => {
+    loadShoe();
+  }, [searchProduct]);
+
+  useEffect(() => {
+    loadSize();
+  }, [searchSize]);
+
+  useEffect(() => {
+    loadColor();
+  }, [searchColor]);
+
+  useEffect(() => {
+    loadMaterial();
+  }, [searchMaterial]);
+
+  useEffect(() => {
+    loadBrand();
+  }, [searchBrand]);
+
+  useEffect(() => {
+    loadSleeve();
+  }, [searchSleeve]);
+
+  useEffect(() => {
+    loadCollar();
+  }, [searchCollar]);
+
+  //Thêm sản phẩm
+  const handleCreate = () => {
+
+    const data = [];
+    const colorImageErrors = [];
+    productDetail.forEach((item) => {
+      const x = {
+        sanPham: item.sanPham.id,
+        mauSac: item.mauSac.id,
+        kichCo: item.kichCo.id,
+        chatLieu: item.chatLieu.id,
+        thuongHieu: item.thuongHieu.id,
+        tayAo: item.tayAo.id,
+        coAo: item.coAo.id,
+        soLuong: item.soLuong,
+        giaBan: item.giaBan,
+        listImages: item.images
+      };
+
+      data.push(x);
+      console.log(data);
+      if (!item.images || item.images.length === 0) {
+        colorImageErrors.push(item.mauSac.ten);
+      }
+    });
+    if (colorImageErrors.length > 0) {
+      const uniqueColorErrors = [...new Set(colorImageErrors)];
+      toast.error(`Các sản phẩm màu ${uniqueColorErrors.join(', ')} chưa chọn ảnh.`);
+      return;
     }
 
-    const handleChangeStatus = async (id) => {
-        await request.remove(`/shirt/${id}`).then(response => {
-            toast.success("Đã cập nhật trạng thái!");
-            loadData();
-        }).catch(e => {
-            console.log(e);
-        })
-    }
+    Modal.confirm({
+      title: "Xác nhận",
+      maskClosable: true,
+      content: "Xác nhận thêm sản phẩm?",
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
 
-    const handleAdd = (values) => {
-        Modal.confirm({
-            title: "Xác nhận",
-            content: "Bạn có chắc muốn thêm sản phẩm này?",
-            okText: "Xác nhận",
-            okType: "primary",
-            cancelText: "Hủy",
-            async onOk() {
-                try {
-                    const response = await request.post("/shirt/create", values);
-                    if (response.status === 200) {
-                        toast.success("Thêm sản phẩm thành công!");
-                        setIsModalAddOpen(false);
-                        formAdd.resetFields();
-                        loadData();
-                    }
-                } catch (error) {
-                    console.error("Error adding data:", error);
-                    toast.error("Thêm sản phẩm thất bại!");
-                }
-            },
+        request.post('/shirt-detail', data).then((response) => {
+          if (response.status === 200) {
+            toast.success("Thêm thành công!", {
+              autoClose: 2000 // Thời gian thông báo sẽ hiển thị trong 2 giây (2000 milliseconds)
+            });
+            setTimeout(() => {
+              navigate("/products");
+            }, 2000);
+
+          }
+        }).catch((e) => {
+          toast.error(e.response.data);
         });
-    };
+        console.log(data);
+      },
+    });
 
-    const handleUpdate = (values) => {
-        Modal.confirm({
-            title: "Xác nhận",
-            content: "Bạn có chắc muốn cập nhật sản phẩm này?",
-            okText: "Xác nhận",
-            okType: "primary",
-            cancelText: "Hủy",
-            async onOk() {
-                try {
-                    const response = await request.put(`/shirt/update/${item.id}`, values);
-                    if (response.status === 200) {
-                        toast.success("Cập nhật sản phẩm thành công!");
-                        setIsModalUpdateOpen(false);
-                        formUpdate.resetFields();
-                        loadData();
-                    }
-                } catch (error) {
-                    console.error("Error updating data:", error);
-                    toast.error("Cập nhật sản phẩm thất bại!");
-                }
-            },
-        });
-    };
+  };
 
-    const handleCancelAdd = () => {
-        setIsModalAddOpen(false);
-        formAdd.resetFields();
-    };
+  return (
 
-    const handleCancelUpdate = () => {
-        setIsModalUpdateOpen(false);
-        formUpdate.resetFields();
-    };
+    <div className="bg-white rounded-3 p-1">
+      <ToastContainer />
+      <Breadcrumb
+        className="mb-2 ms-2"
+        items={[
+          { href: "/" },
+          { href: "/free/products", title: "Danh sách sản phẩm" },
+          { title: "Thêm sản phẩm" },
+        ]}
+      />
+      <Row gutter={24} className="m-3">
+        <Col xl={24}>
+          <label className="mb-1">Tên sản phẩm</label>
+          <div className="d-flex">
+            <Select
+              className="me-2 w-100"
+              size="large"
+              showSearch
+              onChange={(value) => {
+                setSelectedProduct(product.find((item) => item.id === value));
+              }}
+              placeholder="Nhập tên áo..."
+              optionFilterProp="children"
+              onSearch={setSearchProduct}
+            >
+              {product.map((item) => (
+                <Option key={item.id} value={item.id}>
+                  {item.ten}
+                </Option>
+              ))}
+            </Select>
+            <AddShirtModal onAddSuccess={() => loadShoe()} />
+          </div>
+        </Col>
 
-    const handleEdit = (record) => {
-        setItem(record);
-        setIsModalUpdateOpen(true);
-        formUpdate.setFieldsValue({
-            ma: record.ma,
-            ten: record.ten,
-            soLuong: record.soLuong,
-            danhMuc: record.danhMuc,
-            // Thêm các trường khác nếu cần
-        });
-    };
-
-    const columns = [
-        {
-            title: '#',
-            dataIndex: 'index',
-            key: 'index',
-            width: 50,
-            align: 'center',
-        },
-        {
-            title: 'Mã',
-            dataIndex: 'ma',
-            key: 'ma',
-        },
-        {
-            title: 'Tên',
-            dataIndex: 'ten',
-            key: 'ten',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'soLuong',
-            key: 'soLuong',
-            render: (x) => x == null ? 0 : x,
-            align: 'center',
-        },
-        {
-            title: 'Danh mục',
-            dataIndex: 'danhMuc',
-            key: 'danhMuc',
-        },
-
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            render: (x, record) => (
-                <Tooltip title={x ? "Ngừng bán" : "Đang bán"}>
-                    <Switch defaultChecked={!x} onChange={() => handleChangeStatus(record.id)} />
-                </Tooltip>
-            ),
-            align: 'center',
-        },
-        {
-            title: 'Hành động',
-            dataIndex: 'id',
-            key: 'action',
-            render: (x, record) => (
-                <Tooltip title="Chỉnh sửa">
-                    <Button onClick={() => handleEdit(record)}>
-                        <IconEdit />
-                    </Button>
-                </Tooltip>
-            ),
-            align: 'center',
-        },
-    ];
-
-    return (
-        <div style={{ background: '#fff', padding: '20px' }}>
-            <Card className="mb-1 p-2">
-                <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
-                <Row gutter={16} className="mb-3">
-                    <Col span={20}>
-                        <label className="mb-2">Tên sản phẩm</label>
-                        <Input onChange={(event) => setSearchValue(event.target.value)} placeholder="Tìm kiếm sản phẩm theo tên..." />
-                    </Col>
-                    <Col span={4} className="d-flex align-items-end justify-content-end">
-                        <Button type="primary" className="bg-primary" onClick={() => setIsModalAddOpen(true)}>
-                            <IconEdit /> Thêm sản phẩm
-                        </Button>
-                    </Col>
-                </Row>
-            </Card>
-            <Card className="mb-2 p-1">
-                <Row gutter={16}>
-                    <Col span={8}>
-                        <div className="mb-2">Trạng thái</div>
-                        <Radio.Group defaultValue={null} onChange={(event) => setStatusProduct(event.target.value)}>
-                            <Radio value={null}>Tất cả</Radio>
-                            <Radio value={false}>Đang bán</Radio>
-                            <Radio value={true}>Ngừng bán</Radio>
-                        </Radio.Group>
-                    </Col>
-                    <Col span={8}>
-                        <label className="mb-2">Danh mục</label>
-                        <Select
-                            showSearch
-                            onChange={setSelectedCate}
-                            placeholder="Chọn danh mục..."
-                            optionFilterProp="children"
-                            style={{ width: "100%" }}
-                            onSearch={setSearchCate}
-                        >
-                            <Select.Option value="">Chọn danh mục</Select.Option>
-                            {listCate.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Col>
-
-                </Row>
-            </Card>
-            <Card>
-                <Table
-                    dataSource={productList}
-                    columns={columns}
-                    className="custom-table"
-                    pagination={{
-                        showSizeChanger: true,
-                        current: currentPage,
-                        pageSize: pageSize,
-                        pageSizeOptions: [5, 10, 20, 50, 100],
-                        showQuickJumper: true,
-                        total: totalPages * pageSize,
-                        onChange: (page, pageSize) => {
-                            setCurrentPage(page);
-                            setPageSize(pageSize);
-                        },
+        <Col xl={24} className="my-2 mt-4">
+          <Collapse defaultActiveKey={0} className="rounded-0 border-0">
+            <Collapse.Panel key={0} header={"Thuộc tính"} className="border-bottom-0">
+              <Row gutter={24}>
+                <Col xl={12}>
+                  <label className="mb-1">Chất liệu</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedMaterial(material.find((item) => item.id === value));
                     }}
-                    scroll={{ x: 1000 }}
-                />
-            </Card>
+                    placeholder="Nhập tên chất liệu..."
+                    optionFilterProp="children"
+                    onSearch={setSearchMaterial}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"chất liệu"}
+                            name={"material"}
+                            onSuccess={() => loadMaterial()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {material.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
 
-            <Modal
-                title="Thêm sản phẩm"
-                visible={isModalAddOpen}
-                onCancel={handleCancelAdd}
-                onOk={() => formAdd.submit()}
-                okText="Thêm"
-                cancelText="Hủy"
-            >
-                <Form form={formAdd} onFinish={handleAdd}>
+                <Col xl={12}>
+                  <label className="mb-1">Thương Hiệu</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedBrands(brand.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên thương hiệu..."
+                    optionFilterProp="children"
+                    onSearch={setSearchBrand}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"thương hiệu"}
+                            name={"brand"}
+                            onSuccess={() => loadBrand()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {brand.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
 
-                    <Form.Item name="ten" label="Tên sản phẩm" rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
-                        <Input placeholder="Tên sản phẩm" />
-                    </Form.Item>
+              <Row gutter={24}>
+                <Col xl={12}>
+                  <label className="mb-1">Tay áo</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedSleeves(sleeve.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên tay áo..."
+                    optionFilterProp="children"
+                    onSearch={setSearchSleeve}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"tay áo"}
+                            name={"sleeve"}
+                            onSuccess={() => loadSleeve()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {sleeve.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
 
-                    <Form.Item name="danhMuc" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}>
-                        <Select placeholder="Chọn danh mục">
-                            {listCate.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                <Col xl={12}>
+                  <label className="mb-1">Cổ áo</label>
+                  <Select
+                    className="me-2 w-100 mb-3"
+                    size="large"
+                    showSearch
+                    onChange={(value) => {
+                      setSelectedCollars(collar.find((item) => item.id === value));
+                    }}
+                    placeholder="Nhập tên cổ áo..."
+                    optionFilterProp="children"
+                    onSearch={setSearchCollar}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"cổ áo"}
+                            name={"collar"}
+                            onSuccess={() => loadCollar()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {collar.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+            </Collapse.Panel>
+          </Collapse>
+        </Col>
 
-            <Modal
-                title="Cập nhật sản phẩm"
-                visible={isModalUpdateOpen}
-                onCancel={handleCancelUpdate}
-                onOk={() => formUpdate.submit()}
-                okText="Cập nhật"
-                cancelText="Hủy"
-            >
-                <Form form={formUpdate} onFinish={handleUpdate}>
-                    <Form.Item name="ma" label="Mã sản phẩm" rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}>
-                        <Input placeholder="Mã sản phẩm" />
-                    </Form.Item>
-                    <Form.Item name="ten" label="Tên sản phẩm" rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
-                        <Input placeholder="Tên sản phẩm" />
-                    </Form.Item>
-                    <Form.Item name="soLuong" label="Số lượng" rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}>
-                        <Input type="number" placeholder="Số lượng" />
-                    </Form.Item>
-                    <Form.Item name="danhMuc" label="Danh mục" rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}>
-                        <Select placeholder="Chọn danh mục">
-                            {listCate.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </Form>
-            </Modal>
-        </div>
-    );
+        <Col xl={24} className="my-3">
+          <Collapse defaultActiveKey={0} className="rounded-0 border-0">
+            <Collapse.Panel key={0} header={"Kích cỡ và Màu sắc"} className="border-bottom-0">
+              <Row gutter={24}>
+                <Col xl={12}>
+                  <label className="mb-1">Kích cỡ</label>
+                  <Select
+                    className="me-2 w-100"
+                    size="large"
+                    showSearch
+                    mode="multiple"
+                    onChange={async (selectedValues) => {
+                      setSelectedSizes(
+                        await Promise.all(
+                          selectedValues.map(async (item) => {
+                            return await request.get(`/size/${item}`);
+                          })
+                        )
+                      );
+                    }}
+                    placeholder="Nhập kích cỡ..."
+                    optionFilterProp="children"
+                    onSearch={setSearchSize}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"kích cỡ"}
+                            name={"size"}
+                            onSuccess={() => loadSize()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {size.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+
+                <Col xl={12}>
+                  <label className="mb-1">Màu sắc</label>
+                  <Select
+                    className="me-2 w-100"
+                    size="large"
+                    showSearch
+                    mode="multiple"
+                    onChange={async (selectedValues) => {
+                      setSelectedColors(
+                        await Promise.all(
+                          selectedValues.map(async (item) => {
+                            return await request.get(`/color/${item}`);
+                          })
+                        )
+                      );
+                    }}
+                    placeholder="Nhập màu sắc..."
+                    optionFilterProp="children"
+                    onSearch={setSearchColor}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Space className="my-2 ms-2">
+                          <AddProperties
+                            placeholder={"màu sắc"}
+                            name={"color"}
+                            onSuccess={() => loadColor()}
+                          />
+                        </Space>
+                      </>
+                    )}
+                  >
+                    {color.map((item) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.ten}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+            </Collapse.Panel>
+          </Collapse>
+        </Col>
+      </Row>
+
+      {selectedCollars === null || selectedSleeves === null || selectedMaterial === null || selectedProduct === null || selectedProduct === undefined || selectedSizes.length === 0 || selectedColors.length === 0 ? (
+        ""
+      ) : (
+        <>
+          <TableProduct props={productDetail} handleChange={handleChangeProductDetail} />
+          <Button type="primary"
+            style={{ backgroundColor: '#5e35b1' }} className=" float-end mt-3" onClick={handleCreate}>
+            Thêm sản phẩm
+          </Button>
+        </>
+      )}
+
+
+
+
+    </div>
+  );
 }
 
-export default Product;
+export default AddProduct;

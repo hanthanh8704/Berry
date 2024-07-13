@@ -1,10 +1,23 @@
 // assets
-import { IconShirt } from '@tabler/icons-react';
+import { IconShirt, IconBulldozer } from '@tabler/icons-react';
+import { IconShirtSport, IconCategory2, IconHeartCode } from '@tabler/icons-react';
+import { IconPalette, IconArrowsMaximize, IconBrandStocktwits, IconBrandDrupal } from '@tabler/icons-react';
+
 
 // constant
 const icons = {
-  IconShirt
+  IconShirt,
+  IconShirtSport,
+  IconPalette,
+  IconArrowsMaximize,
+  IconBrandStocktwits,
+  IconBrandDrupal,
+  IconCategory2,
+  IconBulldozer,
+  IconHeartCode
+
 };
+
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
@@ -28,47 +41,54 @@ const product = {
           target: false
         },
         {
+          id: 'category',
+          title: 'Danh Mục',
+          type: 'item',
+          url: '/products/category',
+          target: false,
+          icon: icons.IconCategory2
+        },
+        {
           id: 'color',
           title: 'Màu Sắc',
           type: 'item',
           url: '/products/color',
-          target: false
+          target: false,
+          icon: icons.IconPalette
         },
         {
           id: 'size',
           title: 'Kích Cỡ',
           type: 'item',
           url: '/products/size',
-          target: false
+          target: false,
+          icon: icons.IconArrowsMaximize
         },
         {
           id: 'label',
           title: 'Thương Hiệu',
           type: 'item',
           url: '/products/label',
-          target: false
+          target: false,
+          icon: icons.IconBrandStocktwits
         },
         {
           id: 'material',
           title: 'Chất Liệu',
           type: 'item',
           url: '/products/material',
-          target: false
+          target: false,
+          icon: icons.IconBrandDrupal
         },
-        {
-          id: 'category',
-          title: 'Danh Mục',
-          type: 'item',
-          url: '/products/category',
-          target: false
-        },
+
 
         {
           id: 'sleeve',
           title: ' Kiểu Tay Áo',
           type: 'item',
           url: '/products/sleeve',
-          target: false
+          target: false,
+          icon: icons.IconHeartCode
         },
 
 
@@ -77,7 +97,8 @@ const product = {
           title: ' Kiểu Cổ Áo',
           type: 'item',
           url: '/products/collar',
-          target: false
+          target: false,
+          icon: icons.IconBulldozer
         }
       ]
     }

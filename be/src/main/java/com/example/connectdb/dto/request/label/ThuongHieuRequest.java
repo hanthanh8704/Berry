@@ -8,11 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class ThuongHieuRequest   extends PageableRequest {
+public class ThuongHieuRequest extends PageableRequest {
     private Integer id;
     @NotEmpty(message = "Thương Hiệu không được để trống!")
     private String ten;

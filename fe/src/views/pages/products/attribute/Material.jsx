@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import { EditOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
@@ -71,6 +72,11 @@ function Material() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = materialList.some(material => material.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên chất liệu đã tồn tại!");
+                        return;
+                    }
                     const response = await request.post("/material/create", values);
                     if (response.status === 200) {
                         toast.success("Thêm chất liệu thành công!");
@@ -96,6 +102,11 @@ function Material() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = materialList.some(material => material.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên chất liệu đã tồn tại!");
+                        return;
+                    }
                     const response = await request.put(`/material/${item.id}`, values);
                     if (response.status === 200) {
                         toast.success("Cập nhật chất liệu thành công!");
@@ -138,10 +149,10 @@ function Material() {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách chất liệu</h6>
-            <Row gutter={10}>
+            <h6 className="fw-semibold m-3">Danh sách chất liệu</h6>
+            <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Chất liệu</label>
                     <Input
@@ -155,9 +166,10 @@ function Material() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-primary w-100"
+                        className=" w-100"
+                        style={{ backgroundColor: '#5e35b1' }}
                     >
-                        <i className="fas fa-plus-circle me-1"></i> Thêm chất liệu
+                        <PlusOutlined /> Thêm chất liệu
                     </Button>
                 </Col>
             </Row>
@@ -196,10 +208,8 @@ function Material() {
                         className: "text-center",
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
-                                <Button
-                                    onClick={() => handleEdit(record)}
-                                >
-                                    <EditOutlined />
+                                <Button style={{ color: '#5e35b1' }} type="text" onClick={() => handleEdit(record)}>
+                                    <i className="fas fa-edit "><IconEdit /></i>
                                 </Button>
                             </Tooltip>
                         ),
@@ -242,11 +252,19 @@ function Material() {
                     <Form.Item
                         label="Chất liệu"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên chất liệu!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên chất liệu chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên chất liệu..." />
                     </Form.Item>
                 </Form>
+
             </Modal>
 
             <Modal
@@ -271,7 +289,14 @@ function Material() {
                     <Form.Item
                         label="Chất liệu"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên chất liệu!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên chất liệu!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên chất liệu chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên chất liệu..." />
                     </Form.Item>

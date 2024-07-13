@@ -35,8 +35,6 @@ public class ThuongHieuImpl implements ThuongHieuService {
     }
 
 
-
-
     @Override
     public ThuongHieu getOne(Integer id) {
         return thuongHieuRepository.findById(id).orElse(null);

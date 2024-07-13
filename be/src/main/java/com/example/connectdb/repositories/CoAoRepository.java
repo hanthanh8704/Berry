@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoAoRepository extends JpaRepository<CoAo,Integer> {
+public interface CoAoRepository extends JpaRepository<CoAo, Integer> {
     @Query(value = """
             SELECT
             c.id AS id,
@@ -25,7 +25,9 @@ public interface CoAoRepository extends JpaRepository<CoAo,Integer> {
             AND (:#{#req.trangThai} IS NULL OR c.trang_thai = :#{#req.trangThai})
             """, nativeQuery = true)
     Page<CoAoResponse> findAllByCriteria(@Param("req") CoAoRequest request, Pageable pageable);
+
     CoAo findByTen(String ten);
+
     boolean existsByTenIgnoreCase(String ten);
 
 

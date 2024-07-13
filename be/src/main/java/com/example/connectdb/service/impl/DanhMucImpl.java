@@ -39,7 +39,6 @@ public class DanhMucImpl implements DanhMucService {
     }
 
 
-
     @Override
     public DanhMuc getOne(Integer id) {
         return danhMucRepository.findById(id).orElse(null);

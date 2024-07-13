@@ -29,7 +29,7 @@ public class MauSacImpl implements MauSacService {
         this.mauSacRepository = mauSacRepository;
     }
 
-       @Autowired
+    @Autowired
     private ColorConverter colorConverter;
 
     @Override
@@ -37,7 +37,6 @@ public class MauSacImpl implements MauSacService {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSizePage());
         return new PageableObject<>(mauSacRepository.findAllByCriteria(request, pageable));
     }
-
 
 
     @Override
@@ -66,7 +65,6 @@ public class MauSacImpl implements MauSacService {
             return mauSacRepository.save(colorConverter.convertRequestToEntity(oldColor, request));
         }
     }
-
 
 
 }

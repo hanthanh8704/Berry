@@ -7,12 +7,13 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react";
+
 import * as request from "views/utilities/httpRequest";
 
 import AddProperties from "components/Admin/Product/AddProperties";
 import debounce from "lodash/debounce"; // Import debounce function
 
-function UpdateShoeDetail({ props, onSuccess }) {
+function UpdateShirtDetail({ props, onSuccess }) {
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [listImages, setListImages] = useState();
@@ -55,7 +56,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
             cancelText: "Hủy",
             onOk: async () => {
                 await request.remove(`/images/${id}`).then(response => {
-                    toast.success("Xóa thành công!");
+                    toast.success("Xóa thành công!", { autoClose: 3000, closeOnClick: true });
                     onSuccess();
                     loadImages();
                 }).catch(e => {
@@ -96,7 +97,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
                             }
                         }).then(response => {
                             loadImages();
-                            toast.success("Thêm thành công!");
+                            toast.success("Thêm thành công!", { autoClose: 3000, closeOnClick: true });
                         }).catch(e => {
                             console.log(e);
                         })
@@ -137,7 +138,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
             cancelText: "Hủy",
             onOk: async () => {
                 await request.put(`/shirt-detail/${props.id}`, data).then(response => {
-                    toast.success('Cập nhật thành công!');
+                    toast.success('Cập nhật thành công!', { autoClose: 3000, closeOnClick: true });
                     setIsModalOpen(false);
                     onSuccess();
                 }).catch(e => {
@@ -233,11 +234,13 @@ function UpdateShoeDetail({ props, onSuccess }) {
         <>
             <ToastContainer />
             <Tooltip placement="top" title="Chỉnh sửa">
-                <Button type="text" onClick={showModal}><i className="fas fa-edit text-primary"><IconEdit /></i></Button>
+                <Button style={{ color: '#5e35b1' }} type="text" onClick={showModal}>
+                    <i className="fas fa-edit "><IconEdit /></i>
+                </Button>
             </Tooltip>
             <Modal title={props.ten} open={isModalOpen} onCancel={handleCancel} footer={
                 <>
-                    <Button type='primary' htmlType='submit' form='formUpdate' className='bg-primary'>Cập nhật</Button>
+                    <Button type='primary' htmlType='submit' form='formUpdate' style={{ backgroundColor: '#5e35b1' }}>Cập nhật</Button>
                 </>
             } width={800}>
                 <Form layout='vertical' form={form} onFinish={handleOk} id='formUpdate'>
@@ -406,7 +409,7 @@ function UpdateShoeDetail({ props, onSuccess }) {
                             <div className="d-flex flex-wrap">
                                 {listImages?.map((image, index) => (
                                     <div className="position-relative me-2 mt-2">
-                                        <img src={image.ten} alt="images" width={100} height={100} className="object-fit-cover border border-primary" />
+                                        <img src={image.ten} alt="images" width={100} height={100} className="object-fit-cover  border border-purple " style={{ borderColor: '#5e35b1', color: '#5e35b1' }} />
                                         <div className="position-absolute end-0 top-0">
                                             <button type="button" class="btn btn-sm border-0 text-danger" onClick={() => handleDeleteImage(image.id)}>
                                                 <Tooltip title="Xóa ảnh">
@@ -418,13 +421,14 @@ function UpdateShoeDetail({ props, onSuccess }) {
                                     </div>
                                 ))}
                                 {listImages?.length < 3 &&
-                                    <div style={{ width: "100px", height: "100px" }} className="position-relative rounded-0 border border-primary d-flex align-items-center justify-content-center mt-2">
+                                    <div style={{ width: "100px", height: "100px" }} className="position-relative rounded-0 border border-purple d-flex align-items-center justify-content-center mt-2">
                                         <input
                                             type="file"
                                             accept="image/*"
                                             className="position-absolute opacity-0"
                                             style={{ width: "100%", height: "100%" }}
                                             onChange={(event) => handleUploadImage(event)}
+
                                         />
                                     </div>}
                             </div>
@@ -437,4 +441,4 @@ function UpdateShoeDetail({ props, onSuccess }) {
     )
 }
 
-export default UpdateShoeDetail
+export default UpdateShirtDetail

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ChiTietSanPhamImpl  implements ChiTietSanPhamService {
+public class ChiTietSanPhamImpl implements ChiTietSanPhamService {
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
 

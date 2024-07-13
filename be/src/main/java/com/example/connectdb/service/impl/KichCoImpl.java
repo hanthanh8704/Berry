@@ -60,4 +60,6 @@ public class KichCoImpl implements KichCoService {
             return kichCoRepository.save(sizeConverter.convertRequestToEntity(oldSize, request));
         }
     }
+
+
 }

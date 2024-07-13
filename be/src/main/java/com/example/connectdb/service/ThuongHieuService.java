@@ -12,8 +12,6 @@ import com.example.connectdb.util.common.PageableObject;
 public interface ThuongHieuService {
     PageableObject<ThuongHieuResponse> getAll(ThuongHieuRequest request);
 
-
-
     ThuongHieu getOne(Integer id);
 
     ThuongHieu create(ThuongHieuRequest thuongHieuRequest);

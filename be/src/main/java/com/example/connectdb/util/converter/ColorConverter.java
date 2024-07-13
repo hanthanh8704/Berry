@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ColorConverter {
-    public MauSac convertRequestToEntity(MauSacRequest request){
+    public MauSac convertRequestToEntity(MauSacRequest request) {
         MauSac mauSac = MauSac.builder()
 
                 .ten(request.getTen())
@@ -15,7 +15,8 @@ public class ColorConverter {
                 .build();
         return mauSac;
     }
-    public MauSac convertRequestToEntity(MauSac entity, MauSacRequest request){
+
+    public MauSac convertRequestToEntity(MauSac entity, MauSacRequest request) {
 
         entity.setTen(request.getTen());
         entity.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động");

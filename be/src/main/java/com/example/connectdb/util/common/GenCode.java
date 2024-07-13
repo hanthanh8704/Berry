@@ -9,10 +9,11 @@ import java.util.UUID;
 public class GenCode {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 10;
+
     public static String genCodeByName(String name) {
         /*
-         * input: Vũ Nguyên Hướng
-         * output: VUNGUYENHUONG
+         * input: Đỗ Thành Đạt
+         * output: DOTHANHDAT
          * */
 
         // Remove diacritical marks and spaces, convert to uppercase
@@ -29,7 +30,7 @@ public class GenCode {
         return normalizedCode.substring(startIndex);
     }
 
-    public static String randomPassword(){
+    public static String randomPassword() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 }

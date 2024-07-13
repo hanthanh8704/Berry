@@ -16,7 +16,8 @@ public class MaterialConverter {
                 .build();
         return chatLieu;
     }
-    public ChatLieu convertRequestToEntity(ChatLieu entity, ChatLieuRequest request){
+
+    public ChatLieu convertRequestToEntity(ChatLieu entity, ChatLieuRequest request) {
 
         entity.setTen(request.getTen());
         entity.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động");

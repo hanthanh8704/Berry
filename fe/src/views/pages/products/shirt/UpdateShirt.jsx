@@ -11,7 +11,7 @@ import { IconEdit, IconSettings } from "@tabler/icons-react";
 import * as request from "views/utilities/httpRequest";
 import debounce from "lodash/debounce"; // Import debounce function
 
-function UpdateShoe({ props, onSuccess }) {
+function UpdateShirt({ props, onSuccess }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [searchCate, setSearchCate] = useState(null);
@@ -23,7 +23,7 @@ function UpdateShoe({ props, onSuccess }) {
     const handleOk = (data) => {
         console.log(data);
         request.put(`/shirt/${props.id}`, data).then(response => {
-            toast.success('Cập nhật thành công!');
+            toast.success('Cập nhật thành công!', { autoClose: 3000, closeOnClick: true });
             setIsModalOpen(false);
             onSuccess();
         }).catch(e => {
@@ -40,7 +40,7 @@ function UpdateShoe({ props, onSuccess }) {
     };
 
     useEffect(() => {
-        request.get('/category', { params: { name: searchCate } }).then((response) => {
+        request.get('/category', { params: { name: searchCate, status: false, sizePage: 1_000_000 } }).then((response) => {
             setCateList(response.data);
         });
     }, [searchCate])
@@ -48,18 +48,24 @@ function UpdateShoe({ props, onSuccess }) {
 
     return (
         <>
+            <ToastContainer />
             <Tooltip placement="bottom" title="Chỉnh sửa sản phẩm">
-                <Button type="primary" className="bg-primary" onClick={showModal}><i className="fas fa-edit me-1"><IconEdit /></i></Button>
+                <Button type="primary" style={{ backgroundColor: '#5e35b1' }} onClick={showModal}><i className="fas fa-edit me-1"><IconEdit /></i></Button>
             </Tooltip>
             <Modal title="Cập nhật thông tin sản phẩm" open={isModalOpen} onCancel={handleCancel} footer="">
                 <Form onFinish={handleOk} layout="vertical" initialValues={{
                     ten: props.ten,
-                    // danhMuc: props.danhMuc.id,
+
+
                 }}>
                     <Row gutter={10}>
                         <Col xl={24}>
-                            <Form.Item label={"Tên giày"} name={"ten"} rules={[{ required: true, message: "Tên không được để trống!" }]}>
-                                <Input placeholder="Nhập tên giày..." />
+                            <Form.Item label={"Tên áo"} name={"ten"} rules={[
+                                { required: true, message: "Vui lòng nhập tên áo!" },
+                                { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                                { pattern: /^[A-Za-zÀ-ỹ0-9\s'-]+$/, message: "Tên áo chỉ được chứa các ký tự chữ cái, số và không được là khoảng trắng!" },
+                            ]}>
+                                <Input placeholder="Nhập tên áo..." />
                             </Form.Item>
                         </Col>
                         <Col xl={12}>
@@ -77,14 +83,14 @@ function UpdateShoe({ props, onSuccess }) {
 
                     </Row>
                     <div className="d-flex justify-content-end align-items-center">
-                        <Button type="primary" htmlType="submit" className='bg-primary'><i className="fas fa-edit me-1"></i> Cập nhật</Button>
+                        <Button type="primary" htmlType="submit" style={{ backgroundColor: '#5e35b1' }}><i className="fas fa-edit me-1"></i> Cập nhật</Button>
                     </div>
                 </Form>
-                <ToastContainer />
+
             </Modal>
 
         </>
     );
 }
 
-export default UpdateShoe;
+export default UpdateShirt;

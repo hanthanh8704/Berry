@@ -24,7 +24,6 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
-
     @Column(name = "ma")
     private String ma;
 

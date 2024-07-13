@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Col, Input, Modal, Row, Table, Tooltip, Form } from "antd";
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -69,6 +70,11 @@ function Color() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = colorList.some(color => color.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên màu sắc đã tồn tại!");
+                        return;
+                    }
                     const response = await request.post("/color/create", values);
                     if (response.status === 200) {
                         toast.success("Thêm màu sắc thành công!");
@@ -94,6 +100,11 @@ function Color() {
             cancelText: "Hủy",
             async onOk() {
                 try {
+                    const duplicate = colorList.some(color => color.ten.toLowerCase() === values.ten.toLowerCase());
+                    if (duplicate) {
+                        toast.error("Tên màu sắc đã tồn tại!");
+                        return;
+                    }
                     const response = await request.put(`/color/update/${item.id}`, values);
                     if (response.status === 200) {
                         toast.success("Cập nhật màu sắc thành công!");
@@ -133,10 +144,10 @@ function Color() {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold">Danh sách màu sắc</h6>
-            <Row gutter={10}>
+            <h6 className="fw-semibold m-2 mt-2">Danh sách màu sắc</h6>
+            <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Màu sắc</label>
                     <Input
@@ -150,7 +161,8 @@ function Color() {
                     <Button
                         type="primary"
                         onClick={() => setIsModalAddOpen(true)}
-                        className="bg-primary w-100"
+                        className=" w-100"
+                        style={{ backgroundColor: '#5e35b1' }}
                     >
                         <PlusOutlined /> Thêm màu sắc
                     </Button>
@@ -192,8 +204,8 @@ function Color() {
                         className: "text-center",
                         render: (text, record) => (
                             <Tooltip placement="top" title="Chỉnh sửa">
-                                <Button onClick={() => handleEdit(record)}>
-                                    <EditOutlined />
+                                <Button style={{ color: '#5e35b1' }} type="text" onClick={() => handleEdit(record)}>
+                                    <i className="fas fa-edit "><IconEdit /></i>
                                 </Button>
                             </Tooltip>
                         ),
@@ -231,11 +243,20 @@ function Color() {
                     <Form.Item
                         label="Màu sắc"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên màu sắc!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên màu sắc chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên màu sắc..." />
                     </Form.Item>
                 </Form>
+
+
             </Modal>
 
             <Modal
@@ -255,7 +276,14 @@ function Color() {
                     <Form.Item
                         label="Màu sắc"
                         name="ten"
-                        rules={[{ required: true, message: "Vui lòng nhập tên màu sắc!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên màu sắc!" },
+                            { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                            {
+                                pattern: /^[A-Za-zÀ-ỹ\s'-]+$/,
+                                message: "Tên màu sắc chỉ được chứa các ký tự chữ cái và không được là số!",
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên màu sắc..." />
                     </Form.Item>

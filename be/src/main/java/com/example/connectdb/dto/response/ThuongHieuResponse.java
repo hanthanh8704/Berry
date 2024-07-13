@@ -10,8 +10,12 @@ import java.time.LocalDateTime;
 public interface ThuongHieuResponse {
     @Value("#{target.indexs}")
     Integer getIndex();
+
     Integer getId();
+
     String getTen();
+
     String getTrangThai();
+
     LocalDateTime getNgayTao();
 }

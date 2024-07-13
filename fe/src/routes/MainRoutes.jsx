@@ -11,9 +11,9 @@ import Material from 'views/pages/products/attribute/Material';
 import Category from 'views/pages/products/attribute/Category';
 import Sleeve from 'views/pages/products/attribute/Sleeve';
 import Collar from 'views/pages/products/attribute/Collar';
-import AddShirt from 'views/pages/products/shirt-detail/AddShirt'; // Import AddProduct component
+
 import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
-import AddShoe from 'views/pages/products/shirt-detail/AddShoe';
+import AddShirt from 'views/pages/products/shirt-detail/AddShirt';
 
 
 
@@ -46,12 +46,8 @@ const MainRoutes = {
       element: <Product />
     },
     {
-      path: '/products/addshirt',
-      element: <AddShirt />
-    },
-    {
       path: '/products/add-shirt',
-      element: <AddShoe />
+      element: <AddShirt />
     },
     {
       path: '/products/:id',

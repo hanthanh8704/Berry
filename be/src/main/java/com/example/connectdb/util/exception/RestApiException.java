@@ -3,7 +3,7 @@ package com.example.connectdb.util.exception;
 
 import com.example.connectdb.util.constant.Message;
 
-public class RestApiException extends RuntimeException{
+public class RestApiException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private String message;

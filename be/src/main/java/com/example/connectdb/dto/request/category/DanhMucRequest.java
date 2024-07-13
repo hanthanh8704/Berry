@@ -16,12 +16,9 @@ import java.sql.Timestamp;
 @Setter
 public class DanhMucRequest extends PageableRequest {
     private Integer id;
-
     @NotEmpty(message = "Danh mục không được để trống!")
     private String ten;
-
     private String trangThai;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Timestamp ngayTao;
 }

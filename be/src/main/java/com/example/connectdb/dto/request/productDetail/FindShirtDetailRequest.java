@@ -20,12 +20,16 @@ public class FindShirtDetailRequest extends PageableRequest {
     private String sanpham;
     private String chatlieu;
     private String coao;
+    private String thuonghieu;
+
+
     private List<String> sanphams;
     private List<String> mausacs;
     private List<String> kichcos;
     private List<String> tayaos;
     private List<String> chatlieus;
     private List<String> coaos;
+    private List<String> thuonghieus;
     private Boolean deleted;
     private String ten;
 

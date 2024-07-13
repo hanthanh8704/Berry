@@ -24,5 +24,6 @@ public interface SpctKhuyenMaiResponse {
     Integer getQuantity();
 
     Boolean getStatus();
+
     Integer getDiscount();
 }

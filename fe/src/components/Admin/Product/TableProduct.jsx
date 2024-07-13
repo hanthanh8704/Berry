@@ -1,11 +1,11 @@
 import { Button, Collapse, Empty, Input, InputNumber, Modal, Upload, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import ImageModal from "./ImageModal";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+
 
 import { IconTrashFilled, IconPhotoScan } from "@tabler/icons-react";
 function TableProduct({ props, handleChange }) {
@@ -98,6 +98,15 @@ function TableProduct({ props, handleChange }) {
         setGroupByColor(groupedProducts);
     }, [props]);
 
+    const validateInput = (value) => {
+        // Hàm validate để không nhập khoảng trắng và chỉ nhập số
+        if (/\s/.test(value)) {
+            // Kiểm tra nếu có khoảng trắng
+            return false;
+        }
+        return true;
+    };
+
     return (
         <>
             <Collapse defaultActiveKey={0} className="rounded-0 border-0">
@@ -140,18 +149,19 @@ function TableProduct({ props, handleChange }) {
                                                             </td>
                                                             <td width="130px">
                                                                 <InputNumber
-                                                                    defaultValue={option.soLuong}
+                                                                    defaultValue={option.soLuong} // Sử dụng defaultValue từ prop option.soLuong
                                                                     style={{ width: "100%" }}
                                                                     step={1}
-                                                                    formatter={(value) =>
-                                                                        ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                                                    }
-                                                                    parser={(value) =>
-                                                                        value !== null && value !== undefined
-                                                                            ? value.replace(/\$\s?|(,*)/g, "")
-                                                                            : ""
-                                                                    }
-                                                                    onChange={(value) => handleChangeQuantity(value, key, idx)}
+                                                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                                                                    onChange={(value) => {
+                                                                        if (!validateInput(value.toString())) {
+                                                                            toast.error('loi roi b oi');
+                                                                            // Nếu validate không thành công (có khoảng trắng), không thực hiện handleChangeQuantity
+                                                                            return;
+                                                                        }
+                                                                        handleChangeQuantity(value, key, idx);
+                                                                    }}
                                                                     controls={false}
                                                                     min={1}
                                                                 />
@@ -169,7 +179,14 @@ function TableProduct({ props, handleChange }) {
                                                                             ? value.replace(/\$\s?|(,*)/g, "")
                                                                             : ""
                                                                     }
-                                                                    onChange={(value) => handleChangePrice(value, key, idx)}
+                                                                    onChange={(value) => {
+                                                                        if (!validateInput(value.toString())) {
+
+                                                                            // Nếu validate không thành công (có khoảng trắng), không thực hiện handleChangeQuantity
+                                                                            return;
+                                                                        }
+                                                                        handleChangeQuantity(value, key, idx);
+                                                                    }}
                                                                     controls={false}
                                                                     min={0}
                                                                 />

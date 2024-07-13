@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class CategoryConverter {
 
     public DanhMuc convertRequestToEntity(DanhMucRequest request) {
-        DanhMuc danhMuc  = DanhMuc.builder()
+        DanhMuc danhMuc = DanhMuc.builder()
                 .ten(request.getTen())
                 .trangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động")
                 .build();
