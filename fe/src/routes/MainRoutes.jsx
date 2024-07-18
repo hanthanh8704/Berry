@@ -3,6 +3,17 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import Product from 'views/pages/products/shirt/Product';
+import Color from 'views/pages/products/attribute/Color';
+import Size from 'views/pages/products/attribute/Size';
+import Label from 'views/pages/products/attribute/Label';
+import Material from 'views/pages/products/attribute/Material';
+import Category from 'views/pages/products/attribute/Category';
+import Sleeve from 'views/pages/products/attribute/Sleeve';
+import Collar from 'views/pages/products/attribute/Collar';
+
+import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
+import AddShirt from 'views/pages/products/shirt-detail/AddShirt';
 import { element } from 'prop-types';
 
 // dashboard routing
@@ -15,13 +26,13 @@ const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')
 const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
 
 // Dot giam gia của Đức
-const DotGiamGia = Loadable(lazy(() => import('views/pages/dotgiamgia/DotGiamGia.jsx')));
-const AddDotGiamGia = Loadable(lazy(() => import('views/pages/dotgiamgia/AddDotGiamGia.jsx')));
-const DetailDotGiamGia = Loadable(lazy(() => import('views/pages/dotgiamgia/DetailDotGiamGia.jsx')));
-const UpdateDotGiamGia = Loadable(lazy(() => import('views/pages/dotgiamgia/UpdateDotGiamGia.jsx')));
-const Nhanvien = Loadable(lazy(() => import('views/pages/nhan_vien/nhanvien.jsx')));
-const AddNhanVien = Loadable(lazy(() => import('views/pages/nhan_vien/addNhanVien.jsx')));
-const NhanVienDetail = Loadable(lazy(() => import('views/pages/nhan_vien/nhanVienDetail.jsx')));
+const DotGiamGia = Loadable(lazy(() => import('views/pages/promotion/DotGiamGia.jsx')));
+const AddDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/AddDotGiamGia.jsx')));
+const DetailDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/DetailDotGiamGia.jsx')));
+const UpdateDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/UpdateDotGiamGia.jsx')));
+const Nhanvien = Loadable(lazy(() => import('views/pages/employee/nhanvien.jsx')));
+const AddNhanVien = Loadable(lazy(() => import('views/pages/employee/addNhanVien.jsx')));
+const NhanVienDetail = Loadable(lazy(() => import('views/pages/employee/nhanVienDetail.jsx')));
 
 const Voucher = Loadable(lazy(() => import('views/pages/voucher/Voucher.jsx')));
 const VoucherDetail = Loadable(lazy(() => import('views/pages/voucher/VoucherDetail.jsx')));
@@ -57,7 +68,46 @@ const MainRoutes = {
       path: '/bill/:id',
       element: <BillDetail />
     },
-   
+    {
+      path: '/products',
+      element: <Product />
+    },
+    {
+      path: '/products/add-shirt',
+      element: <AddShirt />
+    },
+    {
+      path: '/products/:id',
+      element: <ShirtInfo />
+    },
+    {
+      path: '/products/size',
+      element: <Size />
+    },
+    {
+      path: '/products/color',
+      element: <Color />
+    },
+    {
+      path: '/products/label',
+      element: <Label />
+    },
+    {
+      path: '/products/material',
+      element: <Material />
+    },
+    {
+      path: '/products/category',
+      element: <Category />
+    },
+    {
+      path: '/products/sleeve',
+      element: <Sleeve />
+    },
+    {
+      path: '/products/collar',
+      element: <Collar />
+    },
     {
       path: '/export-pdf/:id',
       element: <ExportPdf />
@@ -73,10 +123,10 @@ const MainRoutes = {
           path: 'dot-giam-gia/add',
           element: <AddDotGiamGia />
         },
-        {
-          path: 'dot-giam-gia/detail/:id',
-          element: <DetailDotGiamGia />
-        },
+        // {
+        //   path: 'dot-giam-gia/detail/:id',
+        //   element: <DetailDotGiamGia />
+        // },
         {
           path: 'dot-giam-gia/update/:id',
           element: <UpdateDotGiamGia />
@@ -88,21 +138,17 @@ const MainRoutes = {
       ]
     },
     {
-      path: '/account',
+      path: '/',
       children: [
         {
-          path: 'customer',
-          element: <Customer />
-        },
-        {
-          path: 'employee',
+          path: '/nhan-vien',
           element: <Nhanvien/>
         },{
-          path:"employee/create",
+          path:"/nhan-vien/add",
           element:<AddNhanVien/>
         },
         {
-          path:"employee/:id",
+          path:"/nhan-vien/:id",
           element:<NhanVienDetail/>
         },
       ]

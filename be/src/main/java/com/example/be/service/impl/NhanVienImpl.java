@@ -2,31 +2,46 @@ package com.example.be.service.impl;
 
 import com.example.be.dto.request.nhanVien.NhanVienRequest;
 import com.example.be.dto.response.NhanVienResponse;
+import com.example.be.entity.Account;
+import com.example.be.entity.ChucVu;
 import com.example.be.entity.NhanVien;
+import com.example.be.repository.AccountRepository;
 import com.example.be.repository.ChucVuRepository;
 import com.example.be.repository.NhanVienRepository;
 import com.example.be.service.NhanVienService;
+import com.example.be.util.CloudinaryUtils;
+import com.example.be.util.MailUtils;
 import com.example.be.util.common.GenCode;
 import com.example.be.util.common.PageableObject;
+import com.example.be.util.constant.ChucVuEnum;
 import com.example.be.util.converter.NhanVienConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 public class NhanVienImpl implements NhanVienService {
-    @Autowired
-    private NhanVienConvert nhanVienConvert;
-    @Autowired
-    private ChucVuRepository chucVuRepository;
-//    @Autowired
-//    private CloudinaryUtils cloudinaryUtils;
+
+    private final NhanVienConvert nhanVienConvert;
+
+    private final ChucVuRepository chucVuRepository;
+
+    private final AccountRepository accountRepository;
+
+    private final CloudinaryUtils cloudinaryUtils;
+    private final MailUtils mailUtils;
     private final NhanVienRepository nhanVienRepository;
 
     @Autowired
-    public NhanVienImpl(NhanVienRepository nhanVienRepository) {
+    public NhanVienImpl(NhanVienConvert nhanVienConvert, ChucVuRepository chucVuRepository, AccountRepository accountRepository, CloudinaryUtils cloudinaryUtils, MailUtils mailUtils, NhanVienRepository nhanVienRepository) {
+        this.nhanVienConvert = nhanVienConvert;
+        this.chucVuRepository = chucVuRepository;
+        this.accountRepository = accountRepository;
+        this.cloudinaryUtils = cloudinaryUtils;
+        this.mailUtils = mailUtils;
         this.nhanVienRepository = nhanVienRepository;
     }
 
@@ -36,22 +51,59 @@ public class NhanVienImpl implements NhanVienService {
         return new PageableObject<>(nhanVienRepository.getAll(request, pageable));
     }
 
-
     @Override
-    public NhanVien createNhanVien(NhanVienRequest nhanVienRequest, String vaiTro) {
+    @Transactional
+    public NhanVien createNhanVien(NhanVienRequest request, String vaiTro) {
         String randomPassword = GenCode.randomPassword();
-        NhanVien account = nhanVienConvert.convertRequestToEntity(nhanVienRequest);
-        account.setChucVu(chucVuRepository.findByVaiTro(vaiTro));
-//        account.setMatKhau(randomPassword);
-//        account.setAnh("defaultAvatar.jpg");
-        NhanVien accountSave = nhanVienRepository.save(account);
-        if (accountSave != null) {
 
-//            if (nhanVienRequest.getAnh() != null)
-//                accountSave.setAnh(String.valueOf(cloudinaryUtils.uploadSingleImage(nhanVienRequest.getAnh(), "nhanvien")));
+        // Convert request thành entity NhanVien
+        NhanVien nhanVien = nhanVienConvert.convertRequestToEntity(request);
+
+        // Set vai tro và trạng thái mặc định
+        nhanVien.setChucVu(chucVuRepository.findByVaiTro(ChucVuEnum.EMPLOYEE.name()));
+        nhanVien.setTrangThai("Đang hoạt động");
+
+        // Upload ảnh nếu có
+        if (request.getAnh() != null) {
+            String uploadedImageUrl = cloudinaryUtils.uploadSingleImage(request.getAnh(), "nhanvien");
+            if (uploadedImageUrl != null) {
+                nhanVien.setAnh(uploadedImageUrl);
+            } else {
+                System.out.println("Tải lên ảnh thất bại.");
+            }
+        } else {
+            System.out.println("Không có ảnh trong request.");
         }
-        return account;
+
+        // Lưu nhân viên vào cơ sở dữ liệu
+        nhanVien.setDeleted(false);
+        NhanVien savedNhanVien = nhanVienRepository.save(nhanVien);
+
+        // Tạo và lưu tài khoản mới
+        Account account = new Account();
+        account.setEmail(savedNhanVien.getEmail());
+        account.setPassword(randomPassword);
+        ChucVu chucVu = chucVuRepository.findByVaiTro(ChucVuEnum.EMPLOYEE.name());
+        account.setChucVu(chucVu);
+        Account savedAccount = accountRepository.save(account);
+
+        // Liên kết tài khoản với nhân viên và lưu lại thông tin nhân viên
+        savedNhanVien.setAccount(savedAccount);
+        nhanVienRepository.save(savedNhanVien);
+
+        // Gửi email thông báo cho khách hàng về tài khoản đã tạo
+        String emailContent = "Kính gửi " + savedNhanVien.getTen() + ",\n\n" +
+                "Chúng tôi xin trân trọng thông báo rằng bạn đã đăng ký tài khoản thành công tại hệ thống của chúng tôi.\n\n" +
+                "Thông tin tài khoản của bạn như sau:\n" +
+                "Username: " + savedAccount.getEmail() + "\n" +
+                "Password: " + savedAccount.getPassword() + "\n\n" +
+                "Vui lòng đăng nhập và hoàn tất các bước xác thực để kích hoạt tài khoản của bạn.\n\n" +
+                "Trân trọng,\n" +
+                "Berry Store";
+        mailUtils.sendEmail(savedNhanVien.getEmail(), "Thư Xác Thực Tài Khoản", emailContent);
+        return savedNhanVien;
     }
+
     @Override
     public NhanVienResponse getOne(Integer id) {
         return nhanVienRepository.getOneNhanVien(id);
@@ -66,40 +118,23 @@ public class NhanVienImpl implements NhanVienService {
     @Override
     public NhanVien update(Integer id, NhanVienRequest nhanVienRequest) {
 
-        if (nhanVienRequest.getMa() == null || nhanVienRequest.getMa().isEmpty()) {
-            throw new IllegalArgumentException("Mã nhân viên không được để trống");
-        }
-        if (nhanVienRequest.getTen() == null || nhanVienRequest.getTen().isEmpty()) {
-            throw new IllegalArgumentException("Tên không được để trống");
-        }
-        if (nhanVienRequest.getDiaChi() == null || nhanVienRequest.getDiaChi().isEmpty()) {
-            throw new IllegalArgumentException("Địa chỉ không được để trống");
-        }
-        if (nhanVienRequest.getNgaySinh() == null) {
-            throw new IllegalArgumentException("Ngày sinh không được để trống");
-        }
-        if (nhanVienRequest.getSoDienThoai() == null || nhanVienRequest.getSoDienThoai().isEmpty() || !nhanVienRequest.getSoDienThoai().matches("\\d{10,11}")) {
-            throw new IllegalArgumentException("Số điện thoại không hợp lệ");
-        }
-        if (nhanVienRequest.getGioiTinh() == null || nhanVienRequest.getGioiTinh().isEmpty()) {
-            throw new IllegalArgumentException("Giới tính không được để trống");
-        }
-        if (nhanVienRequest.getEmail() == null || nhanVienRequest.getEmail().isEmpty() || !nhanVienRequest.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Email không hợp lệ");
-        }
-        if (nhanVienRequest.getCccd() == null || nhanVienRequest.getCccd().isEmpty() || !nhanVienRequest.getCccd().matches("\\d{9,12}")) {
-            throw new IllegalArgumentException("CCCD không hợp lệ");
-        }
-        if (nhanVienRequest.getTrangThai() == null || nhanVienRequest.getTrangThai().isEmpty()) {
-            throw new IllegalArgumentException("Trạng thái không được để trống");
+        // Lấy thông tin nhân viên từ cơ sở dữ liệu dựa trên id
+        NhanVien nhanVien = nhanVienRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với id: " + id));
+
+        NhanVien nhanVienSave = nhanVienConvert.convertRequestToEntity(id, nhanVienRequest);
+        if (nhanVienRequest.getAnh() != null) {
+            String uploadedImageUrl = cloudinaryUtils.uploadSingleImage(nhanVienRequest.getAnh(), "nhanvien");
+            if (uploadedImageUrl != null) {
+                nhanVienSave.setAnh(uploadedImageUrl);
+            } else {
+                System.out.println("Tải lên ảnh thất bại.");
+            }
+        } else {
+            System.out.println("Không có ảnh trong request.");
         }
 
-        NhanVien nhanVienSave = nhanVienRepository.save(nhanVienConvert.convertRequestToEntity(id,nhanVienRequest));
-
-        return nhanVienSave;
+        return nhanVienRepository.save(nhanVienSave);
     }
-
-
-
 
 }

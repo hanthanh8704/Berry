@@ -1,15 +1,15 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.product.SanPhamRequest;
-import com.example.connectdb.dto.request.product.SanPhamSearchRequest;
-import com.example.connectdb.dto.response.SanPhamReponse;
-import com.example.connectdb.entity.SanPham;
-import com.example.connectdb.repositories.SanPhamRepository;
+import com.example.be.dto.request.product.SanPhamRequest;
+import com.example.be.dto.request.product.SanPhamSearchRequest;
+import com.example.be.dto.response.SanPhamReponse;
+import com.example.be.entity.SanPham;
+import com.example.be.repository.SanPhamRepositoty;
 
-import com.example.connectdb.service.SanPhamService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.ProductConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.service.SanPhamService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.ProductConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,7 @@ public class SanPhamImpl implements SanPhamService {
         }
         return code;
     }
-    private final SanPhamRepository sanPhamRepository;
+    private final SanPhamRepositoty sanPhamRepository;
     private final ProductConverter productConverter;
 
     @Override
@@ -39,7 +39,7 @@ public class SanPhamImpl implements SanPhamService {
     }
 
     @Autowired
-    public SanPhamImpl(SanPhamRepository sanPhamRepository, ProductConverter productConverter) {
+    public SanPhamImpl(SanPhamRepositoty sanPhamRepository, ProductConverter productConverter) {
         this.sanPhamRepository = sanPhamRepository;
         this.productConverter = productConverter;
     }

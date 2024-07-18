@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.request.color;
+package com.example.be.dto.request.color;
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 
 import java.sql.Date;
 

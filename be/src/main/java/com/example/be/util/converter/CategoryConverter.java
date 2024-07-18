@@ -1,8 +1,8 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
 
-import com.example.connectdb.dto.request.category.DanhMucRequest;
-import com.example.connectdb.entity.DanhMuc;
+import com.example.be.dto.request.category.DanhMucRequest;
+import com.example.be.entity.DanhMuc;
 import org.springframework.stereotype.Component;
 
 @Component

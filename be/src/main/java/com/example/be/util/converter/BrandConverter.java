@@ -1,7 +1,7 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.label.ThuongHieuRequest;
-import com.example.connectdb.entity.ThuongHieu;
+import com.example.be.dto.request.label.ThuongHieuRequest;
+import com.example.be.entity.ThuongHieu;
 import org.springframework.stereotype.Component;
 
 @Component

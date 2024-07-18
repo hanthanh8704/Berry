@@ -1,7 +1,7 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.collar.CoAoRequest;
-import com.example.connectdb.entity.CoAo;
+import com.example.be.dto.request.collar.CoAoRequest;
+import com.example.be.entity.CoAo;
 import org.springframework.stereotype.Component;
 
 @Component

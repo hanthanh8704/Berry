@@ -2,6 +2,8 @@ package com.example.be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -17,9 +19,12 @@ import java.util.List;
 @Table(name = "chi_tiet_san_pham")
 public class ChiTietSanPham {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+
+    @Column(name = "maCTSP")
+    private String ma;
 
     @ManyToOne
     @JoinColumn(name = "id_mau_sac")
@@ -45,16 +50,10 @@ public class ChiTietSanPham {
     @JoinColumn(name = "id_san_pham")
     private SanPham sanPham;
 
-
     @ManyToOne
     @JoinColumn(name = "id_thuong_hieu")
     private ThuongHieu thuongHieu;
 
-    @ManyToOne
-    @JoinColumn(name = "id_anh")
-    private Anh anh;
-    @Column(name = "maCTSP")
-    private String maCTSP;
 
     @Column(name = "so_luong")
     private Integer soLuong;
@@ -62,10 +61,13 @@ public class ChiTietSanPham {
     @Column(name = "gia_ban")
     private BigDecimal giaBan;
 
+
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
@@ -76,7 +78,16 @@ public class ChiTietSanPham {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
+
+    @OneToMany(mappedBy = "chiTietSanPham", fetch = FetchType.LAZY)
+    private List<Anh> images;
+
     //Cua Duc
-    @OneToMany(mappedBy = "idchiTietSanPham", fetch = FetchType.LAZY)
-    private List<Anh> anhList;  // Thêm trường này để lưu danh sách ảnh liên quan
+    @Column(name = "phan_tram_giam")
+    private Integer phanTramGiam;
+
+
 }

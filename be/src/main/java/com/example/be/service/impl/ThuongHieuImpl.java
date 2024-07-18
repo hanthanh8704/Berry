@@ -1,16 +1,16 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
 
-import com.example.connectdb.dto.request.label.ThuongHieuRequest;
+import com.example.be.dto.request.label.ThuongHieuRequest;
 
-import com.example.connectdb.dto.response.ThuongHieuResponse;
-import com.example.connectdb.entity.ThuongHieu;
-import com.example.connectdb.repositories.ThuongHieuRepository;
-import com.example.connectdb.service.ThuongHieuService;
-import com.example.connectdb.util.common.PageableObject;
+import com.example.be.dto.response.ThuongHieuResponse;
+import com.example.be.entity.ThuongHieu;
+import com.example.be.repository.ThuongHieuRepository;
+import com.example.be.service.ThuongHieuService;
+import com.example.be.util.common.PageableObject;
 
-import com.example.connectdb.util.converter.BrandConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.util.converter.BrandConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

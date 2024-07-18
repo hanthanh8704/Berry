@@ -1,9 +1,10 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.material.ChatLieuRequest;
-import com.example.connectdb.dto.response.ChatLieuResponse;
-import com.example.connectdb.entity.ChatLieu;
-import com.example.connectdb.util.common.PageableObject;
+
+import com.example.be.dto.request.material.ChatLieuRequest;
+import com.example.be.dto.response.ChatLieuResponse;
+import com.example.be.entity.ChatLieu;
+import com.example.be.util.common.PageableObject;
 
 public interface ChatLieuService {
     PageableObject<ChatLieuResponse> getAll(ChatLieuRequest request);

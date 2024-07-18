@@ -22,7 +22,7 @@ public class Anh {
     private Integer id;
 
     @Column(name = "anh")
-    private String anh;
+    private String ten;
 
     @ManyToOne
     @JoinColumn(name = "id_chi_tiet_san_pham")

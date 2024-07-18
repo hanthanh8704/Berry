@@ -1,6 +1,7 @@
 package com.example.be.repository;
 
 import com.example.be.dto.response.DotGiamGiaResponse;
+import com.example.be.entity.ChiTietSanPham;
 import com.example.be.entity.DotGiamGia;
 import com.example.be.entity.DotGiamGiaDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface  DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer> {
-    //    @Query(value = """
+
+//    @Query(value = """
 //            SELECT p.id AS id,
 //            ROW_NUMBER() OVER(ORDER BY p.create_at DESC) AS indexs,
 //            p.code AS code, p.name AS name,
@@ -30,8 +32,11 @@ public interface  DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer
     DotGiamGiaResponse findByIdDotGiamGia (@Param("idDGG") Integer id);
     @Query("select de from DotGiamGiaDetail de join de.idDotGiamGia d where d.id = :idDGG")
     List<DotGiamGiaDetail> findByAllIdDotGiamGia (@Param("idDGG") Integer id);
+    @Query("select sp from ChiTietSanPham sp join DotGiamGiaDetail de on sp.id = de.idSPCT.id " +
+            "join DotGiamGia d on de.idDotGiamGia.id = d.id where d.id = :idDGG")
+    List<ChiTietSanPham> findByAllSPCTByIdDotGiamGia (@Param("idDGG") Integer id);
 
-    @Query("SELECT d FROM DotGiamGia d ORDER BY d.ngayTao DESC")
+    @Query("SELECT d FROM DotGiamGia d  ORDER BY d.ngayTao DESC ")
     List<DotGiamGia> findAllDotGiamGiaByNgayTaoDesc();
     @Query("SELECT d FROM DotGiamGia d where d.ma = :ma")
     Optional<DotGiamGia> findByMa(@Param("ma") String ma);

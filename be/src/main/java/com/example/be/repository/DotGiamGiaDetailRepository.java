@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DotGiamGiaDetailRepository extends JpaRepository<DotGiamGiaDetail, Integer> {
@@ -36,4 +37,12 @@ public interface DotGiamGiaDetailRepository extends JpaRepository<DotGiamGiaDeta
     //    DotGiamGiaDetail findByMaSPCT(String code);
     @Query("SELECT pd.id FROM DotGiamGiaDetail pd WHERE pd.idDotGiamGia.id = :idDGG")
     List<Integer> findIdsByDotGiamGiaId(@Param("idDGG") Integer idDGG);
+
+    @Query("SELECT pd FROM DotGiamGiaDetail pd join pd.idDotGiamGia d WHERE d.id = :idDGG")
+    List<DotGiamGiaDetail> getDGGDetailByidDotGG(@Param("idDGG") Integer idDGG);
+
+    @Query("SELECT dt FROM DotGiamGiaDetail dt JOIN dt.idSPCT spct WHERE spct.id = :idSPCT and dt.trangThai = 'Đang diễn ra'")
+    Optional<DotGiamGiaDetail> getFirstDGGDetailByIdSPCT(@Param("idSPCT") Integer idSPCT);
+    @Query("SELECT pd FROM DotGiamGiaDetail pd WHERE pd.idSPCT.id = :idSPCT")
+    List<DotGiamGiaDetail> findByIdSPCT(@Param("idSPCT") Integer idSPCT);
 }

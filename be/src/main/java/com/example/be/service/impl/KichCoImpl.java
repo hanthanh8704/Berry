@@ -1,13 +1,13 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.size.KichCoRequest;
-import com.example.connectdb.dto.response.KichCoResponse;
-import com.example.connectdb.entity.KichCo;
-import com.example.connectdb.repositories.KichCoRepository;
-import com.example.connectdb.service.KichCoService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.SizeConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.dto.request.size.KichCoRequest;
+import com.example.be.dto.response.KichCoResponse;
+import com.example.be.entity.KichCo;
+import com.example.be.repository.KichCoRepository;
+import com.example.be.service.KichCoService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.SizeConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

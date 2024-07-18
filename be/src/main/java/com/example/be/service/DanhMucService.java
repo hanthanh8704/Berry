@@ -1,9 +1,9 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.category.DanhMucRequest;
-import com.example.connectdb.dto.response.DanhMucResponse;
-import com.example.connectdb.entity.DanhMuc;
-import com.example.connectdb.util.common.PageableObject;
+import com.example.be.dto.request.category.DanhMucRequest;
+import com.example.be.dto.response.DanhMucResponse;
+import com.example.be.entity.DanhMuc;
+import com.example.be.util.common.PageableObject;
 
 import java.util.List;
 

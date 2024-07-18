@@ -3,14 +3,13 @@ import React, { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Loading from "ui-component/Loading";
 import * as request from 'views/utilities/httpRequest';
 import GHN from "ui-component/GHN";
 
 function AddCustomer() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+
   const [dataAddress, setDataAddress] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [anh, setAnh] = useState(null);
@@ -33,7 +32,12 @@ function AddCustomer() {
       toast.error("Vui lòng chọn địa chỉ!");
       return;
     }
-debugger
+
+    if (anh == null) {
+      toast.error("Vui lòng chọn ảnh đại diện!");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("anh", anh);
     formData.append("diaChiRequest.hoTen", data.hoTen);
@@ -57,12 +61,9 @@ debugger
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: () => {
-        setLoading(true);
         request.post("/customer", formData, { headers: { "Content-Type": "multipart/form-data" } })
           .then((response) => {
-            setLoading(false);
             if (response.data.success) {
-              console.log("Hihi",formData)
               toast.success("Thêm thành công!");
               navigate("/api/customer");
             } else {
@@ -70,28 +71,24 @@ debugger
             }
           })
           .catch((error) => {
-            setLoading(false);
             toast.error(error.message || "Đã xảy ra lỗi khi thêm khách hàng.");
           });
       },
     });
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+  // Hàm kiểm tra tuổi
+  const validateAge = (_, value) => {
+    if (!value) return Promise.reject("Ngày sinh không được để trống!");
+    const birthDate = new Date(value);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    if (age < 18) return Promise.reject("Khách hàng phải ít nhất 18 tuổi!");
+    return Promise.resolve();
+  };
 
   return (
     <div>
-      <Breadcrumb style={{ marginBottom: '16px' }}>
-        <Breadcrumb.Item href="/">
-          <FaHome />
-        </Breadcrumb.Item>
-        <Breadcrumb.Item href="/api/customer">
-          Quản lý khách hàng
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Thêm khách hàng</Breadcrumb.Item>
-      </Breadcrumb>
       <Form onFinish={handleAddCustomer} layout="vertical" form={form}>
         <Row gutter={24}>
           <Col span={8}>
@@ -101,8 +98,12 @@ debugger
               label="Tên khách hàng"
               name="hoTen"
               rules={[
-                { required: true, message: "Tên không được để trống!" },
-                { pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/, message: "Tên phải là chữ" }
+                { required: true, message: "Vui lòng nhập tên khách hàng!" },
+                { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                {
+                  pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/,
+                  message: "Tên chỉ được chứa các ký tự chữ cái và không được là số!",
+                },
               ]}
             >
               <Input placeholder="Nhập tên khách hàng..." />

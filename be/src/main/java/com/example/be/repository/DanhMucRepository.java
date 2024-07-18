@@ -1,9 +1,9 @@
-package com.example.connectdb.repositories;
+package com.example.be.repository;
 
-import com.example.connectdb.dto.request.category.DanhMucRequest;
-import com.example.connectdb.entity.DanhMuc;
-import com.example.connectdb.dto.response.DanhMucResponse;
-import com.example.connectdb.entity.TayAo;
+
+import com.example.be.dto.request.category.DanhMucRequest;
+import com.example.be.dto.response.DanhMucResponse;
+import com.example.be.entity.DanhMuc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -11,6 +11,7 @@ import com.example.be.repository.KhachHangRepository;
 import com.example.be.repository.PhieuGiamGiaKhachHangRepository;
 import com.example.be.repository.PhieuGiamGiaRepository;
 import com.example.be.service.PhieuGiamGiaService;
+import com.example.be.util.MailUtils;
 import com.example.be.util.common.PageableObject;
 import com.example.be.util.converter.PhieuGiamGiaConvert;
 import com.example.be.util.exception.RestApiException;
@@ -21,12 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+/**
+ * @author ninhncph40535
+ *
+ */
 
 @Service
 public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
@@ -36,10 +43,13 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
     private KhachHangRepository accountRepository;
     @Autowired
     private PhieuGiamGiaKhachHangRepository accountVoucherRepository;
-    //    @Autowired
-//    private INotificationRepository notificationRepository;
+
     @Autowired
     private PhieuGiamGiaConvert voucherConvert;
+
+    @Autowired
+    private MailUtils mailUtils;
+
 
     private String genCode() {
         String prefix = "VBS0";
@@ -80,66 +90,102 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         return voucherRepository.getOneVoucher(id);
     }
 
+    public static String formatCurrency(BigDecimal amount) {
+        Locale localeVN = new Locale("vi", "VN");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+        return currencyFormatter.format(amount);
+    }
 
     @Override
     @Transactional(rollbackFor = RestApiException.class)
     public PhieuGiamGia add(PhieuGiamGiaRequest request) {
+        //chỗ check trống
+        if (request.getTen().isEmpty()) {
+            throw new RestApiException("Tên phiếu giảm giá không được để trống!");
+        }
+        if (request.getSoLuong() == null) {
+            throw new RestApiException("Số lượng không được để trống!");
+        }
+        if (request.getGiaTriHoaDonDuocGiam() == null) {
+            throw new RestApiException("Giá trị giảm không được để trống!");
+        }
+        if (request.getGiaTriHoaDonDuocApDung() == null) {
+            throw new RestApiException("Giá trị tối thiểu không được để trống!");
+        }
+        if (request.getNgayBatDau() == null) {
+            throw new RestApiException("Ngày bắt đầu không được để trống!");
+        }
+        if (request.getNgayKetThuc() == null) {
+            throw new RestApiException("Ngày kết thúc không được để trống!");
+        }
+        //chỗ để check khác
         if (request.getTen().length() > 50) {
-            throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự.");
+            throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự!");
         }
         if (request.getLoai().equals("Công khai")) {
             if (request.getSoLuong() <= 0) {
-                throw new RestApiException("Số lượng phải lớn hơn 0.");
+                throw new RestApiException("Số lượng phải lớn hơn 0!");
             }
             if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
-                throw new RestApiException("Số lượng phải là số nguyên dương.");
+                throw new RestApiException("Số lượng phải là số nguyên dương!");
             }
             if (request.getSoLuong() > 10000) {
-                throw new RestApiException("Số lượng không được vượt quá 10000. ");
+                throw new RestApiException("Số lượng không được vượt quá 10000! ");
             }
         }
+
+
         if (request.getHinhThucGiam().equals("%")) {
             try {
-                double percentReduce = Double.valueOf(request.getGiaTriHoaDonDuocGiam().toString());
-                if (percentReduce < 0 || percentReduce > 50) {
-                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+
+                BigDecimal maxValue = new BigDecimal("50");
+
+                if (request.getGiaTriHoaDonDuocGiam().compareTo(BigDecimal.ZERO) <= 0 || request.getGiaTriHoaDonDuocGiam().compareTo(maxValue) > 0) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50!");
                 }
             } catch (NumberFormatException e) {
-                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50!");
             } catch (RestApiException e) {
                 throw e;
             }
         } else {
             try {
-                double percentReduce = Double.valueOf(request.getGiaTriHoaDonDuocGiam().toString());
-                if (percentReduce < 0 || percentReduce > 2000000000) {
-                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                BigDecimal maxValue = new BigDecimal("2000000000");
+
+                if (request.getGiaTriHoaDonDuocGiam().compareTo(BigDecimal.ZERO) <= 0 || request.getGiaTriHoaDonDuocGiam().compareTo(maxValue) > 0) {
+                    throw new RestApiException("Giá trị giảm phải nằm trong khoảng từ 1 đến 2,000,000,000!");
                 }
             } catch (NumberFormatException e) {
-                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                throw new RestApiException("Giá trị giảm phải nằm trong khoảng từ 1 đến 2,000,000,000!");
             } catch (RestApiException e) {
                 throw e;
             }
         }
-
-        if (Double.valueOf(request.getGiaTriHoaDonDuocGiam().toString()) <= 0) {
-            throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
-        }
         if (request.getGiaTriHoaDonDuocApDung().compareTo(BigDecimal.ZERO) < 0) {
-            throw new RestApiException("Đơn tối thiểu phải lớn hơn hoặc bằng 0. ");
+            throw new RestApiException("Giá trị tối thiểu phải lớn hơn hoặc bằng 0! ");
         }
-        if (request.getNgayBatDau().after(request.getNgayKetThuc())) {
-            throw new RestApiException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
+        LocalDateTime startDateTime = request.getNgayBatDau();
+        LocalDateTime endDateTime = request.getNgayKetThuc();
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneOffset.UTC);
+
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new RestApiException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
         }
-        if (request.getNgayBatDau().before(Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC)))) {
-            throw new RestApiException("Ngày bắt đầu phải từ ngày hiện tại trở đi.");
+        if (startDateTime.isBefore(currentDateTime)) {
+            throw new RestApiException("Ngày bắt đầu phải từ ngày hiện tại trở đi!");
         }
-        if (request.getNgayBatDau().equals(request.getNgayKetThuc())) {
-            throw new RestApiException("Ngày giờ bắt đầu không được trùng với ngày giờ kết thúc.");
+        if (startDateTime.isEqual(endDateTime)) {
+            throw new RestApiException("Ngày giờ bắt đầu không được trùng với ngày giờ kết thúc!");
         }
-        request.setMa(genCode());
+
+
         PhieuGiamGia voucher = voucherConvert.converRequestToEntity(request);
+        voucher.setDeleted(false);
+        if (voucher.getMa().isEmpty()) {
+            voucher.setMa(genCode());
+        }
         PhieuGiamGia voucherSave = voucherRepository.save(voucher);
+
         updateStatus(voucherSave);
         System.out.println(request);
         if (voucherSave.getLoai().equals("Cá nhân")) {
@@ -151,64 +197,115 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
                     accountVoucher.setIdKhachHang(account);
                     accountVoucher.setTrangThai("Chưa sử dụng");
                     accountVoucherRepository.save(accountVoucher);
+                    String emailContent = "Chúc mừng bạn đã nhận được phiếu giảm giá!\n\n"
+                            + "Chào " + account.getEmail() + ",\n\n"
+                            + "Chúng tôi rất vui mừng thông báo rằng bạn đã nhận được phiếu giảm giá từ Berry Store!\n"
+                            + "Dưới đây là thông tin chi tiết về phiếu giảm giá của bạn:\n\n"
+                            + "- Mã phiếu giảm giá: " + voucherSave.getMa() + "\n"
+                            + "- Giá trị giảm giá: " + voucherSave.getGiaTriHoaDonDuocGiam() + "%\n"
+                            + "- Ngày hết hạn: " + voucherSave.getNgayKetThuc() + "\n"
+                            + "- Điều kiện áp dụng: " + this.formatCurrency(voucherSave.getGiaTriHoaDonDuocApDung()) + "\n\n"
+                            + "Hãy sử dụng mã này để được giảm giá khi mua sắm tại cửa hàng hoặc trên trang web của chúng tôi.\n\n"
+                            + "Đây là email tự động, vui lòng không trả lời email này.\n\n"
+                            + "Cảm ơn bạn đã ủng hộ Berry Store.\n"
+                            + "Chúc bạn một ngày tốt lành!\n\n"
+                            + "Trân trọng,\n"
+                            + "Đội ngũ BerryStore\n\n"
+                            + "Liên hệ: https://www.facebook.com/ninh.cong.9889";
+
+                    mailUtils.sendEmail(account.getEmail(), "Thông tin phiếu giảm giá từ BerryStore", emailContent);
 
                 });
             }
         }
         return voucher;
-
     }
 
     @Override
     public PhieuGiamGia update(Integer id, PhieuGiamGiaRequest request) {
         PhieuGiamGia voucherToUpdate = voucherRepository.findById(id).orElse(null);
+        //chỗ check trống
+        if (request.getTen().isEmpty()) {
+            throw new RestApiException("Tên phiếu giảm giá không được để trống!");
+        }
+        if (request.getSoLuong() == null) {
+            throw new RestApiException("Số lượng không được để trống!");
+        }
+        if (request.getGiaTriHoaDonDuocGiam() == null) {
+            throw new RestApiException("Giá trị giảm không được để trống!");
+        }
+        if (request.getGiaTriHoaDonDuocApDung() == null) {
+            throw new RestApiException("Giá trị tối thiểu không được để trống!");
+        }
+        if (request.getNgayBatDau() == null) {
+            throw new RestApiException("Ngày bắt đầu không được để trống!");
+        }
+        if (request.getNgayKetThuc() == null) {
+            throw new RestApiException("Ngày kết thúc không được để trống!");
+        }
+        //chỗ để check khác
         if (request.getTen().length() > 50) {
-            throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự.");
+            throw new RestApiException("Tên phiếu giảm giá không được vượt quá 50 kí tự!");
         }
         if (request.getLoai().equals("Công khai")) {
-
             if (request.getSoLuong() <= 0) {
-                throw new RestApiException("Số lượng phải lớn hơn 0. ");
-            }
-            if (request.getSoLuong() > 10000) {
-                throw new RestApiException("Số lượng không được vượt quá 10000. ");
+                throw new RestApiException("Số lượng phải lớn hơn 0!");
             }
             if (request.getSoLuong() <= 0 || request.getSoLuong() != (int) request.getSoLuong() || request.getSoLuong() == null) {
-                throw new RestApiException("Số lượng phải là số nguyên dương.");
+                throw new RestApiException("Số lượng phải là số nguyên dương!");
+            }
+            if (request.getSoLuong() > 10000) {
+                throw new RestApiException("Số lượng không được vượt quá 10000!");
             }
         }
+
+
         if (request.getHinhThucGiam().equals("%")) {
             try {
-                double percentReduce = Double.valueOf(request.getGiaTriHoaDonDuocGiam().toString());
-                if (percentReduce < 0 || percentReduce > 50) {
-                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+
+                BigDecimal maxValue = new BigDecimal("50");
+
+                if (request.getGiaTriHoaDonDuocGiam().compareTo(BigDecimal.ZERO) <= 0 || request.getGiaTriHoaDonDuocGiam().compareTo(maxValue) > 0) {
+                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50!");
                 }
             } catch (NumberFormatException e) {
-                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50. ");
+                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 50!");
             } catch (RestApiException e) {
                 throw e;
             }
         } else {
             try {
-                double percentReduce = Double.valueOf(request.getGiaTriHoaDonDuocGiam().toString());
-                if (percentReduce < 0 || percentReduce > 2000000000) {
-                    throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                BigDecimal maxValue = new BigDecimal("2000000000");
+
+                if (request.getGiaTriHoaDonDuocGiam().compareTo(BigDecimal.ONE) <= 0 || request.getGiaTriHoaDonDuocGiam().compareTo(maxValue) > 0) {
+                    throw new RestApiException("Giá trị giảm phải nằm trong khoảng từ 1 đến 2,000,000,000!");
                 }
             } catch (NumberFormatException e) {
-                throw new RestApiException("Phần trăm giảm phải nằm trong khoảng từ 1 đến 2000000000. ");
+                throw new RestApiException("Giá trị giảm phải nằm trong khoảng từ 1 đến 2,000,000,000!");
             } catch (RestApiException e) {
                 throw e;
             }
         }
-        if (!String.valueOf(request.getGiaTriHoaDonDuocGiam()).matches("^-?\\d+(\\.\\d+)?$")) {
-//            System.out.println("1212");
-            throw new RestApiException("Giá trị giảm phải là số");
-        }
+
+
         if (request.getGiaTriHoaDonDuocApDung().compareTo(BigDecimal.ZERO) < 0) {
-            throw new RestApiException("Đơn tối thiểu phải lớn hơn hoặc bằng 0. ");
+            throw new RestApiException("Đơn tối thiểu phải lớn hơn hoặc bằng 0!");
         }
-        if (request.getNgayBatDau().after(request.getNgayKetThuc())) {
-            throw new RestApiException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
+        LocalDateTime startDateTime = request.getNgayBatDau();
+        LocalDateTime endDateTime = request.getNgayKetThuc();
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneOffset.UTC);
+
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new RestApiException("Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
+        }
+        if (startDateTime.isBefore(currentDateTime)) {
+            throw new RestApiException("Ngày bắt đầu phải từ ngày hiện tại trở đi!");
+        }
+        if (endDateTime.isBefore(currentDateTime)) {
+            throw new RestApiException("Ngày giờ kết thúc phải từ ngày hiện tại trở đi!");
+        }
+        if (startDateTime.isEqual(endDateTime)) {
+            throw new RestApiException("Ngày giờ bắt đầu không được trùng với ngày giờ kết thúc!");
         }
         PhieuGiamGia voucherSave = voucherRepository.save(voucherConvert.convertRequestToEntity(id, request));
         if (voucherSave != null) {
@@ -223,6 +320,23 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
                     accountVoucher.setIdKhachHang(account);
                     accountVoucher.setTrangThai("Chưa sử dụng");
                     accountVoucherRepository.save(accountVoucher);
+                    String emailContent = "Chúc mừng bạn đã nhận được phiếu giảm giá!\n\n"
+                            + "Chào " + account.getEmail() + ",\n\n"
+                            + "Chúng tôi rất vui mừng thông báo rằng bạn đã nhận được phiếu giảm giá từ Berry Store!\n"
+                            + "Dưới đây là thông tin chi tiết về phiếu giảm giá của bạn:\n\n"
+                            + "- Mã phiếu giảm giá: " + voucherSave.getMa() + "\n"
+                            + "- Giá trị giảm giá: " + voucherSave.getGiaTriHoaDonDuocGiam() + "%\n"
+                            + "- Ngày hết hạn: " + voucherSave.getNgayKetThuc() + "\n"
+                            + "- Điều kiện áp dụng: " + this.formatCurrency(voucherSave.getGiaTriHoaDonDuocApDung()) + "\n\n"
+                            + "Hãy sử dụng mã này để được giảm giá khi mua sắm tại cửa hàng hoặc trên trang web của chúng tôi.\n\n"
+                            + "Đây là email tự động, vui lòng không trả lời email này.\n\n"
+                            + "Cảm ơn bạn đã ủng hộ BerryStore.\n"
+                            + "Chúc bạn một ngày tốt lành!\n\n"
+                            + "Trân trọng,\n"
+                            + "Đội ngũ BerryStore\n\n"
+                            + "Liên hệ: https://www.facebook.com/ninh.cong.9889";
+
+                    mailUtils.sendEmail(account.getEmail(), "Thông tin phiếu giảm giá từ BerryStore", emailContent);
 
                 });
             }
@@ -246,35 +360,27 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
     }
 
     public void updateStatusVoucher() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
         List<PhieuGiamGia> vouchers = voucherRepository.findAll();
+//        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime currentDateTime = LocalDateTime.now();
+//        OffsetDateTime currentDateTime = OffsetDateTime.now(ZoneOffset.UTC);
         for (PhieuGiamGia voucher : vouchers) {
-            LocalDateTime startDate = voucher.getNgayBatDau().toLocalDateTime();
-            LocalDateTime endDate = voucher.getNgayKetThuc().toLocalDateTime();
-            // so luong bang 0 thi se ket thuc voucher som
-            if (voucher.getLoai().equals("Cá nhân")) {
-                if (voucher.getSoLuong() == 0) {
-                    voucher.setTrangThai("Đã kết thúc"); // Đã kết thúc
-//                voucher.setEndDate(currentDateTime);
-                } else {
-                    if (voucher.getSoLuong() > 0) {
-                        voucher.setTrangThai("Đang diễn ra"); // Đang diễn ra
-                    }
-                }
+            System.out.println("Current DateTime: " + currentDateTime);
+
+            LocalDateTime startDateTime = voucher.getNgayBatDau();
+            LocalDateTime endDateTime = voucher.getNgayKetThuc();
+            if (voucher.getSoLuong() == null || voucher.getSoLuong() == 0) {
+                voucher.setTrangThai("Đã kết thúc");
             } else {
-                if (currentDateTime.isBefore(startDate)) {
-                    voucher.setTrangThai("Sắp diễn ra"); // Chưa bắt đầu
-                } else if (currentDateTime.isAfter(startDate) && currentDateTime.isBefore(endDate)) {
-                    voucher.setTrangThai("Đang diễn ra"); // Đang diễn ra
+                if (currentDateTime.isBefore(startDateTime)) {
+                    voucher.setTrangThai("Sắp diễn ra");
+                } else if (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime)) {
+                    voucher.setTrangThai("Đang diễn ra");
                 } else {
-                    voucher.setTrangThai("Đã kết thúc"); // Đã kết thúc
-//                voucher.setDeleted(true);
+                    voucher.setTrangThai("Đã kết thúc");
                 }
-
-
-                if (endDate.isEqual(startDate)) {
-                    voucher.setTrangThai("Đã kết thúc"); // Đã kết thúc
-//                voucher.setDeleted(true);
+                if (endDateTime.isEqual(startDateTime)) {
+                    voucher.setTrangThai("Đã kết thúc");
                 }
             }
 
@@ -282,22 +388,28 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
         }
     }
 
+
     @Override
     public PhieuGiamGia updateEndDate(Integer id) {
         PhieuGiamGia voucherToUpdate = voucherRepository.findById(id).orElse(null);
-        LocalDateTime currentDate = LocalDateTime.now();
-        Date date = new Date();
+        if (voucherToUpdate == null) {
+            throw new RestApiException("Phiếu giảm giá không tồn tại.");
+        }
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
         if (voucherToUpdate.getTrangThai().equals("Đã kết thúc")) {
             throw new RestApiException("Phiếu giảm giá này đã kết thúc rồi!");
         }
+
         if (voucherToUpdate.getTrangThai().equals("Sắp diễn ra")) {
-            LocalDateTime startDate = currentDate.with(LocalTime.MIN);
-            voucherToUpdate.setNgayBatDau(Timestamp.valueOf(startDate));
+            LocalDateTime startDate = LocalDateTime.now().with(LocalTime.MIN);
+            voucherToUpdate.setNgayBatDau(startDate);
         }
-        voucherToUpdate.setNgayKetThuc(Timestamp.valueOf(currentDate));
+
+        voucherToUpdate.setNgayKetThuc(currentDateTime);
         voucherToUpdate.setTrangThai("Đã kết thúc"); // Đã kết thúc
         return voucherRepository.save(voucherToUpdate);
-
     }
 
     @Override
@@ -312,20 +424,22 @@ public class PhieuGiamGiaImpl implements PhieuGiamGiaService {
 
 
     public void updateStatus(PhieuGiamGia voucher) {
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime startDate = voucher.getNgayBatDau().toLocalDateTime();
-        LocalDateTime endDate = voucher.getNgayKetThuc().toLocalDateTime();
-        if (currentDate.isBefore(startDate)) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        System.out.println("Current DateTime: " + currentDateTime);
+
+        LocalDateTime startDateTime = voucher.getNgayBatDau();
+        LocalDateTime endDateTime = voucher.getNgayKetThuc();
+
+        if (currentDateTime.isBefore(startDateTime)) {
             voucher.setTrangThai("Sắp diễn ra"); // Chưa bắt đầu
-        } else if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)) {
+        } else if (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime)) {
             voucher.setTrangThai("Đang diễn ra"); // Đang diễn ra
-//            voucher.setDeleted(null);
         } else {
             voucher.setTrangThai("Đã kết thúc"); // Đã kết thúc
-//            voucher.setDeleted(true);
         }
+
         voucherRepository.save(voucher);
-
-
     }
+
+
 }

@@ -7,6 +7,12 @@
     background-color: #1890ff; 
   }
 
+  /* custom-button.css */
+.custom-button {
+  border: none !important;
+  color: #6A0DAD 
+}
+
 
 /* Định nghĩa các lớp CSS cho các cột */
 .custom-table .ant-table-thead th.ant-table-cell {
@@ -25,13 +31,7 @@
     border-radius: 8px; /* Bo góc */
     padding: 10px; /* Khoảng cách nội bộ */
   }
-  
-  /* Định nghĩa các lớp CSS cho các nút và icon */
-  .custom-button {
-    background-color: #108ee9; /* Màu nền nút */
-    color: white; /* Màu chữ nút */
-    border: none; /* Không có viền */
-  }
+
   
   .custom-icon {
     color: #ff9900; /* Màu của icon */
@@ -130,3 +130,25 @@
     padding: 12px;
   }
   
+
+  .highlight-container {
+  background-color: #f8f9fa; /* Màu nền sáng hơn */
+  padding: 10px; /* Khoảng đệm xung quanh */
+  border-radius: 5px; /* Bo góc */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng */
+}
+
+.highlight-container .btn-primary {
+  background-color: #007bff; /* Màu xanh dương đậm */
+  border-color: #007bff; /* Màu viền */
+  color: #fff; /* Màu chữ trắng */
+}
+
+.highlight-container .btn-primary:hover {
+  background-color: #0056b3; /* Màu khi hover */
+  border-color: #0056b3; /* Màu viền khi hover */
+}
+
+.ml-auto {
+  margin-left: auto;
+}

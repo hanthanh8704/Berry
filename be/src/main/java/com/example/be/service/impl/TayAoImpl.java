@@ -1,13 +1,13 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.sleeve.TayAoRequest;
-import com.example.connectdb.dto.response.TayAoReponse;
-import com.example.connectdb.entity.TayAo;
-import com.example.connectdb.repositories.TayAoRepository;
-import com.example.connectdb.service.TayAoService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.SleeveConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.dto.request.sleeve.TayAoRequest;
+import com.example.be.dto.response.TayAoReponse;
+import com.example.be.entity.TayAo;
+import com.example.be.repository.TayAoRepository;
+import com.example.be.service.TayAoService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.SleeveConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

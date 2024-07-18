@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.response;
+package com.example.be.dto.response;
 
-import com.example.connectdb.entity.SanPham;
+import com.example.be.entity.SanPham;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 

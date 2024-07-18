@@ -26,13 +26,13 @@ public class NhanVienController {
 
     // Ham them Nhan vien vao REST API
     @PostMapping("/create")
-    public ResponseObject createNhanVien(@RequestBody NhanVienRequest nhanvienRequest) {
+    public ResponseObject createNhanVien(@ModelAttribute NhanVienRequest nhanvienRequest) {
         NhanVien savedNhanVien = nhanVienService.createNhanVien(nhanvienRequest,vaiTro);
         return new ResponseObject(savedNhanVien);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseObject updateNhanVien(@RequestBody @Valid NhanVienRequest request, @PathVariable Integer id) {
+    public ResponseObject updateNhanVien(@ModelAttribute @Valid NhanVienRequest request, @PathVariable Integer id) {
         return new ResponseObject(nhanVienService.update(id,request));
     }
     @GetMapping("/{id}")

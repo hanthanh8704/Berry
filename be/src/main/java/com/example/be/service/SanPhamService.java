@@ -1,10 +1,10 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.product.SanPhamRequest;
-import com.example.connectdb.dto.request.product.SanPhamSearchRequest;
-import com.example.connectdb.dto.response.SanPhamReponse;
-import com.example.connectdb.entity.SanPham;
-import com.example.connectdb.util.common.PageableObject;
+import com.example.be.dto.request.product.SanPhamRequest;
+import com.example.be.dto.request.product.SanPhamSearchRequest;
+import com.example.be.dto.response.SanPhamReponse;
+import com.example.be.entity.SanPham;
+import com.example.be.util.common.PageableObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 

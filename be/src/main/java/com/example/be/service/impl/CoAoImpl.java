@@ -1,13 +1,13 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.collar.CoAoRequest;
-import com.example.connectdb.dto.response.CoAoResponse;
-import com.example.connectdb.entity.CoAo;
-import com.example.connectdb.repositories.CoAoRepository;
-import com.example.connectdb.service.CoAoService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.CollarConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.dto.request.collar.CoAoRequest;
+import com.example.be.dto.response.CoAoResponse;
+import com.example.be.entity.CoAo;
+import com.example.be.repository.CoAoRepository;
+import com.example.be.service.CoAoService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.CollarConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

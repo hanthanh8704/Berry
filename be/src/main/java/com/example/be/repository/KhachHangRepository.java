@@ -16,29 +16,33 @@ import java.util.Optional;
 public interface KhachHangRepository extends JpaRepository<KhachHang,Integer> {
     @Query(value = """
             SELECT v.id as id,
+            ROW_NUMBER() OVER(ORDER BY v.ngay_tao DESC) AS indexs,
             v.ho_ten as hoTen,
              v.so_dien_thoai as soDienThoai,
               v.email as email,
                v.gioi_tinh as gioiTinh,
                v.trang_thai as trangThai,
                pggkh.id_khach_hang as idKhachHang
-                from khach_hang v join phieu_giam_gia_khach_hang pggkh on
+                from khach_hang v left join phieu_giam_gia_khach_hang pggkh on
             v.id = pggkh.id_khach_hang
             WHERE (:#{#req.soDienThoai} IS NULL OR v.so_dien_thoai LIKE CONCAT(%:#{#req.soDienThoai}%) 
             OR v.email LIKE CONCAT(%:#{#req.email}%) OR v.ho_ten LIKE CONCAT(%:#{#req.hoTen}%))
+            GROUP BY v.id, v.ho_ten, v.so_dien_thoai, v.email, v.gioi_tinh, v.trang_thai,pggkh.id_khach_hang;
             """, nativeQuery = true)
     Page<KhachHangResponse> getAllKhachHang(@Param("req") KhachHangRequest request, Pageable pageable);
     @Query(value = """
             SELECT v.id as id,
+            ROW_NUMBER() OVER(ORDER BY v.ngay_tao DESC) AS indexs,
             v.ho_ten as hoTen,
              v.so_dien_thoai as soDienThoai,
               v.email as email,
                v.gioi_tinh as gioiTinh,
                v.trang_thai as trangThai,
                pggkh.id_khach_hang as idKhachHang
-                from khach_hang v join phieu_giam_gia_khach_hang pggkh on
+                from khach_hang v left join phieu_giam_gia_khach_hang pggkh on
             v.id = pggkh.id_khach_hang
             WHERE pggkh.id_phieu_giam_gia=:id
+            GROUP BY v.id, v.ho_ten, v.so_dien_thoai, v.email, v.gioi_tinh, v.trang_thai, pggkh.id_khach_hang;
             """, nativeQuery = true)
     Page<KhachHangResponse> getAllKhachHangID(@Param("id") Integer id, Pageable pageable);
     @Query("""
@@ -72,7 +76,6 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,Integer> {
         ORDER BY kh.ngay_tao DESC
         """, nativeQuery = true)
     Page<KhachHangResponse> getAll(@Param("req") KhachHangRequest request, Pageable pageable);
-
 
     Boolean existsByMa(String ma);
 

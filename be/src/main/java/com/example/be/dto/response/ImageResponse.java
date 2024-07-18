@@ -1,7 +1,7 @@
-package com.example.connectdb.dto.response;
+package com.example.be.dto.response;
 
 
-import com.example.connectdb.entity.Anh;
+import com.example.be.entity.Anh;
 import org.springframework.data.rest.core.config.Projection;
 
 @Projection(types = {Anh.class})

@@ -1,6 +1,7 @@
 package com.example.be.controller;
 
 import com.example.be.dto.request.dotgiamgia.DotGiamGiaRequest;
+import com.example.be.entity.ChiTietSanPham;
 import com.example.be.entity.DotGiamGia;
 import com.example.be.entity.DotGiamGiaDetail;
 import com.example.be.repository.ChiTietSanPhamRepository;
@@ -24,7 +25,7 @@ public class DotGiamGiaController {
     @Autowired
     private DotGiamGiaRepository dotGiamGiaRepository;
     @Autowired
-    private ChiTietSanPhamRepository spct_repository;
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
 
     @GetMapping("/index")
     public ResponseEntity<List<DotGiamGia>> getAllDotGiamGia() {
@@ -33,23 +34,11 @@ public class DotGiamGiaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<DotGiamGiaDetail>> detail(@PathVariable("id") Integer idDGG) {
-        List<DotGiamGiaDetail> dotGiamGiaDetail = dotGiamGiaService.DotGiamGiaDetail(idDGG);
+    public ResponseEntity<List<ChiTietSanPham>> detail(@PathVariable("id") Integer idDGG) {
+        List<ChiTietSanPham> dotGiamGiaDetail = dotGiamGiaService.SPCT(idDGG);
         return ResponseEntity.ok(dotGiamGiaDetail);
     }
 
-    //    @GetMapping("/{id}")
-//    public ResponseEntity<DotGiamGiaDto> detailDotGiamGia(@PathVariable("id") Integer idDGG) {
-//        DotGiamGia dotGiamGia = dotGiamGiaRepository.findById(idDGG).orElse(null);
-//        if (dotGiamGia == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        List<SPCT> spcts = spct_repository.getAllSPCTByidDGG(idDGG);
-//        DotGiamGiaDto dto = new DotGiamGiaDto(dotGiamGia, spcts);
-//
-//        return ResponseEntity.ok(dto);
-//    }
     @GetMapping("/{id}")
     public ResponseEntity<DotGiamGia> detailDotGiamGia(@PathVariable("id") Integer idDGG) {
         DotGiamGia dotGiamGia = dotGiamGiaRepository.findById(idDGG).get();
@@ -67,7 +56,7 @@ public class DotGiamGiaController {
     }
 
     @PostMapping("/add")
-    public ResponseObject   create(@RequestBody DotGiamGiaRequest request) {
+    public ResponseObject create(@RequestBody DotGiamGiaRequest request) {
         return dotGiamGiaService.create(request);
     }
 
@@ -77,13 +66,14 @@ public class DotGiamGiaController {
         return new ResponseObject(dotGiamGiaService.update(id, request));
     }
 
-    @DeleteMapping("/delete-all-promotion-detail/{id}")
+    @DeleteMapping("/deleted/{id}")
     public void deleteAllDotGiamGiaDetailByidDGG(@PathVariable Integer id) {
-        dotGiamGiaService.deleteAll(id);
+        dotGiamGiaService.deletedDotGiamGia(id);
     }
 
     @PutMapping("/update/end-date/{id}")
     public ResponseObject updateEndDate(@PathVariable Integer id) {
         return new ResponseObject(dotGiamGiaService.updateEndDate(id));
     }
+
 }

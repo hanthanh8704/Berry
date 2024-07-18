@@ -1,14 +1,14 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.color.MauSacRequest;
-import com.example.connectdb.dto.request.color.MauSacSearchRequest;
-import com.example.connectdb.dto.response.MauSacResponse;
-import com.example.connectdb.entity.MauSac;
-import com.example.connectdb.repositories.MauSacRepository;
-import com.example.connectdb.service.MauSacService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.ColorConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.dto.request.color.MauSacRequest;
+import com.example.be.dto.request.color.MauSacSearchRequest;
+import com.example.be.dto.response.MauSacResponse;
+import com.example.be.entity.MauSac;
+import com.example.be.repository.MauSacRepository;
+import com.example.be.service.MauSacService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.ColorConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,6 +48,9 @@ public class MauSacImpl implements MauSacService {
     public MauSac create(MauSacRequest request) {
         if (mauSacRepository.existsByTenIgnoreCase(request.getTen())) {
             throw new RestApiException("Màu " + request.getTen() + " đã tồn tại!");
+        }
+        if(mauSacRepository.existsByCodeIgnoreCase(request.getCode())){
+            throw new RestApiException("Màu " + request.getCode() + " đã tồn tại!");
         }
         MauSac color = colorConverter.convertRequestToEntity(request);
         return mauSacRepository.save(color);

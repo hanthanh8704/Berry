@@ -25,7 +25,7 @@ const account = {
           id: 'customer-list',
           title: 'Danh Sách Khách Hàng',
           type: 'item',
-          url: '/account/customer',
+          url: 'api/customer',
           target: false,
           icon: icons.IconUserShield
         },
@@ -33,7 +33,7 @@ const account = {
           id: 'employee-list',
           title: 'Danh Sách Nhân Viên',
           type: 'item',
-          url: '/account/employee',
+          url: '/nhan-vien',
           target: false,
           icon: icons.IconUsers
         }

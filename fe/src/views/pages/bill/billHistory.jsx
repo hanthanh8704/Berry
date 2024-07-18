@@ -11,16 +11,17 @@ import {
 } from "@tabler/icons-react";
 import FormatDate from "views/utilities/FormatDate";
 import "./bill.css";
+import { margin } from "@mui/system";
 
 const { Title } = Typography;
 
 const statusIconMap = {
   "Tạo đơn hàng": <IconBrandOpenai />,
-  "Chờ thanh toán": <IconFileInvoice />,
-  "Chờ xác nhận": <IconCheck />,
-  "Xác nhận thanh toán": <IconCreditCardPay />,
-  "Chờ giao": <IconCalendarClock />,
-  "Đang giao": <IconTruckDelivery />,
+  "Chờ xác nhận": <IconFileInvoice />,
+  "Đang vận chuyển": <IconCheck />,
+  "Chờ giao hàng": <IconCreditCardPay />,
+  "Đang giao hàng": <IconCalendarClock />,
+  "Đã thanh toán": <IconTruckDelivery />,
   "Hoàn thành": <IconCheck />,
   "Hủy": <IconCircleXFilled />,
 };

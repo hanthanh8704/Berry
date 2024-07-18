@@ -1,9 +1,9 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.productDetail.ShirtDetailRequest;
-import com.example.connectdb.entity.*;
-import com.example.connectdb.repositories.*;
-import com.example.connectdb.util.common.GenCode;
+import com.example.be.dto.request.productDetail.ShirtDetailRequest;
+import com.example.be.entity.*;
+import com.example.be.repository.*;
+import com.example.be.util.common.GenCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ShirtDetailConverter {
 
     @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private SanPhamRepositoty sanPhamRepository;
     @Autowired
     private MauSacRepository mauSacRepository;
     @Autowired

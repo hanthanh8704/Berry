@@ -1,9 +1,9 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.size.KichCoRequest;
-import com.example.connectdb.dto.response.KichCoResponse;
-import com.example.connectdb.entity.KichCo;
-import com.example.connectdb.util.common.PageableObject;
+import com.example.be.dto.request.size.KichCoRequest;
+import com.example.be.dto.response.KichCoResponse;
+import com.example.be.entity.KichCo;
+import com.example.be.util.common.PageableObject;
 
 public interface KichCoService {
     PageableObject<KichCoResponse> getAll(KichCoRequest request);

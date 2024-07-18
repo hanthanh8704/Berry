@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -33,15 +34,17 @@ public class PhieuGiamGia {
     private Integer soLuong;
 
     @Column(name = "ngay_bat_dau")
-    private Timestamp ngayBatDau;
+    private LocalDateTime ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
-    private Timestamp ngayKetThuc;
+    private LocalDateTime ngayKetThuc;
 
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")

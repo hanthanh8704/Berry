@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.request.product;
+package com.example.be.dto.request.product;
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -1,9 +1,9 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.product.SanPhamRequest;
-import com.example.connectdb.entity.DanhMuc;
-import com.example.connectdb.entity.SanPham;
-import com.example.connectdb.repositories.DanhMucRepository;
+import com.example.be.dto.request.product.SanPhamRequest;
+import com.example.be.entity.DanhMuc;
+import com.example.be.entity.SanPham;
+import com.example.be.repository.DanhMucRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -6,7 +6,11 @@ import org.springframework.data.rest.core.config.Projection;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
+import java.time.LocalDateTime;
+/**
+ * @author ninhncph40535
+ *
+ */
 @Projection(types = {PhieuGiamGia.class})
 public interface PhieuGiamGiaResponse {
     @Value("#{target.indexs}")
@@ -17,12 +21,12 @@ public interface PhieuGiamGiaResponse {
     String getTen();
     String getLoai();
     Integer getSoLuong();
-    Timestamp getNgayBatDau();
-    Timestamp getNgayKetThuc();
+    LocalDateTime getNgayBatDau();
+    LocalDateTime getNgayKetThuc();
     String getTrangThai();
     String getHinhThucGiam();
     BigDecimal getGiaTriHoaDonDuocGiam();
     BigDecimal getGiaTriHoaDonDuocApDung();
-    String getCustomer();
+    String getCustomers();
 
 }

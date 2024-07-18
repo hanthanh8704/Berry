@@ -13,6 +13,7 @@ public class cronJob {
     @Autowired
     private DotGiamGiaService dotGiamGiaService;
 
+
     @Scheduled(cron = "0 0/30 * * * ?")// 2s chạy một lần
 //    @Scheduled(cron = "*/2 * * * * *") // Chạy mỗi 2 giây
     public void autoUpdateStatusPromotionDetail() {
@@ -22,7 +23,9 @@ public class cronJob {
             e.printStackTrace();
         }
     }
+
     @Scheduled(cron = "0 0/30 * * * ?")// 2s chạy một lần
+//    @Scheduled(cron = "*/2 * * * * *") // Chạy mỗi 2 giây
     public void autoUpdateStatusPromotion() {
         try {
             dotGiamGiaService.updateStatusPromotion();
@@ -34,7 +37,8 @@ public class cronJob {
     @Autowired
     private PhieuGiamGiaService voucherService;
 
-    @Scheduled(cron = "*/2000000000 * * * * ?")// 2s chạy một lần
+    //    @Scheduled(cron = "*/2 * * * * ?")// 2s chạy một lần
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void autoUpdateStatusVoucher() {
         try {
             voucherService.updateStatusVoucher();

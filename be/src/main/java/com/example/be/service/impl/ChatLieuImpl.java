@@ -1,15 +1,14 @@
-package com.example.connectdb.service.impl;
+package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.material.ChatLieuRequest;
-import com.example.connectdb.dto.response.ChatLieuResponse;
-import com.example.connectdb.entity.ChatLieu;
-import com.example.connectdb.entity.MauSac;
-import com.example.connectdb.repositories.ChatLieuRepository;
-import com.example.connectdb.service.ChatLieuService;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.converter.MaterialConverter;
-import com.example.connectdb.util.converter.SizeConverter;
-import com.example.connectdb.util.exception.RestApiException;
+
+import com.example.be.dto.request.material.ChatLieuRequest;
+import com.example.be.dto.response.ChatLieuResponse;
+import com.example.be.entity.ChatLieu;
+import com.example.be.repository.ChatLieuRepository;
+import com.example.be.service.ChatLieuService;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.converter.MaterialConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +32,6 @@ public class ChatLieuImpl implements ChatLieuService {
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSizePage());
         return new PageableObject<>(chatLieuRepository.findAllByCriteria(request, pageable));
     }
-
 
     @Override
     public ChatLieu getOne(Integer id) {

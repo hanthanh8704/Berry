@@ -1,8 +1,8 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
 
-import com.example.connectdb.dto.request.material.ChatLieuRequest;
-import com.example.connectdb.entity.ChatLieu;
+import com.example.be.dto.request.material.ChatLieuRequest;
+import com.example.be.entity.ChatLieu;
 
 import org.springframework.stereotype.Component;
 

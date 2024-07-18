@@ -1,82 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-// import Pagination from '@mui/material/Pagination';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import { IconEdit, IconCircleX, IconClockPause } from '@tabler/icons-react';
-import FormatCurrency from "views/utilities/FormatCurrency";
+import { Table, Input, Button, Select, DatePicker, Pagination, Modal, Slider, Tooltip } from 'antd';
+import { SearchOutlined, EditOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import * as request from "views/utilities/httpRequest";
-import FormatDate from 'views/utilities/FormatDate';
-import { Link } from 'react-router-dom';
-import Tooltip from '@mui/material/Tooltip';
-import { useNavigate } from 'react-router-dom';
-import { toast } from "react-toastify";
+import { Link, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from "react-toastify";
-import { Box, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Typography, TextField, Button, Grid, RadioGroup, Radio, FormControlLabel, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Breadcrumb, Col, Input, Row, Modal ,Pagination} from "antd";
+import FormatCurrency from "views/utilities/FormatCurrency";
+import FormatCurrency1 from "views/utilities/FormatCurrency1";
+import FormatDate from "views/utilities/FormatDate.jsx";
 
+const { confirm } = Modal;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 const Voucher = () => {
-    const { confirm } = Modal;
+    
     const [voucher, setVoucher] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-
     const [pageSize, setPageSize] = useState(5);
     const [searchValue, setSearchValue] = useState('');
     const [filterKieuGiam, setFilterKieuGiam] = useState('All');
+    const [filterLoai, setFilterLoai] = useState('All');
     const [filterTrangThai, setFilterTrangThai] = useState('All');
-
-    const [loaiGiamGia, setLoaiGiamGia] = useState('%');
-    const [ngayBatDau, setNgayBatDau] = useState('');
-    const [ngayKetThuc, setNgayKetThuc] = useState('');
+    const [giaTu, setGiaTu] = useState('');
+    const [selectedDates, setSelectedDates] = useState({});
+    const [giaDen, setGiaDen] = useState([0, 1000000000]);
 
     useEffect(() => {
+        const successMessage = sessionStorage.getItem('voucherAddSuccess') || sessionStorage.getItem('voucherUpdateSuccess');
+        if (successMessage) {
+            toast.success(successMessage);
+            sessionStorage.removeItem('voucherAddSuccess');
+            sessionStorage.removeItem('voucherUpdateSuccess');
+        }
         loadVoucher();
         const intervalId = setInterval(() => {
-            loadVoucher();
-            console.log('e');
+            loadVoucher({
+                ten: `%${searchValue}%`,
+                ma: `%${searchValue}%`,
+                filterKieuGiam,
+                filterLoai,
+                filterTrangThai,
+                selectedDates,
+                giaTu,
+                giaDen,
+            });
         }, 1000);
         return () => {
             clearInterval(intervalId);
         };
-    }, [searchValue, pageSize, currentPage]);
+    }, [searchValue, filterKieuGiam, filterLoai, filterTrangThai, pageSize, currentPage, selectedDates, giaTu, giaDen]);
 
     const loadVoucher = async () => {
         try {
             const response = await request.get('/voucher', {
                 params: {
-                    name: searchValue,
+                    ma: `%${searchValue}%` || null,
+                    ten: `%${searchValue}%` || null,
                     page: currentPage,
                     sizePage: pageSize,
+                    hinhThucGiam: filterKieuGiam !== 'All' ? filterKieuGiam : null,
+                    loai: filterLoai !== 'All' ? filterLoai : null,
+                    trangThai: filterTrangThai !== 'All' ? filterTrangThai : null,
+                   
+                    nguoiSua: selectedDates?.fromDate,
+                    nguoiTao: selectedDates?.toDate,
+                    giaTriHoaDonDuocApDung: giaTu || null,
+                    giaTriHoaDonDuocGiam: giaDen || null,
                 },
             }).then(response => {
-                console.log('Data fetched:', response.data); 
                 setVoucher(response.data);
-            setTotalPages(response.totalPages);
+                setTotalPages(response.totalPages);
             })
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    const handleChangePage = (event, newPage) => {
-        setCurrentPage(newPage);
+    const handleChangePage = (page, pageSize) => {
+        setCurrentPage(page);
+        setPageSize(pageSize);
     };
+    const handleDateChange = (dates) => {
+        if (dates !== null) {
+          setSelectedDates({
+            fromDate: dates[0].format('YYYY-MM-DD'),
+            toDate: dates[1].format('YYYY-MM-DD')
+          })
+        } else {
+          setSelectedDates(null);
+        }
+        console.log(selectedDates);
+      }
 
-    const handleStatusChange = (event) => {
-        setFilterTrangThai(event.target.value);
-        setCurrentPage(1);
-    };
-
-    const handleStatusChange1 = (event) => {
-        setFilterKieuGiam(event.target.value);
+    const handleStatusChange = (value) => {
+        setFilterTrangThai(value);
         setCurrentPage(1);
     };
 
@@ -106,199 +125,174 @@ const Voucher = () => {
             },
         });
     };
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     handAddVoucher(formValues);
-    // };
 
-    const filteredOrders = voucher.filter(order =>
-        (filterKieuGiam === 'All' || order.kieuGiam === filterKieuGiam) &&
-        (order.ma && order.ma.toLowerCase().includes(searchValue.toLowerCase())) ||
-        (order.ten && order.ten.toLowerCase().includes(searchValue.toLowerCase())) ||
-        (filterTrangThai === 'All' || order.trangThai === filterTrangThai)
-    );
-
-
-    // const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-
+    const columns = [
+        {
+            title: 'STT',
+            dataIndex: 'index',
+            key: 'index',
+        },
+        {
+            title: 'Mã',
+            dataIndex: 'ma',
+            key: 'ma',
+        },
+        {
+            title: 'Tên',
+            dataIndex: 'ten',
+            key: 'ten',
+        },
+        {
+            title: 'Giá trị giảm',
+            dataIndex: 'giaTriHoaDonDuocGiam',
+            key: 'giaTriHoaDonDuocGiam',
+            render: (text, record) => (
+                <span>
+                    <FormatCurrency1 value={record.giaTriHoaDonDuocGiam} /> {record.hinhThucGiam}
+                </span>
+            ),
+        },
+        {
+            title: 'Loại',
+            dataIndex: 'loai',
+            key: 'loai',
+        },
+        {
+            title: 'Giá trị tối thiểu',
+            dataIndex: 'giaTriHoaDonDuocApDung',
+            key: 'giaTriHoaDonDuocApDung',
+            render: (text) => <FormatCurrency value={text} />,
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'soLuong',
+            key: 'soLuong',
+        },
+        {
+            title: 'Ngày bắt đầu',
+            dataIndex: 'ngayBatDau',
+            key: 'ngayBatDau',
+            render: (text) => <FormatDate date={text} />,
+        },
+        {
+            title: 'Ngày kết thúc',
+            dataIndex: 'ngayKetThuc',
+            key: 'ngayKetThuc',
+            render: (text) => <FormatDate date={text} />,
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'trangThai',
+            key: 'trangThai',
+            render: (text) => (
+                <div style={{
+                    width: '100px',
+                    borderRadius: '20px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '2px',
+                    color: 'white',
+                    background: text === 'Sắp diễn ra' ? 'orange' : text === 'Đang diễn ra' ? 'green' : 'red'
+                }}>
+                    {text}
+                </div>
+            ),
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (x, record) => (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Tooltip title="Update">
+                        {/* <Button type="primary" icon={<EditOutlined />}> */}
+                            <Link  to={`/api/voucher/${record.id}`} ><EditOutlined /></Link>
+                        {/* </Button> */}
+                    </Tooltip>
+                    <Tooltip title="Stop">
+                        <Button type="danger" icon={<ClockCircleOutlined />} onClick={() => showDeleteConfirm(record)} style={{ marginLeft: '10px' }} />
+                    </Tooltip>
+                </div>
+            ),
+        },
+    ];
 
     return (
-        <Grid container spacing={3}>
-            <Grid container spacing={1} style={{ backgroundColor: 'white', padding: '10px', marginLeft: '24px', marginTop: '20px', borderRadius: '10px' }}>
-                <Grid item xs={12} md={10}>
-                    <Typography variant="h3" gutterBottom>
-                        Bộ lọc
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} md={8}>
-                    <Box display="flex" alignItems="center">
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Search orders..."
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                            InputProps={{
-                                endAdornment: (
-                                    <IconButton>
-                                        <SearchIcon />
-                                    </IconButton>
-                                )
-                            }}
-                        />
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <FormControl fullWidth variant="outlined">
-                        <InputLabel id="filter-status-label">Trạng thái</InputLabel>
-                        <Select
-                            labelId="filter-status-label"
-                            id="filter-status"
-                            value={filterTrangThai}
-                            onChange={handleStatusChange}
-                            label="Filter by Status"
-                        >
-                            <MenuItem value="All">Tất cả</MenuItem>
-                            <MenuItem value="Sắp diễn ra">Sắp diễn ra</MenuItem>
-                            <MenuItem value="Đang diễn ra">Đang diễn ra</MenuItem>
-                            <MenuItem value="Đã kết thúc">Đã kết thúc</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        type="datetime-local"
-                        label="Ngày bắt đầu"
-                        value={ngayBatDau}
-                        onChange={(e) => setNgayBatDau(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
+        <div>
+            <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '10px', marginBottom: '20px' }}>
+                <h4>Bộ lọc</h4>
+                <div style={{ display: 'flex', marginBottom: '20px' }}>
+                    <Input
+                        placeholder="Tìm kiếm đơn hàng..."
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        suffix={<SearchOutlined />}
+                        style={{ width: '300px', marginRight: '20px' }}
                     />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        type="datetime-local"
-                        label="Ngày kết thúc"
-                        value={ngayKetThuc}
-                        onChange={(e) => setNgayKetThuc(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
-                    />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <FormControl fullWidth variant="outlined">
-                        <InputLabel id="filter-kieu-label">Kiểu Giảm</InputLabel>
-                        <Select
-                            labelId="filter-kieu-label"
-                            id="filter-kieu"
-                            value={filterKieuGiam}
-                            onChange={handleStatusChange1}
-                            label="Kiểu Giảm"
-                        >
-                            <MenuItem value="All">Tất cả</MenuItem>
-                            <MenuItem value="%">%</MenuItem>
-                            <MenuItem value="VNĐ">VNĐ</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <Button variant="contained" color="primary">
-                        <Link to={'/api/voucher/add'}>
-                            Thêm
-                        </Link>
-                    </Button>
-                </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <Grid item xs={12} style={{ backgroundColor: 'white', borderRadius: '10px', marginLeft: '10px' }}>
-                    <TableContainer component={Paper}>
-                        <Table >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>STT</TableCell>
-                                    <TableCell>Mã</TableCell>
-                                    <TableCell>Tên</TableCell>
-                                    <TableCell>Giá trị giảm</TableCell>
-                                    <TableCell>Loại</TableCell>
-                                    <TableCell>Giá trị tối thiểu</TableCell>
-                                    <TableCell>Số lượng</TableCell>
-                                    <TableCell>Ngày bắt đầu</TableCell>
-                                    <TableCell>Ngày kết thúc</TableCell>
-                                    <TableCell>Trạng thái</TableCell>
-                                    <TableCell>Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody >
-                            
-                                {voucher.map((voucher) => (
-                                    <TableRow key={voucher.id}>
-                                        <TableCell>{voucher.index}</TableCell>
-                                        <TableCell>{voucher.ma}</TableCell>
-                                        <TableCell>{voucher.ten}</TableCell>
-                                        <TableCell>{(voucher.giaTriHoaDonDuocGiam)}  {voucher.hinhThucGiam}</TableCell>
-                                        <TableCell>{voucher.loai}</TableCell>
-                                        <TableCell>{voucher.giaTriHoaDonDuocApDung}</TableCell>
-                                        <TableCell>{voucher.soLuong}</TableCell>
-                                        <TableCell><FormatDate date={voucher.ngayBatDau} /></TableCell>
-                                        <TableCell><FormatDate date={voucher.ngayKetThuc} /></TableCell>
-                                        <TableCell>{voucher.trangThai}</TableCell>
-                                        <TableCell>
-                                            <Box display="flex" alignItems="center">
-                                                <Tooltip title="Update">
-                                                    <IconButton
-                                                        color="primary"
-                                                    >
-                                                        <Link to={'/api/voucher/' + voucher.id}><IconEdit /> </Link>
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Stop">
-                                                    <IconButton color="primary" onClick={() => showDeleteConfirm(voucher)}>
-                                                        <IconClockPause />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                {/* <Tooltip title="Delete">
-                                                    <IconButton
-                                                        color="primary"
-                                                    >
-                                                        <Link to={'/api/voucher/delete'}><IconCircleX /></Link>
-
-                                                    </IconButton>
-                                                </Tooltip> */}
-                                            </Box>
-                                        </TableCell>
-
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    
-                    <ToastContainer />
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-            <Pagination
-        className="mt-3"
-        showSizeChanger
-        current={currentPage}
-        pageSize={pageSize}
-        pageSizeOptions={[5, 10, 20, 50, 100]}
-        showQuickJumper
-        total={totalPages * pageSize}
-        onChange={(page, pageSize) => {
-          setCurrentPage(page);
-          setPageSize(pageSize);
-        }}
+                    <Select value={filterTrangThai} onChange={handleStatusChange} style={{ width: '200px', marginRight: '20px' }}>
+                        <Option value="All">Tất cả</Option>
+                        <Option value="Sắp diễn ra">Sắp diễn ra</Option>
+                        <Option value="Đang diễn ra">Đang diễn ra</Option>
+                        <Option value="Đã kết thúc">Đã kết thúc</Option>
+                    </Select>
+                    <Select value={filterKieuGiam} onChange={(value) => setFilterKieuGiam(value)} style={{ width: '200px', marginRight: '20px' }}>
+                        <Option value="All">Tất cả</Option>
+                        <Option value="%">%</Option>
+                        <Option value="VNĐ">VNĐ</Option>
+                    </Select>
+                    <Select value={filterLoai} onChange={(value) => setFilterLoai(value)} style={{ width: '200px', marginRight: '20px' }}>
+                        <Option value="All">Tất cả</Option>
+                        <Option value="Cá nhân">Cá nhân</Option>
+                        <Option value="Công khai">Công khai</Option>
+                    </Select>
+                </div>
+                <div style={{ display: 'flex', marginBottom: '20px' }}>
+    <RangePicker onChange={handleDateChange} style={{ marginRight: '10px' }} />
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Input
+            type="number"
+            placeholder="Giá từ"
+            value={giaTu}
+            onChange={(e) => setGiaTu(e.target.value)}
+            style={{ marginRight: '10px' }}
         />
-            </Grid> 
-            
-        </Grid>
+        <span style={{ marginRight: '10px' }}>-</span>
+        <Input
+            type="number"
+            placeholder="Giá đến"
+            value={giaDen}
+            onChange={(e) => setGiaDen(e.target.value)}
+            style={{ marginRight: '20px' }}
+        />
+    </div>
+                <Button type="primary">
+                    <Link to={'/api/voucher/add'} style={{ color: 'white' }}>
+                        Thêm
+                    </Link>
+                </Button>
+</div>
+
+            </div>
+            <Table
+                columns={columns}
+                dataSource={voucher}
+                pagination={{
+                    showSizeChanger: true,
+                    current: currentPage,
+                    pageSize: pageSize,
+                    pageSizeOptions: [5, 10, 20, 50],
+                    showQuickJumper: false,
+                    total: totalPages * pageSize,
+                    onChange: (page, pageSize) => {
+                      setCurrentPage(page);
+                      setPageSize(pageSize);
+                    }
+                  }}
+                  className="custom-table"
+                />
+            <ToastContainer />
+        </div>
     );
 };
 
-
 export default Voucher;
-

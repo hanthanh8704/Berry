@@ -1,7 +1,7 @@
-package com.example.connectdb.repositories;
+package com.example.be.repository;
 
-import com.example.connectdb.dto.response.ImageResponse;
-import com.example.connectdb.entity.Anh;
+import com.example.be.dto.response.ImageResponse;
+import com.example.be.entity.Anh;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

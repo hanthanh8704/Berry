@@ -1,19 +1,19 @@
 package com.example.be.service.impl;
 
-import com.example.connectdb.dto.request.productDetail.FindShirtDetailRequest;
-import com.example.connectdb.dto.request.productDetail.ShirtDetailRequest;
-import com.example.connectdb.dto.request.productDetail.UpdateShirtDetailRequest;
-import com.example.connectdb.dto.response.ShirtDetailResponse;
-import com.example.connectdb.entity.Anh;
-import com.example.connectdb.entity.ChiTietSanPham;
-import com.example.connectdb.entity.SanPham;
-import com.example.connectdb.repositories.*;
-import com.example.connectdb.service.ChiTietSanPhamService;
-import com.example.connectdb.util.common.GenCode;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.common.ResponseObject;
-import com.example.connectdb.util.converter.ShirtDetailConverter;
-import com.example.connectdb.util.exception.RestApiException;
+import com.example.be.dto.request.productDetail.FindShirtDetailRequest;
+import com.example.be.dto.request.productDetail.ShirtDetailRequest;
+import com.example.be.dto.request.productDetail.UpdateShirtDetailRequest;
+import com.example.be.dto.response.ShirtDetailResponse;
+import com.example.be.entity.Anh;
+import com.example.be.entity.ChiTietSanPham;
+import com.example.be.entity.SanPham;
+import com.example.be.repository.*;
+import com.example.be.service.ChiTietSanPhamService;
+import com.example.be.util.common.GenCode;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.common.ResponseObject;
+import com.example.be.util.converter.ShirtDetailConverter;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +35,7 @@ public class ChiTietSanPhamImpl implements ChiTietSanPhamService {
     @Autowired
     private IImagesRepository anhRepository;
     @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private SanPhamRepositoty sanPhamRepository;
     @Autowired
     private MauSacRepository mauSacRepository;
     @Autowired

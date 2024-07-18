@@ -2,6 +2,9 @@ package com.example.be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.sql.Timestamp;
 
 @Getter
@@ -15,6 +18,7 @@ import java.sql.Timestamp;
 public class SanPham {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "id_danh_muc")
@@ -26,18 +30,27 @@ public class SanPham {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
     @Column(name = "ngay_tao")
+    @CreationTimestamp
     private Timestamp ngayTao;
 
     @Column(name = "ngay_sua")
+    @UpdateTimestamp
     private Timestamp ngaySua;
 
     @Column(name = "trang_thai")
     private String trangThai;
+
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

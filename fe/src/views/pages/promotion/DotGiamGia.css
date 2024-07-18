@@ -1,0 +1,45 @@
+.custom-pagination {
+    /* Áp dụng các styles tùy chỉnh cho Pagination */
+  }
+  
+  .custom-pagination .MuiPaginationItem-root {
+    border-radius: 4px; /* Bo tròn viền */
+  }
+  
+  .custom-pagination .Mui-selected {
+    background-color: #fff; 
+    color: black;
+    border: 1px solid #007BFF; /* Viền solid màu xanh */
+  }
+  
+  .image-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .object-fit-contain {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .discount-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    /* Nền đỏ */
+    color: white;
+    /* Chữ trắng */
+    padding: 2px 5px;
+    border-radius: 10px;
+    /* Bo góc */
+    font-weight: bold;
+    font-size: 12px;
+    /* Kích thước chữ */
+    margin: 0;
+    /* Đảm bảo không có margin mặc định */
+    z-index: 1;
+    /* Đảm bảo thẻ này luôn hiển thị trên ảnh */
+  }

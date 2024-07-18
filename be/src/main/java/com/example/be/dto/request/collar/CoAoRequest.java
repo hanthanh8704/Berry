@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.request.collar;
+package com.example.be.dto.request.collar;
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

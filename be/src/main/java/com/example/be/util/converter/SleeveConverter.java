@@ -1,9 +1,9 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.color.MauSacRequest;
-import com.example.connectdb.dto.request.sleeve.TayAoRequest;
-import com.example.connectdb.entity.MauSac;
-import com.example.connectdb.entity.TayAo;
+import com.example.be.dto.request.color.MauSacRequest;
+import com.example.be.dto.request.sleeve.TayAoRequest;
+import com.example.be.entity.MauSac;
+import com.example.be.entity.TayAo;
 import org.springframework.stereotype.Component;
 
 @Component

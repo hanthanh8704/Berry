@@ -1,7 +1,7 @@
-package com.example.connectdb.dto.request.productDetail;
+package com.example.be.dto.request.productDetail;
 
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

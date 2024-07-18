@@ -1,7 +1,7 @@
-package com.example.connectdb.dto.request.product;
+package com.example.be.dto.request.product;
 
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

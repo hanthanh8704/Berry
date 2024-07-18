@@ -17,19 +17,21 @@ import IconButton from '@mui/material/IconButton';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Typography, Button } from '@mui/material';
-import { Add, Details, Save, Update } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
-import FormatDate from 'views/utilities/FormatDate.jsx';
-import VoucherStatus from "./DotGiamGiaTrangThai.jsx";
-import { listDotGiamGia } from 'views/utilities/ApiDotGiamGia/DotGiamGiaApi.js'
+import { Add, Delete, Details, Save, Update } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import FormatDate from '../../utilities/FormatDate.jsx';
+import VoucherStatus from './DotGiamGiaTrangThai.jsx';
+import { listDotGiamGia } from '../../utilities/ApiDotGiamGia/DotGiamGiaApi.js';
+import { deletedDotGiamGia } from '../../utilities/ApiDotGiamGia/DotGiamGiaApi.js';
 import { margin } from '@mui/system';
-
-
-
+import './DotGiamGia.css'; // Đường dẫn đến file CSS hoặc SCSS
+import { Modal } from 'antd';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DotGiamGia = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(5);
   const [searchValue, setSearchValue] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterPrice, setFilterPrice] = useState('All');
@@ -42,34 +44,53 @@ const DotGiamGia = () => {
   //Diềm nó vào danh sách
   useEffect(() => {
     getAllDotGiamGia();
-  }, [])
-  //Get hiển thị 
+  }, []);
+  //Get hiển thị
   function getAllDotGiamGia() {
-    listDotGiamGia().then((response) => {
-      setDotGiamGia(response.data);
-    }).catch(error => {
-      console.error(error)
-    })
+    listDotGiamGia()
+      .then((response) => {
+        setDotGiamGia(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
-
-  // Sử dụng hàm exportData
-  // function handleExport() {
-  //   exportData().then(response => {
-  //     console.log(response.data);
-  //   }).catch(error => {
-  //     console.error('Error exporting data:', error);
-  //   });
-  // }
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: 'Xác nhận',
+      maskClosable: true,
+      content: 'Bạn có muốn ngừng hoạt động đợt giảm giá này?',
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        deletedDotGiamGia(id)
+          .then((response) => {
+            console.log('Đã xóa thành công:', response);
+            toast.success('Ngừng thành công đợt giảm giá!');
+            // Gọi lại hàm getAllDotGiamGia để cập nhật danh sách
+            getAllDotGiamGia();
+          })
+          .catch((error) => {
+            console.error('Lỗi khi xóa:', error);
+          });
+      }
+    });
+  };
 
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
+  };
+  const handlePageSizeChange = (event) => {
+    setPageSize(parseInt(event.target.value, 10));
+    setCurrentPage(1);
   };
 
   const handleStatusChange = (event) => {
     setFilterStatus(event.target.value);
     setCurrentPage(1);
   };
+
   const handlePriceChange = (event) => {
     setFilterPrice(event.target.value);
     setCurrentPage(1);
@@ -81,22 +102,15 @@ const DotGiamGia = () => {
   // const handleClearDetails = () => {
   //   setSelectedOrder(null);
   // };
-  const handleSearch = () => {
-    searchDotGiamGia(searchValue, startDate, endDate)
-      .then((response) => {
-        setDotGiamGia(response.data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
 
-  const searchTenMaGiaTriLike = dotGiamGia.filter(dotGiamGia => {
+  const searchTenMaGiaTriLike = dotGiamGia.filter((dotGiamGia) => {
     const isStatusMatch = filterStatus === 'All' || dotGiamGia.trangThai === filterStatus;
-    const isNameOrCodeMatch = dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
+    const isNameOrCodeMatch =
+      dotGiamGia.ten.toLowerCase().includes(searchValue.toLowerCase()) ||
       dotGiamGia.ma.toLowerCase().includes(searchValue.toLowerCase()) ||
       dotGiamGia.giaTriGiam.toString().toLowerCase().includes(searchValue.toLowerCase());
-    const isDateInRange = (!startDate || new Date(dotGiamGia.ngayBatDau) >= new Date(startDate)) &&
+    const isDateInRange =
+      (!startDate || new Date(dotGiamGia.ngayBatDau) >= new Date(startDate)) &&
       (!endDate || new Date(dotGiamGia.ngayKetThuc) <= new Date(endDate));
 
     let isPriceMatch = true;
@@ -108,16 +122,11 @@ const DotGiamGia = () => {
     return isStatusMatch && isNameOrCodeMatch && isDateInRange && isPriceMatch;
   });
 
-
   //Chuyển sang trang thêm mới
   const handleAddNew = () => {
     // Thực hiện logic thêm mới ở đây
     navigate('/voucher/dot-giam-gia/add'); // Chuyển hướng đến /dot-giam-gia/add
-    console.log("Thêm mới");
-  };
-  //Chuyển sang trang detail 
-  const handleViewDetails = (id) => {
-    navigate(`/voucher/dot-giam-gia/detail/${id}`);
+    console.log('Thêm mới');
   };
 
   const handleViewUpdate = (id) => {
@@ -128,7 +137,11 @@ const DotGiamGia = () => {
 
   return (
     <Grid container spacing={3}>
-      <Grid container spacing={3} style={{ backgroundColor: 'white', padding: '10px', marginLeft: '24px', marginTop: '20px', borderRadius: '10px' }}>
+      <Grid
+        container
+        spacing={3}
+        style={{ backgroundColor: 'white', padding: '10px', marginLeft: '24px', marginTop: '20px', borderRadius: '10px' }}
+      >
         {/* Search Bar */}
         <Grid item xs={12} md={6}>
           <Box display="flex" alignItems="center">
@@ -155,11 +168,11 @@ const DotGiamGia = () => {
             <TextField
               fullWidth
               variant="outlined"
-              type="datetime-local"  // Đặt kiểu datetime-local
+              type="datetime-local" // Đặt kiểu datetime-local
               placeholder="Ngày bắt đầu"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-            // onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
             />
           </Box>
         </Grid>
@@ -170,11 +183,11 @@ const DotGiamGia = () => {
             <TextField
               fullWidth
               variant="outlined"
-              type="datetime-local"  // Đặt kiểu datetime-local
+              type="datetime-local" // Đặt kiểu datetime-local
               placeholder="Ngày kết thúc"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-            // onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
             />
           </Box>
         </Grid>
@@ -198,18 +211,12 @@ const DotGiamGia = () => {
           </FormControl>
         </Grid>
 
-        <Box display="flex" margin={"20px"} paddingTop={"5px"}>
+        <Box display="flex" margin={'20px'} paddingTop={'5px'}>
           {/* Tim theo khoang gia */}
-          <Grid item xs={12} md={20} width={"210px"}>
+          <Grid item xs={12} md={20} width={'210px'}>
             <FormControl fullWidth variant="outlined">
               <InputLabel id="filter-price-label">Giá trị</InputLabel>
-              <Select
-                labelId="filter-price-label"
-                id="filter-price"
-                value={filterPrice}
-                onChange={handlePriceChange}
-                label="Khoảng giá"
-              >
+              <Select labelId="filter-price-label" id="filter-price" value={filterPrice} onChange={handlePriceChange} label="Khoảng giá">
                 <MenuItem value="All">Tất cả</MenuItem>
                 <MenuItem value="1-20">1%-20%</MenuItem>
                 <MenuItem value="20-40">20%-40%</MenuItem>
@@ -219,15 +226,9 @@ const DotGiamGia = () => {
           </Grid>
 
           {/* Nút THÊM MỚI */}
-          <Grid item xs={12} md={3} marginLeft={"0px"}>
-            <Box marginLeft={"25px"} width={"130px"} marginTop={"7px"}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                startIcon={<Add />}
-                onClick={handleAddNew}
-              >
+          <Grid item xs={12} md={3} marginLeft={'0px'}>
+            <Box marginLeft={'25px'} width={'130px'} marginTop={'7px'}>
+              <Button fullWidth variant="contained" color="secondary" startIcon={<Add />} onClick={handleAddNew}>
                 THÊM MỚI
               </Button>
             </Box>
@@ -260,27 +261,21 @@ const DotGiamGia = () => {
                   <TableCell>{dotGiamGia.giaTriGiam}%</TableCell>
                   <TableCell>{<FormatDate date={dotGiamGia.ngayBatDau} />}</TableCell>
                   <TableCell>{<FormatDate date={dotGiamGia.ngayKetThuc} />}</TableCell>
-                  <TableCell><VoucherStatus status={dotGiamGia.trangThai} /></TableCell>
+                  <TableCell>
+                    <VoucherStatus status={dotGiamGia.trangThai} />
+                  </TableCell>
                   <TableCell>
                     <Button
-                      style={{ marginRight: '10px' }}
-                      variant="contained"
-                      color="primary"
-                      startIcon={<Details />} // Icon sẽ được đặt ở phía bắt đầu của Button
-                      onClick={() => handleViewDetails(dotGiamGia.id)}
-                    >
-                      Chi tiết
-                    </Button>
-
-                    <Button
-
-                      variant="contained"
                       color="warning"
                       startIcon={<Update />} // Icon sẽ được đặt ở phía bắt đầu của Button
                       onClick={() => handleViewUpdate(dotGiamGia.id)}
-                    >
-                      Sửa
-                    </Button>
+                    ></Button>
+
+                    <Button
+                      color="error" // Thay đổi thành 'error' để sử dụng màu đỏ
+                      startIcon={<Delete />} // Icon sẽ được đặt ở phía bắt đầu của Button
+                      onClick={() => handleDelete(dotGiamGia.id)}
+                    ></Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -290,15 +285,28 @@ const DotGiamGia = () => {
       </Grid>
 
       {/* Pagination */}
-      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'end', pt: 2 }}>
+        {/* Pagination */}
         <Pagination
           count={Math.ceil(searchTenMaGiaTriLike.length / pageSize)}
           page={currentPage}
           onChange={handleChangePage}
-          color="primary"
+          
+          className="custom-pagination" // Áp dụng lớp CSS tùy chỉnh
         />
+
+        {/* Select box để chọn kích thước trang */}
+        <select className="form-select" style={{ width: '80px', marginLeft: '10px' }} value={pageSize} onChange={handlePageSizeChange}>
+          {[5, 10, 20, 50].map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
       </Grid>
-    </Grid >
+
+      <ToastContainer />
+    </Grid>
   );
 };
 

@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.request.color;
+package com.example.be.dto.request.color;
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 @Setter
 public class MauSacRequest extends PageableRequest {
     private Integer id;
+    private String code;
     @NotEmpty(message = "Màu sắc không được để trống!")
     private String ten;
     private String trangThai;

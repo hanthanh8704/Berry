@@ -37,6 +37,7 @@ public class PhieuGiamGiaController {
     public PageableObject getAllKhachHang(final KhachHangRequest request) {
         return voucherService.findKhachHang(request);
     }
+
     @GetMapping("khach-hang/{id}")
     public PageableObject getAllKhachHangIdPGG(@PathVariable("id") Integer id,final KhachHangRequest request) {
         return voucherService.findKhachHangIdPGG(id,request);

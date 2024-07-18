@@ -1,12 +1,12 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.productDetail.FindShirtDetailRequest;
-import com.example.connectdb.dto.request.productDetail.ShirtDetailRequest;
-import com.example.connectdb.dto.request.productDetail.UpdateShirtDetailRequest;
-import com.example.connectdb.dto.response.ShirtDetailResponse;
-import com.example.connectdb.entity.ChiTietSanPham;
-import com.example.connectdb.util.common.PageableObject;
-import com.example.connectdb.util.common.ResponseObject;
+import com.example.be.dto.request.productDetail.FindShirtDetailRequest;
+import com.example.be.dto.request.productDetail.ShirtDetailRequest;
+import com.example.be.dto.request.productDetail.UpdateShirtDetailRequest;
+import com.example.be.dto.response.ShirtDetailResponse;
+import com.example.be.entity.ChiTietSanPham;
+import com.example.be.util.common.PageableObject;
+import com.example.be.util.common.ResponseObject;
 
 import java.math.BigDecimal;
 import java.util.List;

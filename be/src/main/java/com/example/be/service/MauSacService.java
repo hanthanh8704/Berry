@@ -1,12 +1,12 @@
-package com.example.connectdb.service;
+package com.example.be.service;
 
-import com.example.connectdb.dto.request.color.MauSacRequest;
+import com.example.be.dto.request.color.MauSacRequest;
 
-import com.example.connectdb.dto.response.MauSacResponse;
+import com.example.be.dto.response.MauSacResponse;
 
-import com.example.connectdb.entity.MauSac;
+import com.example.be.entity.MauSac;
 
-import com.example.connectdb.util.common.PageableObject;
+import com.example.be.util.common.PageableObject;
 
 import java.util.List;
 

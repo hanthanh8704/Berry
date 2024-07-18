@@ -1,7 +1,7 @@
-package com.example.connectdb.util.converter;
+package com.example.be.util.converter;
 
-import com.example.connectdb.dto.request.size.KichCoRequest;
-import com.example.connectdb.entity.KichCo;
+import com.example.be.dto.request.size.KichCoRequest;
+import com.example.be.entity.KichCo;
 import org.springframework.stereotype.Component;
 
 @Component

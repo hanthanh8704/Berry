@@ -1,6 +1,6 @@
-package com.example.connectdb.dto.request.material;
+package com.example.be.dto.request.material;
 
-import com.example.connectdb.util.common.PageableRequest;
+import com.example.be.util.common.PageableRequest;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

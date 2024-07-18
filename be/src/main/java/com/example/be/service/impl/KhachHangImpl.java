@@ -21,6 +21,7 @@ import com.example.be.util.common.PageableObject;
 import com.example.be.util.constant.ChucVuEnum;
 import com.example.be.util.converter.DiaChiConvert;
 import com.example.be.util.converter.KhachHangConvert;
+import com.example.be.util.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -83,6 +84,7 @@ public class KhachHangImpl implements KhachHangService {
     @Override
     @Transactional
     public KhachHang create(KhachHangRequest request) {
+        // Check validate
         // Tạo mật khẩu ngẫu nhiên
         String randomPassword = GenCode.randomPassword();
 
@@ -139,8 +141,8 @@ public class KhachHangImpl implements KhachHangService {
         String emailContent = "Kính gửi " + savedKhachHang.getHoTen() + ",\n\n" +
                 "Chúng tôi xin trân trọng thông báo rằng bạn đã đăng ký tài khoản thành công tại hệ thống Beery Store.\n\n" +
                 "Thông tin tài khoản của bạn như sau:\n" +
-                "Email: " + savedAccount.getEmail() + "\n" +
-                "Mật khẩu: " + savedAccount.getPassword() + "\n\n" +
+                "Username: " + savedAccount.getEmail() + "\n" +
+                "Password: " + savedAccount.getPassword() + "\n\n" +
                 "Vui lòng đăng nhập và hoàn tất các bước xác thực để kích hoạt tài khoản của bạn.\n\n" +
                 "Trân trọng,\n" +
                 "Beery Store";
