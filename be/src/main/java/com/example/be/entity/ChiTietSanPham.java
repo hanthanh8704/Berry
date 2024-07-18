@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -75,5 +76,7 @@ public class ChiTietSanPham {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
-
+    //Cua Duc
+    @OneToMany(mappedBy = "idchiTietSanPham", fetch = FetchType.LAZY)
+    private List<Anh> anhList;  // Thêm trường này để lưu danh sách ảnh liên quan
 }

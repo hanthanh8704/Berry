@@ -67,7 +67,7 @@ public class NhanVien {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "email")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 }
