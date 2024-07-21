@@ -1,6 +1,8 @@
 package com.example.connectdb.util.converter;
 
 import com.example.connectdb.dto.request.product.SanPhamRequest;
+import com.example.connectdb.dto.request.productDetail.ShirtDetailRequest;
+import com.example.connectdb.entity.ChiTietSanPham;
 import com.example.connectdb.entity.DanhMuc;
 import com.example.connectdb.entity.SanPham;
 import com.example.connectdb.repositories.DanhMucRepository;
@@ -42,6 +44,12 @@ public class ProductConverter {
         entity.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Hoạt động");
         entity.setDanhMuc(danhMuc);
 
+        return entity;
+    }
+
+    public ChiTietSanPham convertRequestToEntityFast(ChiTietSanPham entity, ShirtDetailRequest request) {
+        entity.setGiaBan(request.getGiaBan());
+        entity.setSoLuong(request.getSoLuong());
         return entity;
     }
 }

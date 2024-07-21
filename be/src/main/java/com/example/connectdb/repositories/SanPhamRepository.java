@@ -19,8 +19,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
 
     boolean existsByMa(String ma);
     @Query("""
-select sp from SanPham sp where sp.id=:id
-""")
+            select sp from SanPham sp where sp.id=:id
+            """)
     public SanPham findByIdSp(Integer id);
 
     @Query(value = """

@@ -10,7 +10,7 @@ import UpdateShirt from "./UpdateShirt";
 import UpdateShirtDetail from "./UpdateShirtDetail";
 import FormatCurrency from "views/utilities/FormatCurrency.jsx";
 import Title from "antd/es/typography/Title";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Option } from "antd/es/mentions";
 import { IconEdit, IconTrash, IconSettings } from "@tabler/icons-react";
@@ -50,6 +50,9 @@ function ShirtInfo() {
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectChange,
+    };
+    const showModal = () => {
+        setIsModalOpen(true);
     };
 
     //QRCODE
@@ -375,7 +378,7 @@ function ShirtInfo() {
 
     return (
         <>
-            <ToastContainer />
+
             <div className="bg-white rounded-3 p-1">
                 <Breadcrumb className="mt-1 m-2"
                     items={[{ href: "/" }, { href: "/free/products", title: "Danh sách sản phẩm" }, { title: `${product.ten}` },]}

@@ -82,6 +82,9 @@ public class ChiTietSanPham {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Column(name = "phan_tram_giam")
+    private  Integer phanTramGiam;
+
     @OneToMany(mappedBy = "chiTietSanPham", fetch = FetchType.LAZY)
     private List<Anh> images;
 }

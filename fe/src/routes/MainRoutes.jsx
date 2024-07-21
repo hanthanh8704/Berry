@@ -1,4 +1,6 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute'; // Đảm bảo đường dẫn import chính xác
 
 // project imports
 import MainLayout from 'layout/MainLayout';
@@ -11,9 +13,10 @@ import Material from 'views/pages/products/attribute/Material';
 import Category from 'views/pages/products/attribute/Category';
 import Sleeve from 'views/pages/products/attribute/Sleeve';
 import Collar from 'views/pages/products/attribute/Collar';
-
 import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
 import AddShirt from 'views/pages/products/shirt-detail/AddShirt';
+import AuthLogin from 'views/pages/authentication/auth-forms/AuthLogin';
+import Login from 'views/pages/authentication3/Login3';
 
 
 
@@ -31,12 +34,16 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
 const MainRoutes = {
   path: '/',
-  element: <MainLayout />,
+  element: <ProtectedRoute><MainLayout /></ProtectedRoute>,
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <Navigate to="/products" replace />
     },
+    // {
+    //   path: '/',
+    //   element: <Navigate to="/pages/login/login3" replace />
+    // },
     {
       path: '/bill',
       element: <Bill />

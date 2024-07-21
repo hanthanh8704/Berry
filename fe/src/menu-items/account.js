@@ -3,9 +3,9 @@ import { IconUserCircle, IconUsers, IconUserShield } from '@tabler/icons-react';
 
 // constant
 const icons = {
-    IconUserCircle,
-    IconUsers,
-    IconUserShield
+  IconUserCircle,
+  IconUsers,
+  IconUserShield
 };
 
 // ==============================|| ACCOUNT MENU ITEMS ||============================== //

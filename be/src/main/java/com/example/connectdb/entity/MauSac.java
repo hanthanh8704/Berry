@@ -20,6 +20,9 @@ public class MauSac {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "code_hex")
+    private String code_hex;
+
     @Column(name = "ten")
     private String ten;
 

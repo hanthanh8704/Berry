@@ -185,6 +185,12 @@ function Category() {
                         className: "text-center",
                     },
                     {
+                        title: "Trạng Thái",
+                        dataIndex: "trangThai",
+                        key: "trangThai",
+                        className: "text-center",
+                    },
+                    {
                         title: "Ngày tạo",
                         dataIndex: "ngayTao",
                         key: "ngayTao",

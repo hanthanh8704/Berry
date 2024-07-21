@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Modal, Select, Space } from "antd";
+import { Button, Form, Input, Modal, Select, Space, Tooltip } from "antd";
 import * as request from "views/utilities/httpRequest";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -83,10 +83,12 @@ function AddShirtModal({ onAddSuccess }) {
     return (
         <>
             <ToastContainer autoClose={3000} closeOnClick />
-            <Button type="primary" onClick={showModal}
-                style={{ backgroundColor: '#5e35b1' }} size="large">
-                <IconPlus />
-            </Button>
+            <Tooltip placement="bottom" title="Thêm mới sản phẩm">
+                <Button title="Thêm sản phẩm " type="primary" onClick={showModal}
+                    style={{ backgroundColor: '#5e35b1' }} size="large">
+                    <IconPlus />
+                </Button>
+            </Tooltip>
             <Modal title="Thêm áo" visible={isModalOpen} onCancel={handleCancel} footer="">
                 <Form form={form} onFinish={handleOk} layout="vertical">
                     <Form.Item

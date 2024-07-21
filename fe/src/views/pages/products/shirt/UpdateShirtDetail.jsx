@@ -3,7 +3,7 @@ import { Option } from 'antd/es/mentions';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react";
@@ -113,9 +113,6 @@ function UpdateShirtDetail({ props, onSuccess }) {
 
     const showModal = () => {
         setIsModalOpen(true);
-        // setSearchSize(props.kichCo.ten);
-        // setSearchColor(props.mauSac.ten);
-        // setSearchSole(props.chatLieu.ten);
         form.setFieldsValue({
             kichCo: props.kichCo,
             mauSac: props.mauSac,
@@ -127,6 +124,7 @@ function UpdateShirtDetail({ props, onSuccess }) {
             giaBan: props.giaBan,
         })
     };
+
     const handleOk = (data) => {
         console.log(data);
         data.shirt = props.id
@@ -138,7 +136,7 @@ function UpdateShirtDetail({ props, onSuccess }) {
             cancelText: "Hủy",
             onOk: async () => {
                 await request.put(`/shirt-detail/${props.id}`, data).then(response => {
-                    toast.success('Cập nhật thành công!', { autoClose: 3000, closeOnClick: true });
+                    toast.success('Cập nhật thành công!');
                     setIsModalOpen(false);
                     onSuccess();
                 }).catch(e => {
@@ -232,7 +230,7 @@ function UpdateShirtDetail({ props, onSuccess }) {
 
     return (
         <>
-            <ToastContainer />
+
             <Tooltip placement="top" title="Chỉnh sửa">
                 <Button style={{ color: '#5e35b1' }} type="text" onClick={showModal}>
                     <i className="fas fa-edit "><IconEdit /></i>
