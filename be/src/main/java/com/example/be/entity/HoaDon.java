@@ -35,10 +35,6 @@ public class HoaDon {
     @JoinColumn(name = "id_khach_hang")
     private KhachHang khachHang;
 
-    @ManyToOne
-    @JoinColumn(name = "id_hinh_thuc_thanh_toan")
-    private ThanhToan thanhToan;
-
     @Column(name = "ma")
     private String ma;
 

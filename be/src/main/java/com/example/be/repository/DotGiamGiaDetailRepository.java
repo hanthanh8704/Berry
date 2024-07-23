@@ -11,19 +11,19 @@ import java.util.Optional;
 
 @Repository
 public interface DotGiamGiaDetailRepository extends JpaRepository<DotGiamGiaDetail, Integer> {
+
     @Query(value = """
-        SELECT GROUP_CONCAT(DISTINCT s.id) 
-        FROM DotGiamGiaDetail pmd
-        JOIN SPCT sd ON sd.id = pmd.idSPCT
-        JOIN SanPham s ON s.id = sd.idSanPham
-        JOIN DotGiamGia pm ON pm.id = pmd.idDotGiamGia
-        WHERE (:idDGG IS NULL OR pm.id = :idDGG)
-        """, nativeQuery = true)
+            SELECT GROUP_CONCAT(DISTINCT s.id) 
+            FROM DotGiamGiaDetail pmd
+            JOIN SPCT sd ON sd.id = pmd.idSPCT
+            JOIN SanPham s ON s.id = sd.idSanPham
+            JOIN DotGiamGia pm ON pm.id = pmd.idDotGiamGia
+            WHERE (:idDGG IS NULL OR pm.id = :idDGG)
+            """, nativeQuery = true)
     List<Integer> getListIdSanPhamDotGiamGia(@Param("idDGG") Integer idDGG);
 
     @Query("SELECT pmd FROM DotGiamGiaDetail pmd WHERE :idSPCT IS NULL OR pmd.idSPCT.id = :idSPCT")
     DotGiamGiaDetail findBySanPhamDetailId(@Param("idSPCT") Integer idSPCT);
-
 
 
 //    PromotionDetail findByShoeDetailId(Long id);
@@ -43,6 +43,18 @@ public interface DotGiamGiaDetailRepository extends JpaRepository<DotGiamGiaDeta
 
     @Query("SELECT dt FROM DotGiamGiaDetail dt JOIN dt.idSPCT spct WHERE spct.id = :idSPCT and dt.trangThai = 'Đang diễn ra'")
     Optional<DotGiamGiaDetail> getFirstDGGDetailByIdSPCT(@Param("idSPCT") Integer idSPCT);
+
     @Query("SELECT pd FROM DotGiamGiaDetail pd WHERE pd.idSPCT.id = :idSPCT")
     List<DotGiamGiaDetail> findByIdSPCT(@Param("idSPCT") Integer idSPCT);
+
+    // Code bán hàng
+
+    @Query(value = """
+            SELECT a.* FROM spct_khuyen_mai a 
+            LEFT JOIN chi_tiet_san_pham b ON b.id = a.id_chi_tiet_san_pham
+            WHERE b.maCTSP = :ma
+            """, nativeQuery = true)
+    DotGiamGiaDetail findByIdSPCT_Ma( String ma);
+
+
 }

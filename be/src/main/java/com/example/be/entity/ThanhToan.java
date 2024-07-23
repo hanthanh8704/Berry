@@ -21,6 +21,10 @@ public class ThanhToan {
     @Column(name = "id")
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "id_hoa_don")
+    private HoaDon hoaDon;
+
     @Column(name = "ma_giao_dich")
     private Integer ma_giao_dich;
 

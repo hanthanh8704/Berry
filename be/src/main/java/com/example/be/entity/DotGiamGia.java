@@ -33,10 +33,8 @@ public class DotGiamGia {
     private Integer giaTriGiam;
     @Column(name = "trang_thai")
     private String trangThai;
-
     @Column(name = "ngay_bat_dau")
     private LocalDateTime ngayBatDau;
-
     @Column(name = "ngay_ket_thuc")
     private LocalDateTime ngayKetThuc;
     @CreationTimestamp

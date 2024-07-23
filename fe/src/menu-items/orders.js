@@ -14,7 +14,7 @@ const orders = {
       id: 'default',
       title: 'Bán Hàng Tại Quầy',
       type: 'item',
-      url: '/dashboard/default',
+      url: '/orders',
       icon: icons.IconShoppingCart, // Sử dụng IconShoppingCart thay vì IconDashboard
       breadcrumbs: false
     }

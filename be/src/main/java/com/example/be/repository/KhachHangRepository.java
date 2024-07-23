@@ -58,6 +58,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,Integer> {
         SELECT 
             kh.id AS id,
             kh.ma AS ma,
+            kh.anh AS anh,
             kh.ho_ten AS hoTen,
             kh.email AS email,
             kh.gioi_tinh AS gioiTinh,

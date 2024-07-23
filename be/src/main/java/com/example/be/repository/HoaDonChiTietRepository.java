@@ -18,38 +18,58 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
     // Hàm getAll
     @Query(value = """
-        SELECT 
-            ROW_NUMBER() OVER(ORDER BY sp.ngay_tao DESC) AS indexs,
-            hdc.id AS id,
-            CONCAT(sp.ten, ' [', ms.ten, ' - ', kc.ten, ']') AS name,
-            ctsp.maCTSP AS maSPCT,
-            ms.ten AS mauSac,
-            kc.ten AS kichCo,
-            cl.ten AS chatLieu,
-            th.ten AS thuongHieu,
-            hdc.don_gia AS gia,
-            GROUP_CONCAT(img.anh) AS ten,
-            hdc.so_luong AS soLuong,
-            hdc.trang_thai AS trangThai,
-            hdc.ngay_tao AS ngayTao,
-            hdc.ngay_sua AS ngaySua,
-            hdc.nguoi_tao AS nguoiTao,
-            hdc.nguoi_sua AS nguoiSua
-        FROM 
-            hoa_don_chi_tiet hdc
-            JOIN chi_tiet_san_pham ctsp ON hdc.id_chi_tiet_san_pham = ctsp.id
-            JOIN san_pham sp ON sp.id = ctsp.id_san_pham
-            JOIN mau_sac ms ON ms.id = ctsp.id_mau_sac
-            JOIN kich_co kc ON kc.id = ctsp.id_kich_co
-            JOIN chat_lieu cl ON cl.id = ctsp.id_chat_lieu
-            JOIN thuong_hieu th ON th.id = ctsp.id_thuong_hieu
-            LEFT JOIN anh img ON img.id_chi_tiet_san_pham = ctsp.id
-        WHERE 
-            (:#{#req.idHoaDon} IS NULL OR hdc.id_hoa_don = :#{#req.idHoaDon})
-            AND (:#{#req.trangThai} IS NULL OR hdc.trang_thai LIKE CONCAT('%', :#{#req.trangThai}, '%'))
-        GROUP BY 
-            hdc.id, sp.ten, ms.ten, kc.ten, ctsp.maCTSP, cl.ten, th.ten, hdc.don_gia, hdc.so_luong, hdc.trang_thai
-        """, nativeQuery = true)
+            SELECT
+                  ROW_NUMBER() OVER (ORDER BY hdc.ngay_tao DESC) AS indexs,
+                  hdc.id AS id,
+                  CONCAT(sp.ten, ' [', ms.ten, ' - ', kc.ten, ']') AS name,
+                  ctsp.maCTSP AS maSPCT,
+                  ctsp.gia_ban AS giaAo,
+                  ms.ten AS mauSac,
+                  kc.ten AS kichCo,
+                  cl.ten AS chatLieu,
+                  th.ten AS thuongHieu,
+                  hdc.don_gia AS gia,
+                  CASE
+                      WHEN dgg.trang_thai = 'Đang diễn ra'
+                          THEN spctkm.gia_moi
+                      ELSE NULL
+                  END AS giaTriDaGiam,
+                  CASE
+                      WHEN dgg.trang_thai = 'Đang diễn ra'
+                          THEN MAX(dgg.gia_tri_giam)
+                      ELSE NULL
+                  END AS phanTramGiam,
+                  GROUP_CONCAT(img.images) AS images,
+                  hdc.so_luong AS soLuong,
+                  hdc.trang_thai AS trangThai,
+                  hdc.ngay_tao AS ngayTao,
+                  hdc.ngay_sua AS ngaySua,
+                  hdc.nguoi_tao AS nguoiTao,
+                  hdc.nguoi_sua AS nguoiSua
+              FROM
+                  hoa_don_chi_tiet hdc
+                  JOIN chi_tiet_san_pham ctsp ON hdc.id_chi_tiet_san_pham = ctsp.id
+                  JOIN san_pham sp ON sp.id = ctsp.id_san_pham
+                  JOIN mau_sac ms ON ms.id = ctsp.id_mau_sac
+                  JOIN kich_co kc ON kc.id = ctsp.id_kich_co
+                  JOIN chat_lieu cl ON cl.id = ctsp.id_chat_lieu
+                  JOIN thuong_hieu th ON th.id = ctsp.id_thuong_hieu
+                  LEFT JOIN (
+                      SELECT
+                          id_chi_tiet_san_pham,
+                          GROUP_CONCAT(DISTINCT anh.anh) AS images
+                      FROM anh
+                      GROUP BY id_chi_tiet_san_pham
+                  ) img ON img.id_chi_tiet_san_pham = ctsp.id
+                  LEFT JOIN spct_khuyen_mai spctkm ON spctkm.id_chi_tiet_san_pham = ctsp.id
+                  LEFT JOIN dot_giam_gia dgg ON dgg.id = spctkm.id_dot_giam_gia
+                  WHERE hdc.id_hoa_don =:#{#req.hoaDon}
+              AND :#{#req.trangThai} IS NULL OR hdc.trang_thai = :#{#req.trangThai}
+              GROUP BY
+                  hdc.id, sp.ten, ms.ten, kc.ten, cl.ten, th.ten, ctsp.maCTSP, hdc.don_gia,
+                  hdc.so_luong, hdc.trang_thai, hdc.ngay_tao, hdc.ngay_sua, hdc.nguoi_tao,
+                  hdc.nguoi_sua, img.images, dgg.trang_thai, spctkm.gia_moi
+                      """, nativeQuery = true)
     Page<HoaDonChiTietResponse> getAllHoaDonChiTiet(@Param("req") BillDetailRequest req, Pageable pageable);
 
     // Hàm này dùng để lấy ra hóa đơn chi tiết qua id hóa đơn
@@ -63,4 +83,14 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
     @Query(value = "SELECT * FROM hoa_don_chi_tiet WHERE id_hoa_don = :idHoaDon", nativeQuery = true)
     List<HoaDonChiTiet> findByHoaDonId(Integer idHoaDon);
+
+    @Query(value = """
+        SELECT h.* 
+        FROM hoa_don_chi_tiet h 
+        LEFT JOIN chi_tiet_san_pham s ON s.id = h.id_chi_tiet_san_pham
+        LEFT JOIN hoa_don hd ON hd.id = h.id_hoa_don
+        WHERE s.maCTSP =:maSPCT AND h.id_hoa_don =:hoaDon
+    """, nativeQuery = true)
+    HoaDonChiTiet findChiTietSanPhamMaAndHoaDonID(@Param("maSPCT") String maSPCT,@Param("hoaDon") Integer hoaDon);
+
 }

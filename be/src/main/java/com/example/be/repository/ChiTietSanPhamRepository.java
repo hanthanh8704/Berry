@@ -25,6 +25,7 @@ import java.util.Map;
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham,Integer> {
     Boolean existsByMaAndMaNot(String code, String exceptCode);
 
+
     ChiTietSanPham findByMa(String code);
 
     boolean existsByMa(String ma);
@@ -36,7 +37,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham,I
                 spct.id AS id,
                 ROW_NUMBER() OVER (ORDER BY sp.ngay_tao DESC) AS indexs,
                 CONCAT(sp.ten, ' [', ms.ten, ' - ', kt.ten, ']') AS ten,
-                spct.maCTSP AS ma,
+                spct.maCTSP AS maSPCT,
                 cl.ten AS chatLieu,
                 ms.ten AS mauSac,
                 kt.ten AS kichCo,
@@ -85,7 +86,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham,I
                  spct.id AS id,
                 ROW_NUMBER() OVER(ORDER BY sp.ngay_tao DESC) AS indexs,
                 CONCAT(sp.ten, ' [', ms.ten, ' - ', kt.ten, ']') AS ten,
-                spct.maCTSP as ma,
+                spct.maCTSP as maSPCT,
                  cl.ten AS chatLieu,
                 ms.ten AS mauSac,
                 kt.ten AS kichCo,
@@ -128,4 +129,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham,I
 
     @Query("SELECT MIN(sd.giaBan) AS minPrice, MAX(sd.giaBan) AS maxPrice FROM ChiTietSanPham sd")
     Map<String, BigDecimal> findMinAndMaxPrice();
+
+
+    @Query(value = """
+        SELECT * FROM chi_tiet_san_pham WHERE maCTSP = :ma
+    """, nativeQuery = true)
+    ChiTietSanPham findByMaSPCT(String ma);
 }

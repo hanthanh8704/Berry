@@ -45,7 +45,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                         FROM hoa_don hd
                         LEFT JOIN nhan_vien nv ON hd.id_nhan_vien = nv.id
                         LEFT JOIN khach_hang kh ON hd.id_khach_hang = kh.id
-                        LEFT JOIN thanh_toan tt ON hd.id_hinh_thuc_thanh_toan = tt.id
+                        LEFT JOIN thanh_toan tt ON hd.id = tt.id_hoa_don
                         LEFT JOIN phieu_giam_gia pgg ON hd.id_phieu_giam_gia = pgg.id
             WHERE (:#{#req.ma} IS NULL OR hd.ma LIKE %:#{#req.ma}% OR hd.so_dien_thoai_nguoi_nhan LIKE %:#{#req.ma}%)
                           AND (:#{#req.trangThaiHoaDon} IS NULL OR hd.trang_thai_hoa_don = :#{#req.trangThaiHoaDon})
@@ -84,6 +84,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Kiểm tra xem hóa đơn đó có tồn tại hay không
     Boolean existsByMa(String ma);
 
-
+    @Query(value = """
+            SELECT *, ROW_NUMBER() OVER(ORDER BY b.ngay_tao DESC) AS indexs 
+            FROM hoa_don b WHERE (:#{#req.ma} IS NULL OR b.ma LIKE %:#{#req.ma}%)
+            AND (:#{#req.idNhanVien} IS NULL OR b.id_nhan_vien = :#{#req.idNhanVien})
+            AND (:#{#req.trangThaiHoaDon} IS NULL OR b.trang_thai_hoa_don = :#{#req.trangThaiHoaDon}) 
+            AND b.trang_thai_hoa_don = 'Tạo đơn hàng' ORDER BY b.ngay_tao DESC
+            """, nativeQuery = true)
+    List<HoaDon> getNewBill(@Param("req") HoaDonSearchRequest request);
 }
 

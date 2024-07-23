@@ -18,13 +18,15 @@ public interface HoaDonService {
 
     List<TKHoaDonTrangThai> getHoaDonByTrangThai();
 
-    //List<HoaDon> getNewHoaDon(HoaDonSearchRequest request);
+    List<HoaDon> getNewHoaDon(HoaDonSearchRequest request);
 
     HoaDon findByMa(String ma);
 
     HoaDon getOne(Integer id);
 
     HoaDon create();
+
+    HoaDon orderBill(Integer id,HoaDonRequest request);
 
     HoaDon changeStatus(Integer id, String ghiChu, String trangThai);
 

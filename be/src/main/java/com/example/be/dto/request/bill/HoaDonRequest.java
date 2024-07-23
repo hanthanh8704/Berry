@@ -31,11 +31,22 @@ public class HoaDonRequest {
 
     private String trangThaiHoaDon;
     private String trangThaiGiaoHang;
+    private String loaiHoaDon;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Timestamp ngayGiaoDich;
     private Integer maGiaoDich;
     private BigDecimal tongTienSauGiamGia;
+    private BigDecimal soTienDuocGiam;
     private String diaChi;
     private String ghiChu;
+    private Integer phieuGiamGia;
+    private Integer khachHang;
+    private Integer account;
+    private Boolean choThanhToan;
+    private Integer hinhThucThanhToan;
+    private BigDecimal tienMat;
+    private BigDecimal tienChuyenKhoan;
+
+    private Boolean waitPay;
 }

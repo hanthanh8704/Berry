@@ -1,6 +1,7 @@
 package com.example.be.dto.response;
 
 import com.example.be.entity.ChiTietSanPham;
+import com.example.be.entity.DotGiamGia;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -15,7 +16,7 @@ public interface ShirtDetailResponse {
 
     Integer getSanPham();
 
-    String getMa();
+    String getMaSPCT();
 
     String getTen();
 
@@ -39,4 +40,5 @@ public interface ShirtDetailResponse {
 
     String getTrangThai();
 
+    BigDecimal getGiaTriDaGiam();
 }

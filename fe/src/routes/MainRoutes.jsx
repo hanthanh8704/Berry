@@ -18,26 +18,33 @@ import { element } from 'prop-types';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
+
+// Bill
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
 const BillDetail = Loadable(lazy(() => import('views/pages/bill/billDetail.jsx')));
 const ExportPdf = Loadable(lazy(() => import('views/pages/export-pdf/ExportBill.jsx')));
 const BillHistory = Loadable(lazy(() => import('views/pages/bill/billHistory.jsx')));
 const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
 const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
+const Orders = Loadable(lazy(() => import('views/pages/order/newOder.jsx')));
 
 // Dot giam gia của Đức
 const DotGiamGia = Loadable(lazy(() => import('views/pages/promotion/DotGiamGia.jsx')));
 const AddDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/AddDotGiamGia.jsx')));
 const DetailDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/DetailDotGiamGia.jsx')));
 const UpdateDotGiamGia = Loadable(lazy(() => import('views/pages/promotion/UpdateDotGiamGia.jsx')));
+
+// Employee
 const Nhanvien = Loadable(lazy(() => import('views/pages/employee/nhanvien.jsx')));
 const AddNhanVien = Loadable(lazy(() => import('views/pages/employee/addNhanVien.jsx')));
 const NhanVienDetail = Loadable(lazy(() => import('views/pages/employee/nhanVienDetail.jsx')));
 
+// Voucher
 const Voucher = Loadable(lazy(() => import('views/pages/voucher/Voucher.jsx')));
 const VoucherDetail = Loadable(lazy(() => import('views/pages/voucher/VoucherDetail.jsx')));
 const AddVoucher = Loadable(lazy(() => import('views/pages/voucher/AddVoucher.jsx')));
 
+// Customer
 const Customer = Loadable(lazy(() => import('views/pages/customer/Customer.jsx')));
 const AddCustomer = Loadable(lazy(() => import('views/pages/customer/AddCustomer.jsx')));
 const DetailCustomer = Loadable(lazy(() => import('views/pages/customer/DetailCustomer.jsx')));
@@ -56,9 +63,10 @@ const MainRoutes = {
   path: '/',
   element: <MainLayout />,
   children: [
+    // Bill
     {
-      path: '/',
-      element: <DashboardDefault />
+      path: '/orders',
+      element: <Orders />
     },
     {
       path: '/bill',
@@ -68,6 +76,8 @@ const MainRoutes = {
       path: '/bill/:id',
       element: <BillDetail />
     },
+
+    // Product
     {
       path: '/products',
       element: <Product />
@@ -112,6 +122,8 @@ const MainRoutes = {
       path: '/export-pdf/:id',
       element: <ExportPdf />
     },
+    
+    // Promotion
     {
       path: '/voucher',
       children: [
@@ -123,20 +135,14 @@ const MainRoutes = {
           path: 'dot-giam-gia/add',
           element: <AddDotGiamGia />
         },
-        // {
-        //   path: 'dot-giam-gia/detail/:id',
-        //   element: <DetailDotGiamGia />
-        // },
         {
           path: 'dot-giam-gia/update/:id',
           element: <UpdateDotGiamGia />
-        },
-        {
-          path: 'phieu-giam-gia',
-          element: <DashboardDefault />
         }
       ]
     },
+
+    // Employee 
     {
       path: '/',
       children: [
@@ -154,6 +160,7 @@ const MainRoutes = {
       ]
     },
 
+    //  Voucher
     {
       path: '/api/voucher',
       element: <Voucher />
@@ -177,15 +184,6 @@ const MainRoutes = {
     {
       path: '/api/customer/:id',
       element: <DetailCustomer />
-    },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
     },
     {
       path: 'utils',

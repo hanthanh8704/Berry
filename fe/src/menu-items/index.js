@@ -10,7 +10,7 @@ import statistical from './statistical';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard,orders,product,bill,voucher,account]
+  items: [orders,product,bill,voucher,account]
 };
 
 export default menuItems;

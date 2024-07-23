@@ -5,12 +5,12 @@ import com.example.be.dto.response.HoaDonChiTietResponse;
 import com.example.be.entity.HoaDonChiTiet;
 import com.example.be.service.HoaDonChiTietService;
 import com.example.be.util.common.PageableObject;
+import com.example.be.util.common.ResponseObject;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -39,5 +39,23 @@ public class HoaDonChiTietController {
         return hoaDonChiTietService.findByHoaDonId(idHoaDon);
     }
 
+    @PostMapping
+    public ResponseObject create(@RequestBody @Valid BillDetailRequest request) {
+        return new ResponseObject(hoaDonChiTietService.create(request));
+    }
 
+    @PutMapping("/{id}")
+    public ResponseObject update(@PathVariable Integer id, @RequestBody @Valid BillDetailRequest request) {
+        return new ResponseObject(hoaDonChiTietService.update(id, request));
+    }
+
+    @GetMapping("/update-quantity/{id}")
+    public ResponseObject updateQuantity(@PathVariable Integer id, @RequestParam(required = false, defaultValue = "0") Integer newQuantity, @RequestParam BigDecimal donGia) {
+        return new ResponseObject(hoaDonChiTietService.updateSoLuong(id, newQuantity, donGia));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseObject delete(@PathVariable Integer id){
+        return new ResponseObject(hoaDonChiTietService.delete(id));
+    }
 }

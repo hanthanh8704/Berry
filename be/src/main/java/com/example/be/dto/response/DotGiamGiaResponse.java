@@ -14,7 +14,6 @@ public interface  DotGiamGiaResponse {
 
     String getTen();
 
-
     Integer getGiaTriGiam();
 
     String getTrangThai();

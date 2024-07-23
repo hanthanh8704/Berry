@@ -23,7 +23,7 @@ public interface ThanhToanRespository extends JpaRepository<ThanhToan, Integer> 
               tt.nguoi_tao AS nguoiTao,
               tt.ghi_chu AS ghiChu
              FROM thanh_toan tt 
-            LEFT JOIN hoa_don hd ON hd.id_hinh_thuc_thanh_toan = tt.id
+            LEFT JOIN hoa_don hd ON hd.id = tt.id_hoa_don
                             WHERE hd.id = :idHoaDon
                         """, nativeQuery = true)
     List<ThanhToanResponse> getThanhToanByIdHoaDon(@Param("idHoaDon")Integer idHoaDon);
@@ -41,7 +41,7 @@ public interface ThanhToanRespository extends JpaRepository<ThanhToan, Integer> 
               tt.nguoi_tao AS nguoiTao,
               tt.ghi_chu AS ghiChu
              FROM thanh_toan tt 
-            LEFT JOIN hoa_don hd ON hd.id_hinh_thuc_thanh_toan = tt.id 
+            LEFT JOIN hoa_don hd ON hd.id = tt.id_hoa_don
             WHERE hd.id = :idHoaDon AND tt.ten_hinh_thuc = :tenHinhThuc
             """, nativeQuery = true)
     List<ThanhToan> findByHoaDonIdAndTenHinhThuc(Integer idHoaDon, String tenHinhThuc);

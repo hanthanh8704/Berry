@@ -54,6 +54,8 @@ public class ChiTietSanPham {
     @JoinColumn(name = "id_thuong_hieu")
     private ThuongHieu thuongHieu;
 
+    @Column(name = "gia_moi")
+    private BigDecimal giaMoi;
 
     @Column(name = "so_luong")
     private Integer soLuong;

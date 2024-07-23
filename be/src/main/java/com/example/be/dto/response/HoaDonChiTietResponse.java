@@ -14,16 +14,20 @@ public interface HoaDonChiTietResponse {
     Integer getId();
     String getName();
     String getMaSPCT();
+    String getImages();
     String getMauSac();
     String getKichCo();
     String getChatLieu();
     String getThuongHieu();
     BigDecimal getGia();
-    String getAnh();
+    BigDecimal getGiaAo();
     Integer getSoLuong();
     String getTrangThai();
     Timestamp getNgayTao();
     Timestamp getNgaySua();
     String getNguoiTao();
     String getNguoiSua();
+    Integer getPhanTramGiam();
+
+    BigDecimal getGiaTriDaGiam();
 }

@@ -36,7 +36,7 @@ public interface HoaDonResponse {
     String getNguoiTao();
     String getNguoiSua();
     // Add methods for fetching related entities if needed
-    String getPhieuGiamGia();
+    String getVoucher();
     String getNhanVien(); // Example: Fetching tenNhanVien from NhanVien entity
     String getKhachHang(); // Example: Fetching tenKhachHang from KhachHang entity
 }

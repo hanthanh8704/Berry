@@ -16,7 +16,10 @@ public class BillDetailRequest extends PageableRequest {
     private Integer soLuong;
     private BigDecimal gia;
     private Integer IdHoaDon;
-    private String maSPCT;
+//    private Integer IdChiTietSanPham;
+    private Integer hoaDon;
+    private String MaSPCT;
+    private String chiTietSanPham;
 
     // Filter
     private BigDecimal minPrice;

@@ -7,6 +7,7 @@ import com.example.be.entity.HoaDon;
 import com.example.be.service.HoaDonService;
 import com.example.be.util.common.PageableObject;
 import com.example.be.util.common.ResponseObject;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,11 @@ public class HoaDonController {
         return hoaDonService.getHoaDonByTrangThai();
     }
 
+    @GetMapping ("/new-bill")
+    public List<HoaDon> getNewBill(HoaDonSearchRequest request){
+        return hoaDonService.getNewHoaDon(request);
+    }
+
     // Hàm này hiển thị detail của hóa đơn
     @GetMapping("/{id}")
     public HoaDon getOne(@PathVariable Integer id) {
@@ -52,6 +58,10 @@ public class HoaDonController {
     @PostMapping("/order/{id}")
     public ResponseEntity<HoaDon> createOrder(@RequestBody HoaDonRequest request) {
         return ResponseEntity.ok(hoaDonService.create());
+    }
+    @PutMapping("/{id}")
+    public ResponseObject orderBill(@PathVariable Integer id, @RequestBody @Valid HoaDonRequest request) {
+        return new ResponseObject(hoaDonService.orderBill(id, request));
     }
 
     // Hàm này dùng để thay đổi trạng thái của một hóa đơn.
