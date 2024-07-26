@@ -5,20 +5,7 @@ import { Modal, Form, Input,Col } from 'antd';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import {
-  Paper,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-  DialogActions
-} from '@mui/material';
+import {Paper,Box,Typography,TextField,Button,Grid,RadioGroup,Radio,FormControlLabel,FormControl,FormLabel,DialogActions} from '@mui/material';
 import { Option } from "antd/es/mentions";
 import GHNDetail from 'ui-component/GHNDetail';
 
@@ -45,9 +32,9 @@ const NhanVienDetail = () => {
     chucVu: ''
   });
 
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
+  const [thanhPho, setThanhPho] = useState([]);
+  const [huyen, setHuyen] = useState([]);
+  const [phuong, setPhuong] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
@@ -90,6 +77,7 @@ const NhanVienDetail = () => {
         console.error('Error fetching employee data:', error);
       }
     };
+    
 
     fetchData();
 

@@ -78,13 +78,13 @@ public class HoaDonChiTietImpl implements HoaDonChiTietService {
             exHDCT.setDonGia(dotGiamGiaDetail != null ? dotGiamGiaDetail.getGiaMoi() : ctsp.getGiaBan());
             exHDCT.setSoLuong(exHDCT.getSoLuong() + request.getSoLuong());
             // Kiểm tra và cập nhật giá nếu giá yêu cầu cao hơn giá hiện tại
-            if (request.getGia() != null) {
+            if (request.getDonGia() != null) {
                 BigDecimal currentDonGia = exHDCT.getDonGia();
                 if (currentDonGia == null) {
                     currentDonGia = BigDecimal.ZERO; // Hoặc giá mặc định nếu cần
                 }
-                if (currentDonGia.compareTo(request.getGia()) < 0) {
-                    exHDCT.setDonGia(request.getGia());
+                if (currentDonGia.compareTo(request.getDonGia()) < 0) {
+                    exHDCT.setDonGia(request.getDonGia());
                 }
             }
 

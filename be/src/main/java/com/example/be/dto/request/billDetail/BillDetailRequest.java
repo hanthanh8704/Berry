@@ -14,7 +14,7 @@ public class BillDetailRequest extends PageableRequest {
     private Integer id;
     @NotNull(message = "Đơn giá không được để trống!")
     private Integer soLuong;
-    private BigDecimal gia;
+    private BigDecimal donGia;
     private Integer IdHoaDon;
 //    private Integer IdChiTietSanPham;
     private Integer hoaDon;

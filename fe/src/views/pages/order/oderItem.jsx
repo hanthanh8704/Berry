@@ -166,6 +166,98 @@ function OrderItem({ index, props, onSuccess }) {
     }
   }, [autoFillAddress]);
 
+  const caculateFee = async () => {
+    await request
+      .post(
+        'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee',
+        {
+          service_id: 53320, // ID của dịch vụ
+          service_type_id: null, // Loại dịch vụ (null)
+          to_district_id: parseInt(autoFillAddress.huyen), // ID của quận/huyện nhận hàng
+          to_ward_code: autoFillAddress.phuong, // Mã phường/xã nhận hàng
+          height: 50, // Chiều cao của gói hàng
+          length: 20, // Chiều dài của gói hàng
+          weight: totalWeight, // Trọng lượng của gói hàng
+          width: 20, // Chiều rộng của gói hàng
+          cod_failed_amount: 2000, // Số tiền thu hộ nếu giao hàng thất bại
+          insurance_value: 10000, // Giá trị bảo hiểm của hàng hóa
+          coupon: null // Mã giảm giá (null)
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Token: '693d8a79-3a3d-11ef-8e53-0a00184fe694',
+            ShopId: 192796
+          }
+        }
+      )
+      .then((response) => {
+        setPhiShip(response.data.data.total); // Cập nhật phí vận chuyển vào trạng thái
+      })
+      .catch((e) => {
+        console.log(e); // In lỗi ra console nếu yêu cầu thất bại
+      });
+  };
+
+  // Kiểm tra xem có thể áp dụng được phiếu giảm khong
+  useEffect(() => {
+    if (voucher !== null) {
+      if (tongTien < voucher.giaTriHoaDonDuocApDung) {
+        toast.error('Không thể áp dụng phiếu giảm giá do không đủ điều kiện!');
+        setVoucher(null);
+        setSoTienDuocGiam(0);
+      } else {
+        setSoTienDuocGiam((tongTien / 100) * voucher?.phanTramGiam);
+      }
+    }
+  }, [voucher, tongTien]);
+
+  useEffect(() => {
+    caculateFee();
+  }, [totalWeight]);
+  // debugger
+  // Hàm này dùng để thay đổi số lượng sản phẩm trong hdct
+  const handleChangeQuantity = async (record, soLuong) => {
+    await request
+      .get(`/bill-detail/update-quantity/${record.id}`, {
+        params: {
+          newQuantity: soLuong,
+          donGia: record.giaTriDaGiam === null ? record.giaAo : record.giaTriDaGiam
+        }
+      })
+      .then((response) => {
+        loadListOrderDetail();
+        console.log(record);
+      })
+      .catch((e) => {
+        console.log(e);
+        toast.error(e.response.data);
+      });
+  };
+
+  // Hàm này dùng để xóa sản phẩm khỏi giỏ hàng
+  const handleDeleteBillDetail = (id) => {
+    Modal.confirm({
+      title: 'Xác nhận',
+      maskClosable: true,
+      content: 'Xác nhận xóa khỏi giỏ hàng ?',
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        await request
+          .remove(`/bill-detail/${id}`)
+          .then((response) => {
+            toast.success('Xóa thành công!');
+            loadListOrderDetail();
+          })
+          .catch((e) => {
+            console.log(e);
+            toast.error(e.response.data);
+          });
+      }
+    });
+  };
+
   const columns = [
     {
       title: '#',
@@ -272,98 +364,6 @@ function OrderItem({ index, props, onSuccess }) {
     }
   ];
 
-  const caculateFee = async () => {
-    await request
-      .post(
-        'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee',
-        {
-          service_id: 53320, // ID của dịch vụ
-          service_type_id: null, // Loại dịch vụ (null)
-          to_district_id: parseInt(autoFillAddress.huyen), // ID của quận/huyện nhận hàng
-          to_ward_code: autoFillAddress.phuong, // Mã phường/xã nhận hàng
-          height: 50, // Chiều cao của gói hàng
-          length: 20, // Chiều dài của gói hàng
-          weight: totalWeight, // Trọng lượng của gói hàng
-          width: 20, // Chiều rộng của gói hàng
-          cod_failed_amount: 2000, // Số tiền thu hộ nếu giao hàng thất bại
-          insurance_value: 10000, // Giá trị bảo hiểm của hàng hóa
-          coupon: null // Mã giảm giá (null)
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Token: '693d8a79-3a3d-11ef-8e53-0a00184fe694',
-            ShopId: 192796
-          }
-        }
-      )
-      .then((response) => {
-        setPhiShip(response.data.data.total); // Cập nhật phí vận chuyển vào trạng thái
-      })
-      .catch((e) => {
-        console.log(e); // In lỗi ra console nếu yêu cầu thất bại
-      });
-  };
-
-  // Kiểm tra xem có thể áp dụng được phiếu giảm khong
-  useEffect(() => {
-    if (voucher !== null) {
-      if (tongTien < voucher.giaTriHoaDonDuocApDung) {
-        toast.error('Không thể áp dụng phiếu giảm giá do không đủ điều kiện!');
-        setVoucher(null);
-        setSoTienDuocGiam(0);
-      } else {
-        setSoTienDuocGiam((tongTien / 100) * voucher?.phanTramGiam);
-      }
-    }
-  }, [voucher, tongTien]);
-
-  useEffect(() => {
-    caculateFee();
-  }, [totalWeight]);
-
-  // Hàm này dùng để thay đổi số lượng sản phẩm trong hdct
-  const handleChangeQuantity = async (record, soLuong) => {
-    await request
-      .get(`/bill-detail/update-quantity/${record.id}`, {
-        params: {
-          newQuantity: soLuong,
-          giaBan: record.giaTriDaGiam === null ? record.sanPhamChiTiet : record.giaTriDaGiam
-        }
-      })
-      .then((response) => {
-        loadListOrderDetail();
-        console.log(record);
-      })
-      .catch((e) => {
-        console.log(e);
-        toast.error(e.response.data);
-      });
-  };
-
-  // Hàm này dùng để xóa sản phẩm khỏi giỏ hàng
-  const handleDeleteBillDetail = (id) => {
-    Modal.confirm({
-      title: 'Xác nhận',
-      maskClosable: true,
-      content: 'Xác nhận xóa khỏi giỏ hàng ?',
-      okText: 'Xác nhận',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        await request
-          .remove(`/bill-detail/${id}`)
-          .then((response) => {
-            toast.success('Xóa thành công!');
-            loadListOrderDetail();
-          })
-          .catch((e) => {
-            console.log(e);
-            toast.error(e.response.data);
-          });
-      }
-    });
-  };
-
   function generateUUID() {
     // Public Domain/MIT
     var d = new Date().getTime(); //Timestamp
@@ -408,7 +408,7 @@ function OrderItem({ index, props, onSuccess }) {
     if (listOrderDetail.length === 0) {
       toast.error('Hãy thêm gì đó vào giỏ hàng!');
     } else {
-      if (hinhThucThanhToan === 'Tiền mặt') {
+      if (hinhThucThanhToan === 'Cả hai') {
         if (tienMat <= 0 || tienMat === null) {
           toast.error('Vui lòng nhập số tiền mặt cần thanh toán!');
           return;
@@ -435,7 +435,7 @@ function OrderItem({ index, props, onSuccess }) {
         localStorage.setItem('checkout', JSON.stringify(bill));
         try {
           const response = await axios.get(
-            `http://localhost:8080/api/vn-pay/payment?id=${bill.idTransaction}&total=${Math.floor(bill.tongTien - bill.soTienDuocGiam + bill.phiShip)}`
+            `http://localhost:8080/api/vn-pay/payment?id=${bill.idTransaction}&total=${Math.floor(bill.totalMoney - bill.moneyReduce + bill.moneyShip)}`
           );
           if (response.status) {
             window.location.href = response.data.data;
@@ -591,7 +591,7 @@ function OrderItem({ index, props, onSuccess }) {
         <Divider className="m-0 mb-3" />
         <Row gutter={10}>
           <Col xl={14}>
-            {loaiHoaDon === 0 ? (
+            {loaiHoaDon !== 'Giao hàng' ? (
               <img
                 // src="https://www.lucepictor.com/wp-content/uploads/2017/05/running-shoes-on-white-background-1920x1280.jpg.webp"
                 width={'100%'}
@@ -656,7 +656,7 @@ function OrderItem({ index, props, onSuccess }) {
               <Row gutter={10}>
                 <VoucherOrder
                   onSelectVoucher={(voucher) => {
-                    if (voucher.quantity <= 0) {
+                    if (voucher.soLuong <= 0) {
                       toast.error('Phiếu giảm giá này đã hết lượt sử dụng!');
                     } else {
                       setVoucher(voucher);
@@ -727,7 +727,7 @@ function OrderItem({ index, props, onSuccess }) {
               </li>
               {loaiHoaDon === 'Tại quầy' && (
                 <>
-                  {hinhThucThanhToan === 'Tiền mặt' && (
+                  {['Tiền mặt', 'Chuyển khoản'].includes(hinhThucThanhToan) && (
                     <>
                       <li className="mb-2">
                         Tiền khách đưa:
@@ -739,41 +739,14 @@ function OrderItem({ index, props, onSuccess }) {
                           suffix="VNĐ"
                           placeholder="Nhập tiền khách đưa..."
                           onChange={(e) => {
-                            setExtraMoney(e - tongTien + soTienDuocGiam);
-                            setTienKhachDua(e);
-                          }}
-                        />
-                        {tongTien > 0 && (
-                          <Alert
-                            message={
-                              tienKhachDua < tongTien - soTienDuocGiam ? 'Vui lòng nhập đủ tiền khách đưa!' : 'Khách đã đưa đủ tiền!'
+                            const totalAmount = tongTien - soTienDuocGiam;
+                            if (hinhThucThanhToan === 'Tiền mặt') {
+                              setExtraMoney(e - totalAmount);
+                              setTienKhachDua(e);
+                            } else {
+                              setTienChuyenKhoan(totalAmount - e);
+                              setTienMat(e);
                             }
-                            type={tienKhachDua < tongTien - soTienDuocGiam ? 'error' : 'success'}
-                          />
-                        )}
-                      </li>
-                      <li className="mb-2">
-                        Tiền thừa:{' '}
-                        <span className="float-end fw-semibold text-danger">
-                          <FormatCurrency value={extraMoney < 0 || extraMoney === null ? 0 : extraMoney} />
-                        </span>
-                      </li>
-                    </>
-                  )}
-                  {hinhThucThanhToan === 'Chuyển khoản' && (
-                    <>
-                      <li className="mb-2">
-                        Tiền khách đưa:
-                        <InputNumber
-                          className="w-100 mb-2"
-                          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          controls={false}
-                          min={0}
-                          suffix="VNĐ"
-                          placeholder="Nhập tiền khách đưa..."
-                          onChange={(e) => {
-                            setExtraMoney(e - tongTien + soTienDuocGiam);
-                            setTienKhachDua(e);
                           }}
                         />
                         {tongTien > 0 && (
@@ -795,7 +768,7 @@ function OrderItem({ index, props, onSuccess }) {
                   )}
                 </>
               )}
-              {hinhThucThanhToan === 'Chuyển khoản' && (
+              {hinhThucThanhToan === 'Cả hai' && (
                 <li className="mb-2">
                   <>
                     <li className="mb-2">
@@ -837,11 +810,6 @@ function OrderItem({ index, props, onSuccess }) {
                     <div
                       className={`py-2 border border-2 rounded-2 d-flex align-items-center justify-content-center ${hinhThucThanhToan === 'Chuyển khoản' && 'border-warning text-warning'}`}
                     >
-                      {/* <img
-                        src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png"
-                        alt=""
-                        style={{ width: '36px' }}
-                      /> */}
                       <span className="ms-2 fw-semibold text-dark">Chuyển khoản</span>
                     </div>
                   </Col>
@@ -851,22 +819,18 @@ function OrderItem({ index, props, onSuccess }) {
                     >
                       <i className="fa-solid fa-coins" style={{ fontSize: '36px' }}></i>
                       <span className="ms-2 fw-semibold text-dark">Tiền mặt & </span>
-                      {/* <img
-                        src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png"
-                        alt=""
-                        style={{ width: '36px' }}
-                      /> */}
                       <span className="ms-2 fw-semibold text-dark">Chuyển khoản</span>
                     </div>
                   </Col>
                 </Row>
               </li>
+
               <li className="mb-2">
                 <TextArea placeholder="Nhập ghi chú..." onChange={(e) => setNote(e.target.value)} />
               </li>
-              <li className="mb-2 float-end">
+              {/* <li className="mb-2 float-end">
                 <Switch onChange={(value) => setChoThanhToan(value)} /> Chờ thanh toán
-              </li>
+              </li> */}
               <li>
                 <Button type="primary" className="bg-warning text-dark w-100" onClick={() => handleCreate()}>
                   Thanh toán hóa đơn

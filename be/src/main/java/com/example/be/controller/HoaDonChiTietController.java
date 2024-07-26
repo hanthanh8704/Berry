@@ -50,7 +50,7 @@ public class HoaDonChiTietController {
     }
 
     @GetMapping("/update-quantity/{id}")
-    public ResponseObject updateQuantity(@PathVariable Integer id, @RequestParam(required = false, defaultValue = "0") Integer newQuantity, @RequestParam BigDecimal donGia) {
+    public ResponseObject updateQuantity(@PathVariable Integer id, @RequestParam(required = false, defaultValue = "0") Integer newQuantity, @RequestParam(value = "donGia", required = true) BigDecimal donGia) {
         return new ResponseObject(hoaDonChiTietService.updateSoLuong(id, newQuantity, donGia));
     }
 

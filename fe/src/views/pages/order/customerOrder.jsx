@@ -88,6 +88,7 @@ function CustomerOrder({ handleSelect }) {
   const onSelect = (value) => {
     setSearchValue('');
     handleSelect(value);
+    setIsModalKHOpen(false); // Tự động đóng form khi chọn khách hàng
   };
 
   const columns = [
@@ -131,7 +132,7 @@ function CustomerOrder({ handleSelect }) {
     {
       title: 'Thao tác',
       key: 'action',
-      render: (text, record) => <Button onClick={() => handleSelect(record.id)}>Chọn</Button>
+      render: (text, record) => <Button onClick={() => onSelect(record.id)}>Chọn</Button> // Thay handleSelect bằng onSelect
     }
   ];
 
@@ -287,32 +288,7 @@ function CustomerOrder({ handleSelect }) {
                       }
                     ]}
                   >
-                    <DatePicker
-                      style={{ width: '100%' }}
-                      format={'DD-MM-YYYY'}
-                      placeholder={'Chọn ngày sinh'}
-                      disabledDate={(current) => {
-                        return current && current > moment();
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item
-                    label={'Số điện thoại'}
-                    name={'soDienThoai'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Số điện thoại không được để trống!'
-                      },
-                      {
-                        pattern: /^(?:\+84|0)(?:\d{9})$/,
-                        message: 'Số điện thoại không đúng định dạng!'
-                      }
-                    ]}
-                  >
-                    <Input placeholder="Nhập số điện thoại..." />
+                    <DatePicker placeholder="Chọn ngày sinh" format={'DD/MM/YYYY'} className="w-100" />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -326,53 +302,77 @@ function CustomerOrder({ handleSelect }) {
                       },
                       {
                         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Email không đúng định dạng!'
+                        message: 'Email không hợp lệ'
                       }
                     ]}
                   >
-                    <Input placeholder="Nhập email..." />
+                    <Input placeholder="Nhập email khách hàng..." />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    label={'Số điện thoại'}
+                    name={'soDienThoai'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Số điện thoại không được để trống!'
+                      },
+                      {
+                        pattern: /^(03|05|07|08|09)\d{8}$/,
+                        message: 'Số điện thoại không hợp lệ'
+                      }
+                    ]}
+                  >
+                    <Input placeholder="Nhập số điện thoại..." />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    label={'Địa chỉ cụ thể'}
+                    name={'diaChiCuThe'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Địa chỉ không được để trống!'
+                      }
+                    ]}
+                  >
+                    <Input.TextArea rows={2} placeholder="Nhập địa chỉ cụ thể..." />
                   </Form.Item>
                 </Col>
               </Row>
             </Col>
           </Row>
           <Divider />
-          <GHNDetail setDataAddress={setDataAddress} />
-          <Divider />
-          <Form.Item className="text-center mb-0">
-            <Button type="primary" htmlType="submit">
-              Thêm mới
-            </Button>
-          </Form.Item>
+          <Row justify="end">
+            <Col>
+              <Button onClick={handleCancel} className="me-2">
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Thêm khách hàng
+              </Button>
+            </Col>
+          </Row>
         </Form>
       </Modal>
 
       <Modal
-        title="Danh sách khách hàng"
-        visible={isModalKHOpen}
-        onCancel={handleKHCancel} // Giữ lại onCancel để đóng modal bằng cách nhấn ngoài modal hoặc nút đóng
+        title="Chọn khách hàng"
+        open={isModalKHOpen}
+        onOk={handleKHOk}
+        onCancel={handleKHCancel}
         width={1000}
-        footer={null} // Xóa nút Ok và Cancel
+        footer=""
       >
-        <div className="d-flex justify-content-between mb-2">
-          <Input.Search
-            placeholder="Tìm kiếm khách hàng..."
-            value={searchValue}
-            onChange={(e) => handleSearch(e.target.value)}
-            onSearch={handleSearch}
-          />
-
-          <Button type="primary" className="bg-warning text-dark" onClick={showModal}>
-            Thêm mới KH
-          </Button>
-        </div>
-        <Table
-          dataSource={customerData}
-          columns={columns}
-          pagination={{
-            pageSize: 5
-          }}
+        <AutoComplete
+          style={{ width: '100%', marginBottom: '16px' }}
+          value={searchValue}
+          onChange={handleSearch}
+          placeholder="Tìm kiếm khách hàng..."
         />
+        <Table dataSource={customerData} columns={columns} rowKey="id" />
       </Modal>
     </>
   );

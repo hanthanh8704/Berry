@@ -157,10 +157,6 @@ const AddressCustomerDetail = () => {
     }
   }, [selectedProvince, selectedDistrict, selectedWard, dataAddress]);
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <>
       <Collapse

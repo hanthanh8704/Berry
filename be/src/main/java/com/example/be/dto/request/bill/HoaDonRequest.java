@@ -32,7 +32,6 @@ public class HoaDonRequest {
     private String trangThaiHoaDon;
     private String trangThaiGiaoHang;
     private String loaiHoaDon;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Timestamp ngayGiaoDich;
     private Integer maGiaoDich;
@@ -44,7 +43,7 @@ public class HoaDonRequest {
     private Integer khachHang;
     private Integer account;
     private Boolean choThanhToan;
-    private Integer hinhThucThanhToan;
+    private String hinhThucThanhToan;
     private BigDecimal tienMat;
     private BigDecimal tienChuyenKhoan;
 

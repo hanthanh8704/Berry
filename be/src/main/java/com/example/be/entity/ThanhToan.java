@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 public class ThanhToan {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

@@ -1,12 +1,11 @@
 package com.example.be.controller;
 
+import com.example.be.dto.request.ThanhToanRequest;
 import com.example.be.dto.response.ThanhToanResponse;
 import com.example.be.service.ThanhToanService;
+import com.example.be.util.common.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,5 +18,9 @@ public class ThanhToanController {
     @GetMapping("/{id}")
     public List<ThanhToanResponse> getAll(@PathVariable Integer id){
         return thanhToanService.getThanhToanByIdHoaDon(id);
+    }
+    @PostMapping
+    public ResponseObject create(@RequestBody ThanhToanRequest request){
+        return thanhToanService.create(request);
     }
 }

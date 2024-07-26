@@ -114,74 +114,75 @@ public class HoaDonImpl implements HoaDonService {
         HoaDon hoaDon = billConvert.convertRequestToEntity(hoaDonRepository.findById(id).get(), request);
         lichSuHoaDon.setHoaDon(hoaDon);
         thanhToan.setHoaDon(hoaDon);
-        thanhToan.setTenHinhThuc("Tiền khách đưa");
+        thanhToan.setTenHinhThuc(ThanhToanEnum.TIEN_KHACH_DUA);
 
         if (request.getChoThanhToan()) {
-            hoaDon.setTrangThaiHoaDon("Chờ thanh toán");
-            lichSuHoaDon.setTrangThai("Chờ thanh toán");
+            hoaDon.setTrangThaiHoaDon(BillStatusConstant.CHO_THANH_TOAN);
+            lichSuHoaDon.setTrangThai(BillStatusConstant.CHO_THANH_TOAN);
             lichSuHoaDonRepository.save(lichSuHoaDon);
             hoaDonRepository.save(hoaDon);
             return hoaDon;
         }
 
-        if (request.getLoaiHoaDon() == "Tại quầy") {
-            hoaDon.setTrangThaiHoaDon("Hoàn thành");
+        if ("Tại quầy".equals(request.getLoaiHoaDon())) {
+            hoaDon.setTrangThaiHoaDon(BillStatusConstant.HOAN_THANH);
             hoaDon.setNgayNhanHang(new Timestamp(System.currentTimeMillis()));
             LichSuHoaDon lshd = new LichSuHoaDon();
             lshd.setHoaDon(hoaDon);
-            lshd.setGhiChu("Đã xác nhận");
-            lshd.setTrangThai("Đã xác nhận");
+            lshd.setGhiChu(BillStatusConstant.DA_XAC_NHAN);
+            lshd.setTrangThai(BillStatusConstant.DA_XAC_NHAN);
             lichSuHoaDonRepository.save(lshd);
         }
 
-        if (request.getHinhThucThanhToan().equals("Tiền mặt")) {
+        if (ThanhToanEnum.TIEN_MAT.equals(request.getHinhThucThanhToan())) {
             thanhToan.setTongTienThanhToan(hoaDon.getTongTien());
             thanhToan.setGhiChu("Thanh toán tiền mặt");
-            thanhToan.setTenHinhThuc("Tiền mặt");
+            thanhToan.setTenHinhThuc(ThanhToanEnum.TIEN_MAT);
             thanhToanRespository.save(thanhToan);
-        } else if (request.getHinhThucThanhToan().equals("Chuyển khoản")) {
+        } else if (ThanhToanEnum.CHUYEN_KHOAN.equals(request.getHinhThucThanhToan())) {
             thanhToan.setTongTienThanhToan(hoaDon.getTongTien());
             thanhToan.setGhiChu("Thanh toán chuyển khoản");
-            thanhToan.setTenHinhThuc("Chuyển khoản");
+            thanhToan.setTenHinhThuc(ThanhToanEnum.CHUYEN_KHOAN);
             thanhToanRespository.save(thanhToan);
-        } else if (request.getHinhThucThanhToan().equals("Cả hai")) {
+        } else if (ThanhToanEnum.TIEN_MAT_VA_CHUYEN_KHOAN.equals(request.getHinhThucThanhToan())) {
             ThanhToan tt = new ThanhToan();
             tt.setHoaDon(hoaDon);
             tt.setTongTienThanhToan(request.getTienMat());
             tt.setGhiChu("Thanh toán tiền mặt");
-            tt.setTenHinhThuc("Tiền mặt");
+            tt.setTenHinhThuc(ThanhToanEnum.TIEN_MAT);
             thanhToanRespository.save(tt);
             tt.setTongTienThanhToan(request.getTienChuyenKhoan());
             tt.setMa_giao_dich(request.getMaGiaoDich());
-            tt.setGhiChu("Thanh toán tiền chuyển khoản");
-            tt.setTenHinhThuc("Chuyển khoản");
+            tt.setGhiChu("Thanh toán chuyển khoản");
+            tt.setTenHinhThuc(ThanhToanEnum.CHUYEN_KHOAN);
             thanhToanRespository.save(tt);
         }
 
         lichSuHoaDon.setGhiChu("Mua hàng thành công");
-        lichSuHoaDon.setTrangThai("Hoàn thành");
+        lichSuHoaDon.setTrangThai(BillStatusConstant.HOAN_THANH);
 
-        if (request.getLoaiHoaDon().equals("Giao hàng")) {
-            hoaDon.setTrangThaiHoaDon("Chờ giao hàng");
-            lichSuHoaDon.setTrangThai("Chờ giao hàng");
-            lichSuHoaDon.setGhiChu("Chờ giao hàng");
 
-            if (request.getHinhThucThanhToan().equals("Chuyển khoản")) {
+        if ("Giao hàng".equals(request.getLoaiHoaDon())) {
+            hoaDon.setTrangThaiHoaDon(BillStatusConstant.CHO_GIAO_HANG);
+            lichSuHoaDon.setTrangThai(BillStatusConstant.CHO_GIAO_HANG);
+            lichSuHoaDon.setGhiChu(BillStatusConstant.CHO_GIAO_HANG);
+
+            if (ThanhToanEnum.CHUYEN_KHOAN.equals(request.getHinhThucThanhToan())) {
                 LichSuHoaDon lshd = new LichSuHoaDon();
                 lshd.setHoaDon(hoaDon);
                 lshd.setGhiChu("Đã xác nhận thông tin thanh toán!");
-                lshd.setTrangThai("Đã xác nhận");
+                lshd.setTrangThai(BillStatusConstant.DA_XAC_NHAN);
                 lichSuHoaDonRepository.save(lshd);
                 thanhToan.setTrangThai("Đã chuyển khoản!");
                 thanhToan.setGhiChu("Đã chuyển khoản!");
                 thanhToan.setMa_giao_dich(request.getMaGiaoDich());
-                thanhToan.setTenHinhThuc("Chuyển khoản");
+                thanhToan.setTenHinhThuc(ThanhToanEnum.CHUYEN_KHOAN);
                 thanhToanRespository.save(thanhToan);
-            } else if (request.getHinhThucThanhToan().equals("Cả hai")) {
+            } else if (ThanhToanEnum.TIEN_MAT_VA_CHUYEN_KHOAN.equals(request.getHinhThucThanhToan())) {
                 thanhToan.setTongTienThanhToan(request.getTienChuyenKhoan());
                 thanhToan.setGhiChu("Đã chuyển khoản!");
                 thanhToan.setMa_giao_dich(request.getMaGiaoDich());
-                thanhToan.setTenHinhThuc("Chuyển khoản");
+                thanhToan.setTenHinhThuc(ThanhToanEnum.CHUYEN_KHOAN);
                 thanhToanRespository.save(thanhToan);
             }
         }
