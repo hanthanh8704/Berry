@@ -68,7 +68,7 @@ public class Bill {
     private String recipientPhone; // Số điện thoại của người nhận hàng
 
     @Column(name = "invoice_status") // Định nghĩa cột "invoice_status" trong bảng
-    private Integer invoiceStatus; // Trạng thái của hóa đơn (ví dụ: đang xử lý, đã hoàn thành)
+    private StatusBil invoiceStatus; // Trạng thái của hóa đơn (ví dụ: đang xử lý, đã hoàn thành)
 
     @Column(name = "delivery_status") // Định nghĩa cột "delivery_status" trong bảng
     private String deliveryStatus; // Trạng thái giao hàng (ví dụ: đang giao, đã giao)

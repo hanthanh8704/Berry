@@ -10,6 +10,7 @@ import com.poly.backend.repository.SPCT_Repository;
 import com.poly.backend.repository.SanPhamRepository;
 import com.poly.backend.service.client.AccountClientService;
 import com.poly.backend.service.client.GioHangService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -238,7 +239,7 @@ public class SanPham_ClientController {
     public ResponseEntity<List<SanPhamRequest>> getNewProducts() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
-        List<Product> listSP = sanPhamRepository.findAllByNew(oneWeekAgo);
+        List<Product> listSP = spct_repository.findAllByNewProduct(oneWeekAgo);
 
         List<SanPhamRequest> sanPhamRequestList = new ArrayList<>();
 
@@ -256,7 +257,7 @@ public class SanPham_ClientController {
             sanPhamRequest.setCreatedBy(sp.getCreatedBy());
             sanPhamRequest.setUpdatedBy(sp.getUpdatedBy());
 
-            List<ProductDetail> listSPCT = spct_repository.findByIdSP(sp.getId());
+            List<ProductDetail> listSPCT = spct_repository.findAllByNewProductDetail(oneWeekAgo, sp.getId());
             sanPhamRequest.setListProductDetails(listSPCT);
 
             sanPhamRequestList.add(sanPhamRequest);
@@ -291,9 +292,10 @@ public class SanPham_ClientController {
     }
 
     //Phan luu san pham
+
     @PutMapping("/update/{idKH}")
-    public ResponseObject updateKH(@PathVariable Integer idKH, @RequestBody KhachHangRequest request) {
-        return new ResponseObject(accountClientService.updateKH(idKH, request));
+    public KhachHangRequest updateKH(@PathVariable Integer idKH, @ModelAttribute @Valid KhachHangRequest request) {
+        return accountClientService.updateKH(idKH, request);
     }
 
 

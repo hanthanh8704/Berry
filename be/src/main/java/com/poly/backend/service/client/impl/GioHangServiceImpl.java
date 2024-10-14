@@ -59,7 +59,6 @@ public class GioHangServiceImpl implements GioHangService {
     PhieuGiamGiaRepository phieuGiamGiaRepository;
     @Autowired
     ThanhToanRepository thanhToanRepository;
-
     @Autowired
     MailUtils mailUtils;
 
@@ -231,11 +230,11 @@ public class GioHangServiceImpl implements GioHangService {
 
         // Xét trạng thái hóa đơn dựa trên phương thức thanh toán
         if (request.getPaymentId() == 1) { //Day la chuyển khoản
-            hoaDon.setInvoiceStatus(1); //1 là chờ xác nhận
+            hoaDon.setInvoiceStatus(StatusBil.CHO_XAC_NHAN); //1 là chờ xác nhận
             hoaDon.setPaymentStatus("Đã thanh toán");
         } else {
             hoaDon.setPaymentStatus(null);
-            hoaDon.setInvoiceStatus(1);
+            hoaDon.setInvoiceStatus(StatusBil.CHO_XAC_NHAN);
         }
 
 //        // Xét mã giao dịch
@@ -262,7 +261,7 @@ public class GioHangServiceImpl implements GioHangService {
         hoaDon.setDeliveryDate(null); //Ngay giao hang
         hoaDon.setShippingTime(null); //Thoi gian giao
         hoaDon.setReceivedDate(null); // Ngày người nhận hàng đã nhận được
-        hoaDon.setDeleted(true);
+        hoaDon.setDeleted(false);
         hoaDon.setCreatedAt(request.getCreatedAt());
         hoaDon.setUpdatedBy(request.getUpdatedBy());
         hoaDon.setCreatedBy(null);
@@ -946,7 +945,9 @@ public class GioHangServiceImpl implements GioHangService {
         khachHangRequest.setFullName(khachHang.getFullName());
         khachHangRequest.setEmail(khachHang.getEmail());
         khachHangRequest.setListAddress(listDiaChi);
-        khachHangRequest.setImage(khachHang.getImage());
+
+        khachHangRequest.setImageStr(khachHang.getImage());
+
         khachHangRequest.setGender(khachHang.getGender());
         khachHangRequest.setCreatedAt(khachHang.getCreatedAt());
         khachHangRequest.setUpdatedAt(khachHang.getUpdatedAt());
@@ -1017,7 +1018,7 @@ public class GioHangServiceImpl implements GioHangService {
             // Thiết lập các giá trị từ HoaDon cho HoaDonRequest
             hoaDonRequest.setId(hoaDon.getId());
             hoaDonRequest.setCode(hoaDon.getCode());
-//            hoaDonRequest.setDiaChi(hoaDon.getDiaChi());
+            hoaDonRequest.setAddress(hoaDon.getAddress());
             hoaDonRequest.setNote(hoaDon.getNote());
             hoaDonRequest.setCreatedAt(hoaDon.getCreatedAt());
             hoaDonRequest.setInvoiceType(hoaDon.getInvoiceType());

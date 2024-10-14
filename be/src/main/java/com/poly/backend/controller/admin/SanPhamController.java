@@ -30,23 +30,23 @@ public class SanPhamController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<ProductDetail>> detail(@PathVariable(name = "id") Integer idSanPham) {
-        List<ProductDetail> sanPhamCTList = sanPhamRepository.findAllSPCTBySanPhamId(idSanPham);
-
-        // Lặp qua danh sách SPCT để lấy danh sách ảnh tương ứng
-        for (ProductDetail spct : sanPhamCTList) {
-            Integer idSPCT = spct.getId();
-            List<Image> anhList = sanPhamRepository.findAllAnhBySanPhamCTId(idSPCT);
-            spct.setImages(anhList); // Gắn danh sách ảnh vào từng SPCT
-        }
-
-        return ResponseEntity.ok(sanPhamCTList);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<ProductDetail>> detail(@PathVariable(name = "id") Integer idSanPham) {
+//        List<ProductDetail> sanPhamCTList = sanPhamRepository.findAllSPCTBySanPhamId(idSanPham);
+//
+//        // Lặp qua danh sách SPCT để lấy danh sách ảnh tương ứng
+//        for (ProductDetail spct : sanPhamCTList) {
+//            Integer idSPCT = spct.getId();
+//            List<Image> anhList = sanPhamRepository.findAllAnhBySanPhamCTId(idSPCT);
+//            spct.setImages(anhList); // Gắn danh sách ảnh vào từng SPCT
+//        }
+//
+//        return ResponseEntity.ok(sanPhamCTList);
+//    }
 
 
     @GetMapping("/detailDGG/{id}")
-    public ResponseEntity<List<ProductDetail>> detailSPCT(@PathVariable(name = "id") Integer idSanPham) {
+    public ResponseEntity<List<ProductDetail>> detailSPCT(@PathVariable("id") Integer idSanPham) {
         List<ProductDetail> sanPhamCTList = sanPhamRepository.findAllSPCTBySanPhamId(idSanPham);
 
         // Lặp qua danh sách SPCT để lấy danh sách ảnh tương ứng

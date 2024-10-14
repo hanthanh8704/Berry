@@ -24,8 +24,6 @@ public interface SanPhamRepository extends JpaRepository<Product, Integer> {
             "WHERE spct.id = :idSPCT")
     List<Image> findAllAnhBySanPhamCTId(@Param("idSPCT") Integer idSPCT);
 
-    @Query("select sp from Product sp where sp.createdAt >= :oneWeekAgo")
-    List<Product> findAllByNew(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
 
     //Hien thi san pham theo idDM
     @Query("SELECT sp FROM Product sp " +

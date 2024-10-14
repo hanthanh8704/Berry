@@ -3,6 +3,7 @@ package com.poly.backend.service.client.impl;
 import com.poly.backend.dto.request.khachhang.KhachHangRequest;
 import com.poly.backend.entity.English.Customer;
 
+import com.poly.backend.infrastructure.cloudinary.CloudinaryUtils;
 import com.poly.backend.repository.KhachHangRepository;
 import com.poly.backend.service.client.AccountClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class AccountClientServiceImpl implements AccountClientService {
     @Autowired
     KhachHangRepository khachHangRepository;
+    @Autowired
+    CloudinaryUtils cloudinaryUtils;
 
     @Override
     public KhachHangRequest updateKH(Integer idKH, KhachHangRequest request) {
@@ -21,8 +24,12 @@ public class AccountClientServiceImpl implements AccountClientService {
         if (optionalKhachHang.isPresent()) {
             Customer khachHang = optionalKhachHang.get();
 
-            // Cập nhật thông tin từ request vào đối tượng KhachHang
-            khachHang.setImage(request.getImage());
+            if (request.getImage() != null) {
+                String uploadedImageUrl = cloudinaryUtils.uploadSingleImage(request.getImage(), "khachhang");
+                khachHang.setImage(uploadedImageUrl);
+            }
+
+            // Cập nhật thông tin từ request vào đối tượng Khach
             khachHang.setFullName(request.getFullName());
             khachHang.setEmail(request.getEmail());
             khachHang.setPhoneNumber(request.getPhoneNumber());
@@ -33,7 +40,8 @@ public class AccountClientServiceImpl implements AccountClientService {
 
             // Tạo đối tượng KhachHangRequest để trả về
             KhachHangRequest khachHangResponse = new KhachHangRequest();
-            khachHangResponse.setImage(khachHang.getImage());
+
+            khachHangResponse.setImageStr(khachHang.getImage());
             khachHangResponse.setFullName(khachHang.getFullName());
             khachHangResponse.setEmail(khachHang.getEmail());
             khachHangResponse.setPhoneNumber(khachHang.getPhoneNumber());

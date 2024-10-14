@@ -6,6 +6,7 @@ import com.poly.backend.entity.English.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -18,8 +19,9 @@ public class KhachHangRequest {
     private Integer id;
 
     private String code;
-    private String image;
+    private MultipartFile image;
 
+    private String imageStr;
     private String fullName;
 
     private String gender;

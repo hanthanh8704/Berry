@@ -4,8 +4,10 @@ import com.poly.backend.dto.request.hoadon.HoaDonRequest;
 import com.poly.backend.entity.English.Bill;
 import com.poly.backend.entity.English.Bill_detail;
 
+import com.poly.backend.entity.English.Bill_history;
 import com.poly.backend.repository.HoaDonChiTietRepository;
 import com.poly.backend.repository.HoaDonRepository;
+import com.poly.backend.repository.LichSuHoaDonRepository;
 import com.poly.backend.service.client.TraCuuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,8 @@ public class TraCuuServiceImpl implements TraCuuService {
     HoaDonRepository hoaDonRepository;
     @Autowired
     HoaDonChiTietRepository hoaDonChiTietRepository;
-
+    @Autowired
+    LichSuHoaDonRepository lichSuHoaDonRepository;
     @Override
     public Bill findByMaAndSDT(String ma , String sdt) {
         Bill hoaDon = hoaDonRepository.findByMaAndPhone(ma, sdt);
@@ -28,10 +31,11 @@ public class TraCuuServiceImpl implements TraCuuService {
     @Override
     public HoaDonRequest detailHoaDon(String ma) {
         Bill hoaDon = hoaDonRepository.findByCode(ma);
+
         List<Bill_detail> hoaDonChiTietList = hoaDonChiTietRepository.findByBill(hoaDon);
+        List<Bill_history> billHistories = lichSuHoaDonRepository.findAllByIdHD(hoaDon.getId());
 
         HoaDonRequest hoaDonRequest = new HoaDonRequest();
-
         if (hoaDon != null) {
             hoaDonRequest.setId(hoaDon.getId());
             hoaDonRequest.setEmployee(hoaDon.getEmployee());
@@ -50,11 +54,11 @@ public class TraCuuServiceImpl implements TraCuuService {
             hoaDonRequest.setDeliveryStatus(hoaDon.getDeliveryStatus());
             hoaDonRequest.setDeliveryDate(hoaDon.getDeliveryDate());
             hoaDonRequest.setReceivedDate(hoaDon.getReceivedDate());
-//            hoaDonRequest.setTransactionNo(hoaDon.getCreated_by()); //Ma hoa don
             hoaDonRequest.setNote(hoaDon.getNote());
             hoaDonRequest.setAddress(hoaDon.getAddress());
             hoaDonRequest.setCreatedAt(hoaDon.getCreatedAt());
             hoaDonRequest.setUpdatedAt(hoaDon.getUpdatedAt());
+            hoaDonRequest.setBillHistory(billHistories);
         } else {
             throw new RuntimeException("Không tìm thấy hóa đơn với mã: " + ma);
         }

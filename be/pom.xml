@@ -89,6 +89,18 @@
 			<version>3.4.1</version>
 		</dependency>
 
+
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.33.0</version> <!-- Thay thế phiên bản tại đây -->
+		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-taglib</artifactId>
+			<version>1.33.0</version> <!-- Thay thế phiên bản tại đây -->
+		</dependency>
+
 	</dependencies>
 
 	<build>

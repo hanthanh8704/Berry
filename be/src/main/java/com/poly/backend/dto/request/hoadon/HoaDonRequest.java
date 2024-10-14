@@ -1,10 +1,7 @@
 package com.poly.backend.dto.request.hoadon;
 
 
-import com.poly.backend.entity.English.Bill_detail;
-import com.poly.backend.entity.English.Customer;
-import com.poly.backend.entity.English.Employee;
-import com.poly.backend.entity.English.Voucher;
+import com.poly.backend.entity.English.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +26,7 @@ public class HoaDonRequest {
 
     //    private Customer customer; // Khách hàng mua hàng
     private Integer customerId;
+    private List<Bill_history> billHistory;
     private String code; // Mã hóa đơn
 
     private String invoiceType; // Loại hóa đơn (ví dụ: điện tử, giấy)
@@ -45,7 +43,7 @@ public class HoaDonRequest {
 
     private String recipientPhone; // Số điện thoại của người nhận hàng
 
-    private Integer invoiceStatus; // Trạng thái của hóa đơn (ví dụ: đang xử lý, đã hoàn thành)
+    private StatusBil invoiceStatus; // Trạng thái của hóa đơn (ví dụ: đang xử lý, đã hoàn thành)
 
     private String deliveryStatus; // Trạng thái giao hàng (ví dụ: đang giao, đã giao)
     private String note;
