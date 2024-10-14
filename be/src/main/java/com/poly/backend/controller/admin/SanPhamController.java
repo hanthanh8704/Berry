@@ -22,7 +22,6 @@ public class SanPhamController {
     private SanPhamRepository sanPhamRepository;
     @Autowired
     private DotGiamGiaDetailRepository dotGiamGiaDetailRepository;
-
     @GetMapping("/index")
     public ResponseEntity<List<Product>> getAllSanPham() {
         List<Product> SanPhamList = sanPhamRepository.findAll();

@@ -27,7 +27,7 @@ import { findAllThuongHieu } from '../../utilities/ApiDotGiamGia/DotGiamGiaApi.j
 const { Search } = Input;
 const { Option } = Select;
 const UpdateDotGiamGia = () => {
-
+ 
   const [currentPageSP, setCurrentPageSP] = useState(1);
   const [currentPageSPCT, setCurrentPageSPCT] = useState(1);
 

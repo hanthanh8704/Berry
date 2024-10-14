@@ -38,8 +38,7 @@ const AddDotGiamGia = () => {
 
   const [searchValue, setSearchValue] = useState('');
 
-  const [dotGiamGia, setDotGiamGia] = useState([]);
-
+  const [dotGiamGia, setDotGiamGia] = useState([])
   const [sanPham, setSanPham] = useState([]);
   const [searchValueSCT, setSearchValueSCT] = useState('');
 
