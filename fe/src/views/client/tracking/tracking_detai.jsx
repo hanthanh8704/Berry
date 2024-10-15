@@ -236,24 +236,37 @@
 
 //Bản tiếng Anh
 
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { message } from 'antd';
-import { detailHoaDon, findByMaAndSDT } from '../../utilities/ApiDotGiamGia/DotGiamGiaApi.js';
-import { Card, Button, Typography, Steps, Row, Carousel, Col } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from "react"; 
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux'; // Thêm dòng này
+import { message, InputNumber, Col } from 'antd';
+import { detailHoaDon } from '../../utilities/ApiDotGiamGia/DotGiamGiaApi.js';
+import { Card, Typography, Row ,Carousel  } from 'antd';
 import FormatCurrency from '../../utilities/FormatCurrency.jsx';
+import TimeLine from '../../client/account/timline.jsx'; // Import TimeLine component
 const { Title, Text } = Typography;
-const { Step } = Steps;
-import { Link } from 'react-router-dom'; // nếu bạn dùng react-router-dom
 import './tracking_detail.css';
-const TrackingDetail = () => {
 
+const listStatus = [
+    { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
+    { id: 2, name: "Chờ xác nhận", status: "CHO_XAC_NHAN" },
+    { id: 3, name: "Xác nhận", status: "XAC_NHAN" },
+    { id: 4, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN" },
+    { id: 5, name: "Vận chuyển", status: "VAN_CHUYEN" },
+    { id: 6, name: "Thanh toán", status: "DA_THANH_TOAN" },
+    { id: 7, name: "Thành công", status: "THANH_CONG" },
+];
+
+const TrackingDetail = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [hoaDonDetail, setHoaDonDetail] = useState();
-    const { ma } = useParams(); //ID Sản phẩm 
+    const [billHistory, setBillHistory] = useState([]);
+    const { ma } = useParams(); // ID sản phẩm
 
+    const statusPresent = useSelector((state) => state.hoaDonDetail?.invoiceStatus);
+
+    
     useEffect(() => {
         console.log("Current ma:", ma); // Log giá trị ma để kiểm tra
         DetailHoaDon();
@@ -262,50 +275,31 @@ const TrackingDetail = () => {
     const DetailHoaDon = () => {
         detailHoaDon(ma)
             .then(response => {
-                console.log("API response:", response.data); // Log toàn bộ response để kiểm tra
-                setHoaDonDetail(response.data); // Set product data
+                console.log("API response dddddddddddddmmmmmm:", response.data.billHistory); // Log toàn bộ response để kiểm tra
+                setHoaDonDetail(response.data); // Set product 
+                setBillHistory(response.data.billHistory); // Set product data
             })
             .catch(error => {
-                console.error('Error fetching San Pham CT:', error);
+                console.error('Error fetching Hoa Don Detail:', error);
             });
-    };
-
-    const determineCurrentStep = (trangThaiGiaoHang) => {
-        switch (trangThaiGiaoHang) {
-            case 5:
-                return 5;
-            case 4:
-                return 4;
-            case 3:
-                return 3;
-            case 2:
-                return 2;
-            case 1:
-                return 1;
-            default: // Chờ xác nhận
-                return 0;
-        }
     };
 
     return (
         <div style={{ padding: '20px' }}>
-            <Card>
+            <Card style={{ backgroundColor: 'whitesmoke' }}>
                 <Row className="d-flex" style={{ marginBottom: '10px' }}>
                     <Typography.Text strong>
                         <Link to="/home" style={{ color: 'black', textDecoration: 'none', marginRight: 10 }}>
                             Trang chủ
                         </Link>
                     </Typography.Text>
-
                     <Typography.Text style={{ color: 'black', marginRight: 10 }}>|</Typography.Text>
                     <Typography.Text strong>
                         <Link to="/tracking" style={{ color: 'black', textDecoration: 'none', marginRight: 10 }}>
                             Tra cứu
                         </Link>
                     </Typography.Text>
-
                     <Typography.Text style={{ color: 'black', marginRight: 10 }}>|</Typography.Text>
-
                     <Typography.Text>
                         {hoaDonDetail ? (
                             <Link to={`/tracking/${hoaDonDetail.code}`} style={{ color: 'black', textDecoration: 'none', marginRight: 10 }}>
@@ -314,48 +308,21 @@ const TrackingDetail = () => {
                         ) : (
                             <Text>Loading...</Text>
                         )}
-
                     </Typography.Text>
                 </Row>
-                <Card style={{ marginTop: '20px', backgroundColor: 'whitesmoke' }}>
+                <Card style={{ marginTop: '20px', backgroundColor: 'white' }}>
                     <Title level={5}>Lịch sử đơn hàng</Title>
 
-                    {/* Hàm xác định trạng thái hiện tại */}
-                    <Steps current={determineCurrentStep(hoaDonDetail?.invoiceStatus)} style={{ marginBottom: '20px' }}>
-                        <Step
-                            title="Chờ xác nhận"
-                            description={hoaDonDetail?.createdAt}
-                            icon={<CheckCircleOutlined />}
-                        />
-                        <Step
-                            title="Đã xác nhận"
-                            description={hoaDonDetail?.updatedAt ? hoaDonDetail?.updatedAt : 'Thời gian không có sẵn'}
-                            icon={<CheckCircleOutlined />}
-                        />
-                        <Step
-                            title="Đang chuẩn bị hàng"
-                            description={hoaDonDetail?.updatedAt ? hoaDonDetail?.updatedAt : 'Thời gian không có sẵn'}
-                            icon={<CheckCircleOutlined />}
-                        />
-                        <Step
-                            title="Đang giao hàng"
-                            description={hoaDonDetail?.updatedAt ? hoaDonDetail?.updatedAt : 'Thời gian không có sẵn'}
-                            icon={<CheckCircleOutlined />}
-                        />
-                        <Step
-                            title="Đã giao hàng"
-                            description={hoaDonDetail?.updatedAt ? hoaDonDetail?.updatedAt : 'Thời gian không có sẵn'}
-                            icon={<CheckCircleOutlined />}
-                        />
-                        <Step
-                            title="Hoàn thành"
-                            description={hoaDonDetail?.updatedAt ? hoaDonDetail?.updatedAt : 'Thời gian không có sẵn'}
-                            icon={<CheckCircleOutlined />}
-                        />
-                    </Steps>
+                    {/* Kiểm tra hoaDonDetail trước khi truyền props cho TimeLine */}
+                    <TimeLine
+                        style={{ width: "100%" }}
+                        listStatus={listStatus}
+                        data={billHistory}
+                        statusPresent={statusPresent}
+                    />
                 </Card>
 
-                <Card style={{ marginTop: '20px', backgroundColor: 'whitesmoke' }}>
+                <Card style={{ marginTop: '20px', backgroundColor: 'white' }}>
                     <Title level={5}>ĐỊA CHỈ NHẬN HÀNG</Title>
                     <Text>Địa chỉ : {hoaDonDetail?.recipientName}</Text>
                     <br />
@@ -364,13 +331,13 @@ const TrackingDetail = () => {
                     <Text>{hoaDonDetail?.address}</Text>
                 </Card>
 
-
-                <Card style={{ marginTop: '20px', backgroundColor: 'whitesmoke' }}>
+                <Card style={{ marginTop: '20px', backgroundColor: 'white' }}>
                     {hoaDonDetail ? (
                         <div>
                             {hoaDonDetail?.billDetails?.map((chiTiet, index) => (
-                                <div key={index} className="d-flex align-items-center justify-content-between" style={{ marginBottom: '20px' }}> {/* Add marginBottom to separate each record */}
+                                <div key={index} className="d-flex align-items-center justify-content-between" style={{ marginBottom: '20px' }}>
                                     <div className="d-flex">
+                                        {/* Carousel cho hình ảnh sản phẩm */}
                                         <Carousel autoplay autoplaySpeed={3000} dots={false} arrows={false} style={{ height: '100px', width: '100px' }}>
                                             {chiTiet?.productDetail?.images?.map((anh, subIndex) => (
                                                 <div key={`${index}-${subIndex}`} className="image-container">
@@ -395,23 +362,33 @@ const TrackingDetail = () => {
                                             <Text style={{ fontSize: '14px' }}>
                                                 Phân loại hàng: {chiTiet?.productDetail?.color?.name}{", "}
                                                 {chiTiet?.productDetail?.size?.name}{" "}
+                                            </Text> <br />
+                                            <Text style={{ fontSize: '14px', color: 'red' }}>
+                                                <FormatCurrency value={chiTiet.price} />
                                             </Text>
                                             <br />
                                             <Text style={{ fontSize: '14px' }}>
-                                                Số lượng: {chiTiet?.quantity}
+                                                X{chiTiet?.quantity}
                                             </Text>
                                         </div>
                                     </div>
-
+                                    <div>
+                                        <Col>
+                                            <InputNumber
+                                                min={chiTiet.quantity}
+                                                max={chiTiet.quantity} // Sử dụng số lượng từ sản phẩm hiện tại
+                                                defaultValue={chiTiet.quantity} // Giá trị mặc định là số lượng sản phẩm
+                                            />
+                                        </Col>
+                                    </div>
                                     <div>
                                         <Text style={{ fontSize: '14px', color: 'red' }}>
-                                            <FormatCurrency value={chiTiet?.productDetail?.discountPrice === 0
-                                                ? chiTiet?.productDetail?.price * chiTiet?.quantity
-                                                : chiTiet?.productDetail?.discountPrice * chiTiet?.quantity} />
+                                            <FormatCurrency value={chiTiet.price} />
                                         </Text>
                                     </div>
                                 </div>
                             ))}
+
                         </div>
                     ) : (
                         <p>Đang tải dữ liệu...</p>
@@ -445,26 +422,23 @@ const TrackingDetail = () => {
                                 <Text>Giảm giá:</Text>
                             </Col>
                             <Col span={12} style={{ textAlign: 'left' }}>
-                                <Text strong><FormatCurrency value={hoaDonDetail?.discountAmount} /></Text>
+                                <Text strong> <FormatCurrency value={hoaDonDetail?.discountAmount} /></Text>
                             </Col>
                         </Row>
 
                         <Row gutter={16} style={{ marginBottom: '10px' }}>
-                            <Col span={12} style={{ fontSize: '20px', textAlign: 'right' }}>
+                            <Col span={12} style={{ textAlign: 'right' }}>
                                 <Text>Tổng thanh toán:</Text>
                             </Col>
                             <Col span={12} style={{ textAlign: 'left' }}>
-                                <Text strong style={{ fontSize: '20px', color: 'red' }}><FormatCurrency value={hoaDonDetail?.totalMoney + hoaDonDetail?.shippingFee - hoaDonDetail?.discountAmount} /></Text>
+                                <Text strong style={{ color: 'red' }}><FormatCurrency value={hoaDonDetail?.totalPayment} /></Text>
                             </Col>
                         </Row>
                     </div>
                 </Card>
-
-
-
             </Card>
-        </div >
-    )
+        </div>
+    );
 };
 
 export default TrackingDetail;
