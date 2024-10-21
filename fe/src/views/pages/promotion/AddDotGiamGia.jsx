@@ -158,7 +158,7 @@ const AddDotGiamGia = () => {
           cancelText: 'Hủy',
           onOk: async () => {
             const dotGiamGia = { code: ma, name: ten, discountPercentage: giaTriGiam, startDate: ngayBatDau, endDate: ngayKetThuc, productDetails: selectedSanPhamDetailIds };
-             try {
+            try {
               const response = await create(dotGiamGia);
               console.log(response.data); // Log dữ liệu phản hồi từ server nếu cần
               toast.success('Thêm thành công đợt giảm giá!');
@@ -606,7 +606,7 @@ const AddDotGiamGia = () => {
               Danh sách chi tiết sản phẩm
             </Typography.Title>
 
-            <Row gutter={[16, 16]} align="middle" justify="space-between" wrap>
+            <Row gutter={[16, 16]} align="middle" justify="space-between" wrap className='my-4'>
               <Col flex="280px">
                 <Search
                   placeholder="Tìm kiếm theo tên sản phẩm"
@@ -619,8 +619,9 @@ const AddDotGiamGia = () => {
               </Col>
 
               <Col flex="150px">
+                <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Giá</div>
                 <Select
-                  placeholder="Giá"
+                  placeholder="Chọn giá"
                   value={filterPrice}
                   onChange={handlePriceChange}
                   style={{ width: '100%' }}
@@ -633,8 +634,9 @@ const AddDotGiamGia = () => {
               </Col>
 
               <Col flex="150px">
+                <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Chất liệu</div>
                 <Select
-                  placeholder="Chất liệu"
+                  placeholder="Chọn chất liệu"
                   value={selectedChatLieu}
                   onChange={handleChatLieu}
                   style={{ width: '100%' }}
@@ -642,15 +644,16 @@ const AddDotGiamGia = () => {
                   <Option value="All">Tất cả</Option>
                   {chatLieu.map((cl) => (
                     <Option key={cl.id} value={cl.id}>
-                      {cl.ten}
+                      {cl.name}
                     </Option>
                   ))}
                 </Select>
               </Col>
 
               <Col flex="150px">
+                <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Màu sắc</div>
                 <Select
-                  placeholder="Màu sắc"
+                  placeholder="Chọn màu sắc"
                   value={selectedMauSac}
                   onChange={handleMauSac}
                   style={{ width: '100%' }}
@@ -658,15 +661,16 @@ const AddDotGiamGia = () => {
                   <Option value="All">Tất cả</Option>
                   {mauSac.map((ms) => (
                     <Option key={ms.id} value={ms.id}>
-                      {ms.ten}
+                      {ms.name}
                     </Option>
                   ))}
                 </Select>
               </Col>
 
               <Col flex="150px">
+                <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Kích cỡ</div>
                 <Select
-                  placeholder="Kích cỡ"
+                  placeholder="Chọn kích cỡ"
                   value={selectedKichCo}
                   onChange={handleKichCo}
                   style={{ width: '100%' }}
@@ -674,15 +678,16 @@ const AddDotGiamGia = () => {
                   <Option value="All">Tất cả</Option>
                   {kichCo.map((kc) => (
                     <Option key={kc.id} value={kc.id}>
-                      {kc.ten}
+                      {kc.name}
                     </Option>
                   ))}
                 </Select>
               </Col>
 
               <Col flex="150px">
+                <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Thương hiệu</div>
                 <Select
-                  placeholder="Thương hiệu"
+                  placeholder="Chọn thương hiệu"
                   value={selectedThuongHieu}
                   onChange={handleThuongHieu}
                   style={{ width: '100%' }}
@@ -690,11 +695,12 @@ const AddDotGiamGia = () => {
                   <Option value="All">Tất cả</Option>
                   {thuongHieu.map((th) => (
                     <Option key={th.id} value={th.id}>
-                      {th.ten}
+                      {th.name}
                     </Option>
                   ))}
                 </Select>
               </Col>
+
             </Row>
 
             <TableContainer component={Paper}>

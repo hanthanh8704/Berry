@@ -583,17 +583,17 @@ const Address = () => {
 
     // Lấy quận/huyện khi tỉnh/thành phố thay đổi
     useEffect(() => {
-        if (thanhPho) {
+        if (thanhPho !== null && thanhPho !== undefined) {
             fetchDistricts(thanhPho);
         }
     }, [thanhPho]);
-
-    // Lấy phường/xã khi quận/huyện thay đổi
+    
     useEffect(() => {
-        if (huyen) {
+        if (huyen !== null && huyen !== undefined) {
             fetchWards(huyen);
         }
     }, [huyen]);
+    
 
     const handleProvinceChange = (provinceCode) => {
         setThanhPho(provinceCode);
@@ -772,26 +772,45 @@ const Address = () => {
         handleSelectDefaultAddress();
     }, []);
 
-    const getAddressDetails = (idTP, idHuyen, idPhuong) => {
-
-        const province = provinces.find(p => Number(p.ProvinceID) === Number(idTP));
-        const district = districts.find(d => Number(d.DistrictID) === Number(idHuyen));
-        const ward = wards.find(w => String(w.WardCode) === String(idPhuong));
-
-        console.log(`Getting details for: ${idTP}, ${idHuyen}, ${idPhuong}`);
-        console.log(`Province: ${province ? province.ProvinceName : 'Không xác định'}, District: ${district ? district.DistrictName : 'Không xác định'}, Ward: ${ward ? ward.WardName : 'Không xác định'}`);
-
-        return {
-            provinceName: province ? province.ProvinceName : 'Không xác định',
-            districtName: district ? district.DistrictName : 'Không xác định',
-            wardName: ward ? ward.WardName : 'Không xác định', // Thay đổi từ "Chưa xác định" thành "Không xác định"
-        };
-
+    
+    const getAddressDetailsPerRecord = (record) => {
+        // Sửa lỗi destructuring để lấy đúng giá trị từ record
+        const { ward: idPhuong, city: idTP, district: idHuyen } = record;
+    
+        // Log dữ liệu đầu vào để kiểm tra
+        console.log("Record data:", record);
+        console.log("ID TP (city):", idTP);
+        console.log("ID Huyện (district):", idHuyen);
+        console.log("ID Phường (ward):", idPhuong);
+    
+        // Kiểm tra kiểu dữ liệu để tránh vấn đề kiểu dữ liệu không khớp
+        console.log("ID TP type:", typeof idTP);
+        console.log("ID Huyện type:", typeof idHuyen);
+        console.log("ID Phường type:", typeof idPhuong);
+    
+        // Lọc danh sách provinces, districts, và wards dựa trên bản ghi hiện tại
+        const filteredProvinces = provinces.filter(p => Number(p.ProvinceID) === Number(idTP));
+        const filteredDistricts = districts.filter(d => Number(d.DistrictID) === Number(idHuyen) && Number(d.ProvinceID) === Number(idTP));
+        const filteredWards = wards.filter(w => String(w.WardCode) === String(idPhuong) && Number(w.DistrictID) === Number(idHuyen));
+    
+        // Log kết quả của từng danh sách lọc
+        console.log("Filtered Provinces:", filteredProvinces);
+        console.log("Filtered Districts:", filteredDistricts);
+        console.log("Filtered Wards:", filteredWards);
+    
+        // Tạo chuỗi địa chỉ từ các danh sách lọc được
+        const provinceName = filteredProvinces.length > 0 ? filteredProvinces[0].ProvinceName : 'Không xác định';
+        const districtName = filteredDistricts.length > 0 ? filteredDistricts[0].DistrictName : 'Không xác định';
+        const wardName = filteredWards.length > 0 ? filteredWards[0].WardName : 'Không xác định';
+    
+        // Log địa chỉ sau khi đã lọc
+        console.log("Address:", `${provinceName}, ${districtName}, ${wardName}`);
+    
+        // Trả về địa chỉ dưới dạng chuỗi
+        return `${provinceName}, ${districtName}, ${wardName}`;
     };
-
-    console.log('Provinces:', provinces);
-    console.log('Districts:', districts);
-    console.log('Wards:', wards);
+    
+    
 
 
 
@@ -802,60 +821,60 @@ const Address = () => {
                 + Thêm địa chỉ
             </Button>
             <div>
-                {khachHang ? (
-                    <div className="d-flex flex-column">
-                        {khachHang.listAddress.length > 0 ? (
-                            khachHang.listAddress.map((diaChi, index) => {
-                                const { provinceName, districtName, wardName } = getAddressDetails(diaChi.city, diaChi.district, diaChi.ward);
-
-                                return (
-                                    <div key={index} className="d-flex mb-3">
-                                        <div className="flex-grow-1">
-                                            <input
-                                                className='mx-2'
-                                                type="checkbox"
-                                                checked={selectedAddressId === diaChi.id}
-                                                onChange={() => handleCheckboxChange(diaChi.id)}
-                                            />
-                                            <b>{diaChi.fullName} - {diaChi.phoneNumber}</b>
-                                            <p>
-                                                {wardName}, {districtName}, {provinceName}
-                                            </p>
-                                            <p>
-                                                {diaChi.defaultAddress ? (
-                                                    <span className='px-2' style={{ width: '80px', border: '1px solid #6A0DAD', color: '#6A0DAD' }}>
-                                                        Mặc định
-                                                    </span>
-                                                ) : (
-                                                    <span className='px-2' style={{ width: '90px', border: '1px solid black', color: 'black' }}>
-                                                        Địa chỉ
-                                                    </span>
-                                                )}
-                                            </p>
-                                            <hr />
-                                        </div>
-                                        {selectedAddressId === diaChi.id && (
-                                            <div style={{ marginLeft: '30px' }}>
-                                                <Button
-                                                    style={{ backgroundColor: diaChi.defaultAddress ? '#6A0DAD' : 'white', color: diaChi.defaultAddress ? 'white' : 'black' }}
-                                                    onClick={() => handleSetDefaultAddress(diaChi.id)}
-                                                    disabled={diaChi.defaultAddress}
-                                                >
-                                                    {diaChi.defaultAddress ? 'Mặc định' : 'Thiết lập mặc định'}
-                                                </Button>
+                {
+                    khachHang ? (
+                        <div className="d-flex flex-column">
+                            {khachHang.listAddress.length > 0 ? (
+                                khachHang.listAddress.map((diaChi, index) => {
+                                    return (
+                                        <div key={index} className="d-flex mb-3">
+                                            <div className="flex-grow-1">
+                                                <input
+                                                    className='mx-2'
+                                                    type="checkbox"
+                                                    checked={selectedAddressId === diaChi.id}
+                                                    onChange={() => handleCheckboxChange(diaChi.id)}
+                                                />
+                                                <b>{diaChi.fullName} - {diaChi.phoneNumber}</b>
+                                                <p>
+                                                    {/* Gọi hàm getAddressDetailsPerRecord và hiển thị chi tiết địa chỉ */}
+                                                    {getAddressDetailsPerRecord(diaChi)}
+                                                </p>
+                                                <p>
+                                                    {diaChi.defaultAddress ? (
+                                                        <span className='px-2' style={{ width: '80px', border: '1px solid #6A0DAD', color: '#6A0DAD' }}>
+                                                            Mặc định
+                                                        </span>
+                                                    ) : (
+                                                        <span className='px-2' style={{ width: '90px', border: '1px solid black', color: 'black' }}>
+                                                            Địa chỉ
+                                                        </span>
+                                                    )}
+                                                </p>
+                                                <hr />
                                             </div>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p>Chưa có địa chỉ nào</p>
-                        )}
-                    </div>
-                ) : (
-                    <p>Đang tải dữ liệu...</p>
-                )}
-
+                                            {selectedAddressId === diaChi.id && (
+                                                <div style={{ marginLeft: '30px' }}>
+                                                    <Button
+                                                        style={{ backgroundColor: diaChi.defaultAddress ? '#6A0DAD' : 'white', color: diaChi.defaultAddress ? 'white' : 'black' }}
+                                                        onClick={() => handleSetDefaultAddress(diaChi.id)}
+                                                        disabled={diaChi.defaultAddress}
+                                                    >
+                                                        {diaChi.defaultAddress ? 'Mặc định' : 'Thiết lập mặc định'}
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p>Chưa có địa chỉ nào</p>
+                            )}
+                        </div>
+                    ) : (
+                        <p>Đang tải dữ liệu...</p>
+                    )
+                }
 
                 <Modal
                     show={showModal}

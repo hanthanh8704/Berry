@@ -45,7 +45,8 @@ public class Bill {
     @Column(name = "address") // Định nghĩa cột "code" trong bảng
     private String address; // Mã hóa đơ
     @Column(name = "invoice_type") // Định nghĩa cột "invoice_type" trong bảng
-    private String invoiceType; // Loại hóa đơn (ví dụ: điện tử, giấy)
+    @Enumerated(EnumType.STRING)
+    private TypeBill invoiceType; // Loại hóa đơn (ví dụ: điện tử, giấy)
 
     @Column(name = "recipient_name") // Định nghĩa cột "recipient_name" trong bảng
     private String recipientName; // Tên người nhận hàng

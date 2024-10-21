@@ -38,7 +38,7 @@ public class Bill_detail {
     private BigDecimal price;
 
     @Column(name = "status")
-    private Integer status;
+    private StatusBil status;
 
     @CreationTimestamp // Ghi nhận thời gian tạo bản ghi tự động
     @CreatedDate // Đánh dấu trường này là ngày tạo

@@ -1069,20 +1069,30 @@ const Cart = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Box className="d-flex align-items-center">
-                                                <Carousel autoplay autoplaySpeed={3000} dots={false} arrows={false} style={{ height: '90px', width: '90px' }}>
+                                                <Carousel autoplay autoplaySpeed={3000} dots={false} arrows={false} >
                                                     {gh.productDetail.images?.map((anh, index) => (
-                                                        <div key={index} className="image-container">
-                                                            <img src={anh.url} alt="images" className="object-fit-cover" />
-                                                            {gh.productDetail.discountPercentage ? <p className="discount-badge">{-gh.productDetail.discountPercentage}%</p> : null}
+                                                        <div key={index} className="image-container" >
+                                                            <img
+                                                                src={anh.url}
+                                                                alt="images"
+                                                                className="carousel-image"
+                                                                style={{ height: '100px', width: '100px' }}
+                                                            />
+                                                            {gh.productDetail.discountPercentage ? (
+                                                                <p className="discount-badge">
+                                                                    {-gh.productDetail.discountPercentage}%
+                                                                </p>
+                                                            ) : null}
                                                         </div>
                                                     ))}
                                                 </Carousel>
+
                                                 <Typography variant="body1" sx={{ marginLeft: 2, marginRight: 2 }}>
                                                     {gh.productDetail.product.name}, {gh.productDetail.brand.name}, {gh.productDetail.collar.name}, {gh.productDetail.sleeve.name}
                                                 </Typography>
-                                                <button onClick={() => handleShow(gh)} className='btn rounded' style={{ backgroundColor: '#6A0DAD' }}>
+                                                {/* <button onClick={() => handleShow(gh)} className='btn rounded' style={{ backgroundColor: '#6A0DAD' }}>
                                                     Sửa
-                                                </button>
+                                                </button> */}
                                             </Box>
                                         </TableCell>
                                         <TableCell>
@@ -1097,7 +1107,7 @@ const Cart = () => {
                                                                 return; // Không cần cập nhật nếu giá trị không thay đổi
                                                             }
                                                             // console.log(`Số lượng cho ${gh.productDetail.product.name}: ${value}`);
-                                                            console.log(`ID gio hang chi tiet wwwwwwwwwwwwwwwww ${gh.quantity}`);                                                           
+                                                            console.log(`ID gio hang chi tiet wwwwwwwwwwwwwwwww ${gh.quantity}`);
                                                             updateSoLuong(gh.id, value)
                                                                 .then(response => {
                                                                     console.log("Cập nhật số lượng thành công", response.data);

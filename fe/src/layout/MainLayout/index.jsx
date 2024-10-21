@@ -88,9 +88,11 @@ const MainLayout = () => {
 
       {/* main content */}
       <Main theme={theme} open={leftDrawerOpened}>
-        {/* breadcrumb */}
-        <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+        {/* Thanh tiêu đề của bảng  */}
+        <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />\
+         {/* Phần hiển thị */}
         <Outlet />
+
       </Main>
       <Customization />
     </Box>

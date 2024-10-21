@@ -10,7 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const { confirm } = Modal;
 
-const User = () => {
+const User = ({ onSuccess }) => {
     const [khachHang, setKhachHang] = useState(null);
     const [hoTen, setHoTen] = useState('');
     const [soDienThoai, setSoDienThoai] = useState('');
@@ -102,8 +102,6 @@ const User = () => {
             errorsCopy.email = '';
         }
 
-
-
         setErrors(errorsCopy);
         return valid;
     };
@@ -134,6 +132,9 @@ const User = () => {
                             setImageUrl(response.data.imageStr || '');
                             setPreviewUrl(response.data.imageStr || '');
                             setImageFile(null); // Reset imageFile sau khi cập nhật thành công
+                            if (onSuccess) {
+                                onSuccess(response.data.imageStr); // Truyền URL ảnh mới lên
+                            }
                         } else {
                             toast.error("Cập nhật thông tin khách hàng thất bại!");
                         }

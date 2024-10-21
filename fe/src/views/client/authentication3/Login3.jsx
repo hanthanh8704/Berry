@@ -8,17 +8,16 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
-import AuthCardWrapper from '../AuthCardWrapper';
+import AuthWrapper1 from '../../pages/AuthWrapper1';
+import AuthCardWrapper from '../../pages/AuthCardWrapper';
+import AuthLogin from '../authentication/auth-forms/AuthLogin';
 import Logo from 'ui-component/Logo';
-import AuthRegister from '../authentication/auth-forms/AuthRegister';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 
-// assets
 
-// ===============================|| AUTH3 - REGISTER ||=============================== //
+// ================================|| AUTH3 - LOGIN ||================================ //
 
-const Register = () => {
+const Login = () => {
   const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
 
   return (
@@ -30,7 +29,7 @@ const Register = () => {
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item sx={{ mb: 3 }}>
-                    <Link to="#" aria-label="theme logo">
+                    <Link to="#" aria-label="logo">
                       <Logo />
                     </Link>
                   </Grid>
@@ -39,25 +38,25 @@ const Register = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color="secondary.main" gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            Sign up
+                            Xin chào, Chào mừng bạn trở lại
                           </Typography>
                           <Typography variant="caption" fontSize="16px" textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Enter your credentials to continue
+                            Nhập thông tin đăng nhập của bạn để tiếp tục
                           </Typography>
                         </Stack>
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item xs={12}>
-                    <AuthRegister />
+                    <AuthLogin />
                   </Grid>
                   <Grid item xs={12}>
                     <Divider />
                   </Grid>
                   <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Already have an account?
+                      <Typography component={Link} to="/sign-up" variant="subtitle1" sx={{ textDecoration: 'none' }}>
+                        Không có tài khoản?
                       </Typography>
                     </Grid>
                   </Grid>
@@ -74,4 +73,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

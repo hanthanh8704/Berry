@@ -32,13 +32,14 @@ const TimeLine = ({ listStatus, data, statusPresent }) => {
   };
 
   // Kiểm tra dữ liệu và trả về thông báo nếu không có dữ liệu
-  if (data.length === 0) {
-    return <div>Không có dữ liệu lịch sử hóa đơn.</div>;
-  }
+  // if (data.length === 0) {
+  //   return <div>Không có dữ liệu lịch sử hóa đơn.</div>;
+  // }
+  console.log("Timeline",TimelineEvent); // In ra để kiểm tra
 
   return (
     <div className="container" style={{ width: "100%", margin: "10px" }}>
-      <Timeline minEvents={statusPresent !== 7 ? 5 : 1} placeholder>
+      <Timeline minEvents={statusPresent !== "THANH_CONG" ? "DA_THANH_TOAN" : "CHO_XAC_NHAN" } placeholder>
         {data
           .filter((history) => history.status !== null)
           .map((item) => (
@@ -57,7 +58,7 @@ const TimeLine = ({ listStatus, data, statusPresent }) => {
                 item.status === "THANH_CONG" ? "Thành công" :
                 "Đã hủy"
               }
-              subtitle={moment(item.createDate).format("HH:mm:ss DD-MM-YYYY")}
+              subtitle={moment(item.createdAt).format("HH:mm:ss DD-MM-YYYY")}
             />
           ))}
       </Timeline>

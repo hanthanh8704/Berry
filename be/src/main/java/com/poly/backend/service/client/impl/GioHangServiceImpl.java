@@ -102,10 +102,6 @@ public class GioHangServiceImpl implements GioHangService {
     @Transactional(rollbackFor = RestApiException.class)
     public ResponseObject create(GioHangRequest request) {
         // Kiểm tra request
-//        if (request == null || request.getCustomerId() == null || request.getSpctId() == null || request.getQuantity() == null) {
-//            throw new RestApiException("Thông tin giỏ hàng không hợp lệ.");
-//        }
-
         // Tìm giỏ hàng hiện tại của khách hàng
         Cart existingGioHang = gioHangRepository.findByKhachHangId(request.getCustomerId());
 
@@ -181,12 +177,10 @@ public class GioHangServiceImpl implements GioHangService {
             Cart_detail chiTiet = gioHangChiTietRepository.findById(id).orElse(null);
             ProductDetail spct = spct_repository.findById(chiTiet.getProductDetail().getId()).get();
 
-
             if (chiTiet != null) {
                 chiTietListAo.add(chiTiet);
             }
         }
-
         // Lấy giỏ hàng chính của khách hàng
         Cart gioHangCu = gioHangRepository.findByKhachHangId(request.getCustomer().getId());
 
@@ -217,15 +211,12 @@ public class GioHangServiceImpl implements GioHangService {
     @Override
     public ResponseObject thanhToan(HoaDonRequest request) {
         // Lấy phương thức thanh toán từ request
-//        Payment thanhToanMethod = thanhToanRepository.findById(request.getPaymentId())
-//                .orElseThrow(() -> new RuntimeException("Không tìm thấy phương thức thanh toán!"));
-
         Customer customer = khachHangRepository.findById(request.getCustomerId()).get();
         // Tạo mới hóa đơn
         Bill hoaDon = new Bill();
         hoaDon.setCustomer(customer);
         hoaDon.setCode(genCodeHD());
-        hoaDon.setInvoiceType("Giao hàng");
+        hoaDon.setInvoiceType(TypeBill.GIAO_HANG);
         hoaDon.setEmployee(null);
 
         // Xét trạng thái hóa đơn dựa trên phương thức thanh toán
@@ -291,7 +282,7 @@ public class GioHangServiceImpl implements GioHangService {
             );
             hoaDonChiTiet.setCreatedAt(hoaDon.getCreatedAt());
             hoaDonChiTiet.setUpdatedAt(hoaDon.getUpdatedAt());
-            hoaDonChiTiet.setStatus(1);
+            hoaDonChiTiet.setStatus(StatusBil.CHO_XAC_NHAN);
             hoaDonChiTietRepository.save(hoaDonChiTiet);
             gioHangChiTietRepository.delete(gioHangChiTiet);
 
@@ -348,7 +339,7 @@ public class GioHangServiceImpl implements GioHangService {
         Bill_history lichSuHoaDon = new Bill_history();
         lichSuHoaDon.setBill(hoaDon);
         lichSuHoaDon.setEmployee(null);
-        lichSuHoaDon.setStatus("Chờ xác nhận");
+        lichSuHoaDon.setStatus(StatusBil.CHO_XAC_NHAN);
         lichSuHoaDon.setActionDescription(hoaDon.getNote());
         lichSuHoaDon.setCreatedAt(request.getCreatedAt());
         lichSuHoaDon.setUpdatedAt(request.getUpdatedAt());
@@ -914,11 +905,6 @@ public class GioHangServiceImpl implements GioHangService {
         ProductDetail spct = spct_repository.findById(gioHangCT.getProductDetail().getId())
                 .orElseThrow(() -> new RestApiException("Sản phẩm không tồn tại"));
 
-        // Tăng số lượng sản phẩm trở lại sau khi xóa chi tiết giỏ hàng
-//        spct.setSoLuong(spct.getSoLuong() + gioHangCT.getSoLuong());
-
-        // Lưu thay đổi số lượng sản phẩm vào cơ sở dữ liệu
-//        spct_repository.save(spct);
 
         // Xóa chi tiết giỏ hàng
         gioHangChiTietRepository.delete(gioHangCT);

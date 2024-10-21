@@ -29,7 +29,7 @@ public class HoaDonRequest {
     private List<Bill_history> billHistory;
     private String code; // Mã hóa đơn
 
-    private String invoiceType; // Loại hóa đơn (ví dụ: điện tử, giấy)
+    private TypeBill invoiceType; // Loại hóa đơn (ví dụ: điện tử, giấy)
 
     private String recipientName; // Tên người nhận hàng
 

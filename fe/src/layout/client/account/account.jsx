@@ -1,55 +1,61 @@
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import React, { useState, useEffect } from 'react'; 
-import { Avatar, Menu, Button, message } from 'antd'; 
-import { 
-    ProfileOutlined, 
-    EnvironmentOutlined, 
-    ShoppingCartOutlined, 
-    GiftOutlined, 
-    KeyOutlined 
-} from '@ant-design/icons'; 
-import { Box, Typography } from '@mui/material'; 
-import { Link, useLocation, Outlet } from 'react-router-dom'; 
-import { detailKH } from '../../../views/utilities/ApiDotGiamGia/DotGiamGiaApi'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Menu, Button, message } from 'antd';
+import {
+    ProfileOutlined,
+    EnvironmentOutlined,
+    ShoppingCartOutlined,
+    GiftOutlined,
+    KeyOutlined
+} from '@ant-design/icons';
+import { Box, Typography } from '@mui/material';
+import { Link, useLocation, Outlet } from 'react-router-dom';
+import { detailKH } from '../../../views/utilities/ApiDotGiamGia/DotGiamGiaApi';
+import User from 'views/client/account/profile';
 
+const Account = ({ handleLeftDrawerToggle }) => {
+    const location = useLocation();
+    const [selectedMenu, setSelectedMenu] = useState('');
+    const [khachHang, setKhachHang] = useState(null);
 
-const Account = ({ handleLeftDrawerToggle }) => { 
-    const location = useLocation(); 
-    const [selectedMenu, setSelectedMenu] = useState(''); 
-    const [khachHang, setKhachHang] = useState(null); 
+    useEffect(() => {
+        const customerId = 2;
+        detailKHClient(customerId);
+    }, []);
 
-    useEffect(() => { 
-        const customerId = 2; 
-        detailKHClient(customerId); 
-    }, []); 
+    const detailKHClient = (id) => {
+        detailKH(id)
+            .then(response => {
+                setKhachHang(response.data);
+                console.log("Khách hàng:", response.data);
+            })
+            .catch(error => {
+                message.error('Đã xảy ra lỗi khi tải thông tin khách hàng.');
+            });
+    };
+    const handleUpdateSuccess = (newImageUrl) => {
+        setKhachHang(prev => ({
+            ...prev,
+            imageStr: newImageUrl // Cập nhật URL ảnh mới
+        }));
+    };
 
-    const detailKHClient = (id) => { 
-        detailKH(id) 
-            .then(response => { 
-                setKhachHang(response.data); 
-                console.log("Khách hàng:", response.data); 
-            }) 
-            .catch(error => { 
-                message.error('Đã xảy ra lỗi khi tải thông tin khách hàng.'); 
-            }); 
-    }; 
-
-    useEffect(() => { 
-        const path = location.pathname; 
-        if (path.includes('/account/profile')) { 
-            setSelectedMenu('profile'); 
-        } else if (path.includes('/account/address')) { 
-            setSelectedMenu('address'); 
-        } else if (path.includes('/account/orders')) { 
-            setSelectedMenu('orders'); 
-        } else if (path.includes('/account/vouchers')) { 
-            setSelectedMenu('vouchers'); 
-        } else if (path.includes('/account/password')) { 
-            setSelectedMenu('password'); 
-        } else { 
-            setSelectedMenu(''); 
-        } 
-    }, [location.pathname]); 
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes('/account/profile')) {
+            setSelectedMenu('profile');
+        } else if (path.includes('/account/address')) {
+            setSelectedMenu('address');
+        } else if (path.includes('/account/orders')) {
+            setSelectedMenu('orders');
+        } else if (path.includes('/account/vouchers')) {
+            setSelectedMenu('vouchers');
+        } else if (path.includes('/account/password')) {
+            setSelectedMenu('password');
+        } else {
+            setSelectedMenu('');
+        }
+    }, [location.pathname]);
 
     const menuItems = [
         {
@@ -79,47 +85,47 @@ const Account = ({ handleLeftDrawerToggle }) => {
         }
     ];
 
-    return ( 
-        <div className="container py-3 px-5" style={{ backgroundColor: 'whitesmoke' }}> 
-            <Box className='d-flex py-3'> 
-                <Typography 
-                    component={Link} 
-                    to="/home" 
-                    sx={{ color: 'black', textDecoration: 'none', marginX: 1, fontWeight: 'bold' }} 
-                > 
-                    Trang chủ 
-                </Typography> 
-                <Typography sx={{ color: 'black', marginX: 1 }}>|</Typography> 
-                <Typography 
-                    component={Link} 
-                    to="/account/profile" 
-                    sx={{ color: 'black', textDecoration: 'none', marginX: 1 }} 
-                > 
-                    Tài khoản của tôi 
-                </Typography> 
-            </Box> 
+    return (
+        <div className="container py-3 px-5" style={{ backgroundColor: 'whitesmoke' }}>
+            <Box className='d-flex py-3'>
+                <Typography
+                    component={Link}
+                    to="/home"
+                    sx={{ color: 'black', textDecoration: 'none', marginX: 1, fontWeight: 'bold' }}
+                >
+                    Trang chủ
+                </Typography>
+                <Typography sx={{ color: 'black', marginX: 1 }}>|</Typography>
+                <Typography
+                    component={Link}
+                    to="/account/profile"
+                    sx={{ color: 'black', textDecoration: 'none', marginX: 1 }}
+                >
+                    Tài khoản của tôi
+                </Typography>
+            </Box>
 
-            <div className="row my-5"> 
-                <div className="col-md-4 px-5 py-5" style={{ backgroundColor: 'white', borderRadius: '5px', marginRight: '70px' }}> 
-                    <div className="text-center mb-4"> 
-                        <Avatar size={64} src={khachHang?.imageStr} alt="Ảnh khách hàng" /> 
-                        <h4 className="mt-2">{khachHang?.hoTen || 'Tên khách hàng'}</h4> 
-                        <Button type="link">Sửa hồ sơ</Button> 
-                    </div> 
-                    <Menu 
-                        mode="inline" 
-                        selectedKeys={[selectedMenu]} 
-                        items={menuItems} 
-                    /> 
-                 
-                </div> 
-                
-                <div className="col-md-7" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '5px' }}> 
-                    <Outlet /> 
-                </div> 
-            </div> 
-        </div> 
-    ); 
-}; 
+            <div className="row my-5">
+                <div className="col-md-4 px-5 py-5" style={{ backgroundColor: 'white', borderRadius: '5px', marginRight: '70px' }}>
+                    <div className="text-center mb-4">
+                        <Avatar size={64} src={khachHang?.imageStr} alt="Ảnh khách hàng" />
+                        <h4 className="mt-2">{khachHang?.fullName || 'Tên khách hàng'}</h4>
+                    </div>
+                    {/* <User onSuccess={handleUpdateSuccess} />  */}
+                    <Menu
+                        mode="inline"
+                        selectedKeys={[selectedMenu]}
+                        items={menuItems}
+                    />
+
+                </div>
+
+                <div className="col-md-7" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '5px' }}>
+                    <Outlet />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default Account;

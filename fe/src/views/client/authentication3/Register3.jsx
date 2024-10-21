@@ -8,8 +8,8 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
-import AuthCardWrapper from '../AuthCardWrapper';
+import AuthWrapper1 from '../../pages/AuthWrapper1';
+import AuthCardWrapper from '../../pages/AuthCardWrapper';
 import Logo from 'ui-component/Logo';
 import AuthRegister from '../authentication/auth-forms/AuthRegister';
 import AuthFooter from 'ui-component/cards/AuthFooter';
@@ -39,10 +39,10 @@ const Register = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color="secondary.main" gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            Sign up
+                            Đăng ký
                           </Typography>
                           <Typography variant="caption" fontSize="16px" textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Enter your credentials to continue
+                            Đăng ký tài khoản mới
                           </Typography>
                         </Stack>
                       </Grid>
@@ -56,8 +56,8 @@ const Register = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Already have an account?
+                      <Typography component={Link} to="/login" variant="subtitle1" sx={{ textDecoration: 'none' }}>
+                        Đã có tài khoản?
                       </Typography>
                     </Grid>
                   </Grid>

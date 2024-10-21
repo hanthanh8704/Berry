@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/danh-muc")
+@RequestMapping("/api/category")
 public class DanhMucController {
     @Autowired
     DanhMucRepository danhMucRepository;

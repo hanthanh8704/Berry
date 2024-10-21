@@ -11,6 +11,7 @@
     height: 100%;
     /* Chiều cao 100% để ảnh vừa với container */
     object-fit: cover;
+    border-radius: 10px; 
     /* Đảm bảo ảnh không bị biến dạng */
 }
 

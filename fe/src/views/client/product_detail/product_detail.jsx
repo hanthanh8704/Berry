@@ -707,7 +707,7 @@ const ProductDetail = () => {
                         )}
                     </div>
                     <div className='d-flex text-center'>
-                        {selectedSPCT ? (
+                        {/* {selectedSPCT ? (
                             selectedSPCT.discountPrice !== 0 ? (
                                 <>
                                     <h5 className="text-dark fw-semibold text-decoration-line-through">
@@ -724,7 +724,8 @@ const ProductDetail = () => {
                             )
                         ) : (
                             <p>Không có sản phẩm</p>
-                        )}
+                        )} */}
+                          <FormatCurrency value={selectedSPCT?.price * (100 - selectedSPCT?.discountPercentage) / 100} />
                     </div>
 
                     <div className='my-2'>
@@ -852,6 +853,7 @@ const ProductDetail = () => {
                                             <div className='d-flex justify-content-between mt-4 align-item-center'>
                                                 <b style={{ color: 'red' }}>
                                                     <FormatCurrency value={cart.data.spct.discountPrice === 0 ? cart.data.spct.price : cart.data.spct.discountPrice} />
+                                                   
                                                 </b>
                                                 <b>x{cart.data.quantity}</b>
                                             </div>

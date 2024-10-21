@@ -30,7 +30,8 @@ public class Bill_history {
     @JoinColumn(name = "employee_id")
     private Employee employee;
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusBil status;
 
     @Column(name = "action_description")
     private String actionDescription;

@@ -88,8 +88,7 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         // Lưu đợt giảm giá vào cơ sở dữ liệu
         Promotion dotGiamGiaSave = dotGiamGiaRepository.save(dotGiamGiaConvert.convertRequestToEntity(request));
 
-        // Cập nhật trạng thái khuyến mãi
-        updateStatusPromotion();
+
 
         // Thêm chi tiết đợt giảm giá mới
         for (Integer x : request.getProductDetails()) {
@@ -123,7 +122,8 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
 
         // Cập nhật trạng thái chi tiết đợt giảm giá
         updateStatusDotGiamGiaDetail();
-
+        // Cập nhật trạng thái khuyến mãi
+        updateStatusPromotion();
         return new ResponseObject(request);
     }
 
@@ -159,8 +159,6 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         // Lưu đợt giảm giá vào cơ sở dữ liệu
         Promotion dotGiamGiaSave = dotGiamGiaRepository.save(dotGiamGiaConvert.convertRequestToEntity(dotGiamGia, request));
 
-        // Cập nhật trạng thái khuyến mãi
-        updateStatusPromotion();
 
 
         // Thêm chi tiết đợt giảm giá mới
@@ -195,6 +193,9 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         // Cập nhật trạng thái chi tiết đợt giảm giá
         updateStatusDotGiamGiaDetail();
 
+        // Cập nhật trạng thái khuyến mãi
+        updateStatusPromotion();
+
         return new ResponseObject(dotGiamGia);
     }
 
@@ -225,19 +226,21 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
         Optional<Promotion> dotGiamGiaOpt = dotGiamGiaRepository.findById(idDGG);
         if (dotGiamGiaOpt.isPresent()) {
             Promotion dotGiamGia = dotGiamGiaOpt.get();
-            dotGiamGia.setDeleted(true); //true laf 1 true của deleted là xóa
+            dotGiamGia.setDeleted(true); //true là được phép xóa là 1 đã xóa
             dotGiamGia.setStatus("Đã kết thúc");
 
             dotGiamGiaRepository.save(dotGiamGia); // Lưu lại đối tượng DotGiamGia sau khi cập nhật trường deleted
 
             List<ProductDetailPromotion> dotGiamGiaDetails = dotGiamGiaDetailRepository.getDGGDetailByidDotGG(idDGG);
+
             for (ProductDetailPromotion dotGiamGiaDetail : dotGiamGiaDetails) {
                 Integer idSPCT = dotGiamGiaDetail.getProductDetail().getId();
                 Optional<ProductDetail> spctOpt = spct_repository.findById(idSPCT);
                 if (spctOpt.isPresent()) {
                     ProductDetail spct = spctOpt.get();
                     spct.setDiscountPercentage(0);
-                    spct.setPrice(dotGiamGiaDetail.getOldPrice());
+                    spct.setDiscountPrice(BigDecimal.valueOf(0));
+//                    spct.setPrice(dotGiamGiaDetail.getOldPrice());
                     spct_repository.save(spct); // Lưu lại đối tượng SPCT sau khi cập nhật giá bán
                 }
             }
@@ -252,14 +255,66 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
     @Override
     public void updateStatusPromotion() {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        List<Promotion> promotions = dotGiamGiaRepository.findAll();
 
+        List<Promotion> promotions = dotGiamGiaRepository.findAll();
+        List<ProductDetailPromotion> dotGiamGiaDetailList = dotGiamGiaDetailRepository.findAll();
+
+        for (ProductDetailPromotion dotGiamGiaDetail : dotGiamGiaDetailList) {
+            Integer idSPCT = dotGiamGiaDetail.getProductDetail().getId(); // Lấy ID sản phẩm cụ thể
+            Optional<ProductDetail> spctOptional = spct_repository.findById(idSPCT); // Tìm sản phẩm cụ thể (SPCT) bằng ID
+
+            if (spctOptional.isPresent()) {
+                ProductDetail spct = spctOptional.get();
+                List<ProductDetailPromotion> dotGiamGiaDDG = dotGiamGiaDetailList.stream()
+                        .filter(detail -> detail.getProductDetail().getId().equals(idSPCT) && detail.getStartDate().isBefore(currentDateTime) && detail.getEndDate().isAfter(now))
+                        .collect(Collectors.toList());
+
+                if (dotGiamGiaDetail.getStartDate().isAfter(currentDateTime)) {
+                    dotGiamGiaDetail.setStatus("Sắp diễn ra");
+                    dotGiamGiaDetail.setOldPrice(spct.getPrice());
+                    dotGiamGiaDetail.setNewPrice(dotGiamGiaDetail.getOldPrice().multiply(BigDecimal.valueOf(1 - dotGiamGiaDetail.getPromotion().getDiscountPercentage() / 100.0)));
+                    dotGiamGiaDetail.setDiscount(dotGiamGiaDetail.getOldPrice().subtract(dotGiamGiaDetail.getNewPrice()));
+                    spct.setDiscountPercentage(0);
+                    spct.setDiscountPrice(BigDecimal.valueOf(0));
+
+                } else if (dotGiamGiaDetail.getStartDate().isBefore(currentDateTime) && dotGiamGiaDetail.getEndDate().isAfter(currentDateTime)) {
+                    dotGiamGiaDetail.setStatus("Đang diễn ra");
+
+                    BigDecimal giaMoi;
+                    if (dotGiamGiaDDG.size() > 1) {
+                        int totalDiscount = dotGiamGiaDDG.stream().mapToInt(detail -> detail.getPromotion().getDiscountPercentage()).sum();
+                        int averageDiscount = totalDiscount / dotGiamGiaDDG.size();
+                        spct.setDiscountPercentage(averageDiscount);
+                        giaMoi = spct.getPrice().multiply(BigDecimal.valueOf(1 - averageDiscount / 100.0));
+                    } else {
+                        spct.setDiscountPercentage(dotGiamGiaDetail.getPromotion().getDiscountPercentage());
+                        giaMoi = spct.getPrice().multiply(BigDecimal.valueOf(1 - spct.getDiscountPercentage() / 100.0));
+                    }
+
+                    dotGiamGiaDetail.setOldPrice(spct.getPrice());
+                    dotGiamGiaDetail.setNewPrice(giaMoi);
+                    dotGiamGiaDetail.setDiscount(dotGiamGiaDetail.getOldPrice().subtract(dotGiamGiaDetail.getNewPrice()));
+                    spct.setDiscountPrice(giaMoi);
+
+                } else if (dotGiamGiaDetail.getEndDate().isBefore(currentDateTime)) {
+                    dotGiamGiaDetail.setStatus("Đã kết thúc");
+                    spct.setPrice(spct.getPrice());
+                    spct.setDiscountPrice(BigDecimal.valueOf(0));
+                    dotGiamGiaDetail.setOldPrice(spct.getPrice());
+                    dotGiamGiaDetail.setNewPrice(dotGiamGiaDetail.getOldPrice().multiply(BigDecimal.valueOf(1 - dotGiamGiaDetail.getPromotion().getDiscountPercentage() / 100.0)));
+                    dotGiamGiaDetail.setDiscount(dotGiamGiaDetail.getOldPrice().subtract(dotGiamGiaDetail.getNewPrice()));
+
+                    spct.setDiscountPercentage(0);
+                }
+
+                spct_repository.save(spct);
+            }
+        }
         for (Promotion dotGiamGia : promotions) {
-            if (dotGiamGia.getDeleted() == true) {
+            if (dotGiamGia.getDeleted() == false) {  //false là ko xóa true là đã xóa
                 LocalDateTime startDate = dotGiamGia.getStartDate();
                 LocalDateTime endDate = dotGiamGia.getEndDate();
                 if (currentDateTime.isBefore(startDate)) {
-
                     dotGiamGia.setStatus("Sắp diễn ra");
                 } else if (currentDateTime.isAfter(startDate) && currentDateTime.isBefore(endDate)) {
                     dotGiamGia.setStatus("Đang diễn ra");
@@ -269,7 +324,9 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
                 if (endDate.isEqual(startDate)) {
                     dotGiamGia.setStatus("Đã kết thúc");
                 }
+
                 dotGiamGiaRepository.save(dotGiamGia);
+                dotGiamGiaDetailRepository.saveAll(dotGiamGiaDetailList);
             }
         }
     }

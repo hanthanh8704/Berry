@@ -71,14 +71,14 @@ export const findAllByIdSanPhamAndDGG = (id) => {
     return axios.get(`${RESST_API_BASE_URL_SP}/detailDGG/${id}`);
 }
 
-//Danh muc
-const RESST_API_BASE_URL_DM = 'http://localhost:8080/api/danh-muc';
+    //Danh muc
+    const RESST_API_BASE_URL_DM = 'http://localhost:8080/api/category';
 
-export const getAllDanhMuc = () => axios.get(`${RESST_API_BASE_URL_DM}/index`);
+    export const getAllDanhMuc = () => axios.get(`${RESST_API_BASE_URL_DM}/index`);
 
-export const finBySanPhamIdDM = (id) => {
-    return axios.get(`${RESST_API_BASE_URL_DM}/detail/${id}`);
-}
+    export const finBySanPhamIdDM = (id) => {
+        return axios.get(`${RESST_API_BASE_URL_DM}/detail/${id}`);
+    }
 
 
 // Day la trar hàng con mẹ nó 
