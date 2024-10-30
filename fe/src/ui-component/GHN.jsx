@@ -2,7 +2,7 @@
   import { Col, Form, Select, Divider } from "antd";
   import * as request from 'views/utilities/httpRequest';
 
-  const GHN = ({ dataAddress, thanhPho, phuong, huyen, disabledValue }) => {
+  const GHN = ({ dataAddress, city, district, ward, disabledValue }) => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -30,8 +30,8 @@
     }, []);
 
     useEffect(() => {
-      if (thanhPho && huyen) {
-        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${thanhPho}`, configApi)
+      if (city && district) {
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${city}`, configApi)
           .then((response) => {
             setDistricts(response.data);
           })
@@ -39,7 +39,7 @@
             console.error('Error fetching districts:', error);
           });
 
-        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${huyen}`, configApi)
+        request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${district}`, configApi)
           .then((response) => {
             setWards(response.data);
           })
@@ -47,7 +47,7 @@
             console.error('Error fetching wards:', error);
           });
       }
-    }, [thanhPho, huyen]);
+    }, [city, district]);
 
     const handleProvinceChange = (provinceCode) => {
       setSelectedProvince(provinceCode);
@@ -85,9 +85,9 @@
     useEffect(() => {
       if (dataAddress) {
         dataAddress({
-          thanhPho: selectedProvince,
-          huyen: selectedDistrict,
-          phuong: selectedWard,
+          city: selectedProvince,
+          district: selectedDistrict,
+          ward: selectedWard,
         });
       }
     }, [selectedProvince, selectedDistrict, selectedWard, dataAddress]);
@@ -96,7 +96,7 @@
       <>
         <Col span={8}>
           <Form.Item
-            name="thanhPho"
+            name="city"
             label="Thành phố"
             rules={[{ required: true, message: "Thành phố không được để trống!" }]}
           >
@@ -105,7 +105,7 @@
               placeholder="Chọn thành phố"
               optionFilterProp="children"
               onChange={handleProvinceChange}
-              value={thanhPho}
+              value={city}
               filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
             >
               {provinces.map((province) => (
@@ -118,7 +118,7 @@
         </Col>
         <Col span={8}>
           <Form.Item
-            name="huyen"
+            name="district"
             label="Huyện"
             rules={[{ required: true, message: "Huyện không được để trống!" }]}
           >
@@ -127,7 +127,7 @@
               placeholder="Chọn huyện"
               optionFilterProp="children"
               onChange={handleDistrictChange}
-              value={huyen}
+              value={district}
               filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
             >
               {districts.map((district) => (
@@ -140,7 +140,7 @@
         </Col>
         <Col span={8}>
           <Form.Item
-            name="phuong"
+            name="ward"
             label="Phường"
             rules={[{ required: true, message: "Phường không được để trống!" }]}
           >
@@ -149,7 +149,7 @@
               placeholder="Chọn phường"
               optionFilterProp="children"
               onChange={handleWardChange}
-              value={phuong}
+              value={ward}
               filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
             >
               {wards.map((ward) => (

@@ -1,16 +1,33 @@
-.custom-button {
-    width: 100%;
-    text-align: center;
-    border-radius: 0;
-    border: 1px solid #000;
-    background-color: #fff;
-    color: #000;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px 0;
+
+.image-container {
+  position: relative;
+
 }
 
-.custom-button:hover {
-    background-color: #f8f9fa;
-    color: #000;
+.object-fit-contain {
+ 
+  object-fit: contain;
 }
+
+.discount-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: red;
+  /* Nền đỏ */
+  color: white;
+  /* Chữ trắng */
+  padding: 2px 5px;
+  border-radius: 5px;
+  /* Bo góc */
+  font-weight: bold;
+  font-size: 12px;
+  /* Kích thước chữ */
+  margin: 0;
+  /* Đảm bảo không có margin mặc định */
+  z-index: 1;
+  /* Đảm bảo thẻ này luôn hiển thị trên ảnh */
+}
+
+
+

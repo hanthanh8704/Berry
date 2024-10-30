@@ -3,7 +3,7 @@ import { Option } from "antd/es/mentions";
 import React, { useEffect, useState } from "react";
 import * as request from 'views/utilities/httpRequest';
 
-const GHNDetail = ({ dataAddress, thanhPho, huyen, phuong, disabledValue }) => {
+const GHNDetail = ({ dataAddress, city, district, ward, disabledValue }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -26,19 +26,19 @@ const GHNDetail = ({ dataAddress, thanhPho, huyen, phuong, disabledValue }) => {
     }).catch((e) => {
       console.log(e);
     });
-    if (huyen !== undefined && phuong !== undefined) {
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${thanhPho}`, configApi).then((response) => {
+    if (district !== undefined && ward !== undefined) {
+      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${city}`, configApi).then((response) => {
         setDistricts(response.data);
       }).catch((e) => {
         console.log(e);
       });
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${huyen}`, configApi).then((response) => {
+      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${district}`, configApi).then((response) => {
         setWards(response.data);
       }).catch((e) => {
         console.log(e);
       });
     }
-  }, [thanhPho, huyen, phuong]);
+  }, [city, district, ward]);
 
   const handleProvinceChange = (provinceCode) => {
     request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceCode}`, configApi).then((response) => {
@@ -59,27 +59,27 @@ const GHNDetail = ({ dataAddress, thanhPho, huyen, phuong, disabledValue }) => {
   };
 
   useEffect(() => {
-    setSelectedProvince(thanhPho);
-    setSelectedDistrict(huyen);
-    setSelectedWard(phuong);
-    console.log(`${thanhPho} - ${huyen} - ${phuong}`);
-  }, [thanhPho, huyen, phuong]);
+    setSelectedProvince(city);
+    setSelectedDistrict(district);
+    setSelectedWard(ward);
+    console.log(`${city} - ${district} - ${ward}`);
+  }, [city, district, ward]);
 
   const handleWardChange = (wardCode) => {
     dataAddress({
-      thanhPho: selectedProvince,
-      huyen: selectedDistrict,
-      phuong: wardCode,
+      city: selectedProvince,
+      district: selectedDistrict,
+      ward: wardCode,
     });
   };
 
   return (
     <>
       <Col span={8}>
-        <Form.Item label="Tỉnh/thành phố" name={"thanhPho"} initialValue={!thanhPho ? null : parseInt(thanhPho)} rules={[{ required: true, message: "Tỉnh thành phố không được để trống!" },]}>
+        <Form.Item label="Tỉnh/thành phố" name={"city"} initialValue={!city ? null : parseInt(city)} rules={[{ required: true, message: "Tỉnh thành phố không được để trống!" },]}>
           <Select showSearch onChange={handleProvinceChange} placeholder="Chọn tỉnh/thành phố..." optionFilterProp="children"
             filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={!thanhPho ? null : parseInt(thanhPho)}
+            defaultValue={!city ? null : parseInt(city)}
             disabled={disabledValue}
           >
             {provinces.map((province) => (
@@ -91,10 +91,10 @@ const GHNDetail = ({ dataAddress, thanhPho, huyen, phuong, disabledValue }) => {
         </Form.Item>
       </Col>
       <Col span={8}>
-        <Form.Item label="Quận/huyện" name={"huyen"} initialValue={!huyen ? null : parseInt(huyen)} rules={[{ required: true, message: "Quận huyện không được để trống!" },]}>
+        <Form.Item label="Quận/huyện" name={"district"} initialValue={!district ? null : parseInt(district)} rules={[{ required: true, message: "Quận huyện không được để trống!" },]}>
           <Select showSearch onChange={handleDistrictChange} placeholder="Chọn quận/huyện..." optionFilterProp="children"
             filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={!huyen ? null : parseInt(huyen)}
+            defaultValue={!district ? null : parseInt(district)}
             disabled={disabledValue}
           >
             {districts.map((province) => (
@@ -106,10 +106,10 @@ const GHNDetail = ({ dataAddress, thanhPho, huyen, phuong, disabledValue }) => {
         </Form.Item>
       </Col>
       <Col span={8}>
-        <Form.Item label="Xã/phường/thị trấn" initialValue={phuong} name={"phuong"} rules={[{ required: true, message: "Xã phường không được để trống!" },]}>
+        <Form.Item label="Xã/phường/thị trấn" initialValue={ward} name={"ward"} rules={[{ required: true, message: "Xã phường không được để trống!" },]}>
           <Select showSearch onChange={handleWardChange} placeholder="Chọn xã/phường/thị trấn..." optionFilterProp="children"
             filterOption={(input, option) => (option?.children ?? "").toLowerCase().includes(input.toLowerCase())}
-            defaultValue={phuong}
+            defaultValue={ward}
             disabled={disabledValue}
           >
             {wards.map((ward) => (

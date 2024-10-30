@@ -5,7 +5,7 @@ import FormatCurrency from 'views/utilities/FormatCurrency';
 import FormatDate from 'views/utilities/FormatDate';
 import * as request from 'views/utilities/httpRequest';
 
-function VoucherOrder({ onSelectVoucher, customerId }) {
+function VoucherOrder({ onSelectVoucher, idKhachHang }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [privateVoucher, setPrivateVoucher] = useState([]);
     const [publicVoucher, setPublicVoucher] = useState([]);
@@ -16,8 +16,8 @@ function VoucherOrder({ onSelectVoucher, customerId }) {
     const loadVoucher = (searchValue) => {
         request.get('/voucher/public', {
             params: {
-                ten: searchValue,
-                trangThai: "Đang diễn ra"
+                name: searchValue,
+                status: "Đang diễn ra"
             }   
         }).then(response => {
             setPublicVoucher(response.data);
@@ -25,10 +25,10 @@ function VoucherOrder({ onSelectVoucher, customerId }) {
         }).catch(e => {
             console.log(e);
         })
-        request.get(`/voucher/private/${customerId}`, {
+        request.get(`/voucher/private/${idKhachHang}`, {
             params: {
-                ten: searchValue,
-                trangThai: "Đang diễn ra"
+                name: searchValue,
+                status: "Đang diễn ra"
             }
         }).then(response => {
             setPrivateVoucher(response.data);
@@ -80,8 +80,9 @@ function VoucherOrder({ onSelectVoucher, customerId }) {
                               position-relative pt-2 mt-3 border border-2 px-2 ${selectedVoucher === item && 'border-warning'}`}>
                                 <div className="flex-grow-1">
                                     <ul className='list-unstyled'>
-                                        <li className='fw-semibold'><span className='text-warning'>[{item.ma}]</span> {item.ten} <Tag color="gold">{item.giaTriHoaDonDuocGiam} <span>{item.hinhThucGiam}</span> </Tag></li>
+                                        <li className='fw-semibold'><span className='text-warning'>[{item.code}]</span> {item.name} <Tag color="gold">{item.giaTriHoaDonDuocGiam} <span>{item.hinhThucGiam}</span> </Tag></li>
                                         <li className='small'>Đơn tối thiểu: <FormatCurrency value={item.giaTriHoaDonDuocApDung} /></li>
+                                        <li className='small'>Đơn tối đa: <FormatCurrency value={item.giaTriHoaDonDuocApDungToiDa} /></li>
                                         <li className='small'>Ngày kết thúc: <FormatDate date={item.ngayKetThuc} /></li>
                                     </ul>
                                 </div>
@@ -100,16 +101,17 @@ function VoucherOrder({ onSelectVoucher, customerId }) {
                             <div onClick={() => { setSelectedVoucher(item); onSelectVoucher(item) }} className={`d-flex align-items-center position-relative pt-2 mt-3 border border-2 rounded-2 px-2 ${selectedVoucher === item && 'border-warning'}`}>
                                 <div className="flex-grow-1">
                                 <ul className='list-unstyled'>
-                                        <li className='fw-semibold'><span className='text-warning'>[{item.ma}]</span> {item.ten} <Tag color="gold">{item.giaTriHoaDonDuocGiam} <span>{item.hinhThucGiam}</span> </Tag></li>
-                                        <li className='small'>Đơn tối thiểu: <FormatCurrency value={item.giaTriHoaDonDuocApDung} /></li>
-                                        <li className='small'>Ngày kết thúc: <FormatDate date={item.ngayKetThuc} /></li>
+                                        <li className='fw-semibold'><span className='text-warning'>[{item.ma}]</span> {item.name} <Tag color="gold">{item.giaTriHoaDonDuocGiam} <span>{item.hinhThucGiam}</span> </Tag></li>
+                                        <li className='small'>Đơn tối thiểu: <FormatCurrency value={item.minOrderValue} /></li>
+                                        <li className='small'>Đơn tối đa: <FormatCurrency value={item.maxDiscountValue} /></li>
+                                        <li className='small'>Ngày kết thúc: <FormatDate date={item.endDate} /></li>
                                     </ul>
                                 </div>
                                 <div className="">
                                     <input type="radio" className="form-check-input" name='voucher' checked={selectedVoucher === item ? true : false} />
                                 </div>
                                 <span className="position-absolute top-0 start-100 translate-middle badge bg-warning">
-                                    x {item.soLuong}
+                                    x {item.quantity}
                                 </span>
                             </div>
                         ))}

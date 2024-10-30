@@ -39,11 +39,9 @@ const Register = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color="secondary.main" gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            Sign up
+                            Đăng ký
                           </Typography>
-                          <Typography variant="caption" fontSize="16px" textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Enter your credentials to continue
-                          </Typography>
+
                         </Stack>
                       </Grid>
                     </Grid>
@@ -56,7 +54,7 @@ const Register = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
+                      <Typography component={Link} to="/login" variant="subtitle1" sx={{ textDecoration: 'none' }}>
                         Already have an account?
                       </Typography>
                     </Grid>
@@ -66,9 +64,9 @@ const Register = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sx={{ m: 3, mt: 1 }}>
+        {/* <Grid item xs={12} sx={{ m: 3, mt: 1 }}>
           <AuthFooter />
-        </Grid>
+        </Grid> */}
       </Grid>
     </AuthWrapper1>
   );

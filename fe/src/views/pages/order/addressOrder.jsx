@@ -52,14 +52,14 @@ function AddressOrders(idKhachHang, onSuccess) {
     },
     {
       title: 'Tên người nhận',
-      dataIndex: 'hoTen',
-      key: 'hoTen',
+      dataIndex: 'fullName',
+      key: 'fullName',
       className: 'text-center'
     },
     {
       title: 'Số điện thoại',
-      dataIndex: 'soDienThoai',
-      key: 'soDienThoai',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
       className: 'text-center'
     },
     {
@@ -69,19 +69,19 @@ function AddressOrders(idKhachHang, onSuccess) {
       className: 'text-center',
       render: (x, item) => (
         <>
-          {item.diaChiCuThe}
+          {item.detailedAddress}
           {', '}
-          <DetailAddress thanhPho={item.thanhPho} huyen={item.huyen} phuong={item.phuong} />
+          <DetailAddress city={item.city} district={item.district} ward={item.ward} />
         </>
       )
     },
     {
       title: 'Mặc định',
-      key: 'diaChiMacDinh',
+      key: 'defaultAddress',
       className: 'text-center',
       render: (x, item) => 
       <>{
-        item.diaChiMacDinh ? 
+        item.defaultAddress ? 
         <IconCheck className="text-success" /> 
         : <IconX className="text-danger" />
         }</>

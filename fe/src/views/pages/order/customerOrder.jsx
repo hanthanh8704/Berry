@@ -69,7 +69,7 @@ function CustomerOrder({ handleSelect }) {
     request
       .get('/customer', {
         params: {
-          hoTen: value
+          fullName: value
         }
       })
       .then((response) => {
@@ -88,20 +88,19 @@ function CustomerOrder({ handleSelect }) {
   const onSelect = (value) => {
     setSearchValue('');
     handleSelect(value);
-    setIsModalKHOpen(false); // Tự động đóng form khi chọn khách hàng
+    setIsModalKHOpen(false);
   };
 
   const columns = [
     {
       title: 'STT',
-      dataIndex: 'stt',
-      key: 'stt',
-      render: (text, record, index) => index + 1
+      dataIndex: 'integer',
+      key: 'integer'
     },
     {
       title: 'Ảnh đại diện',
-      dataIndex: 'anh',
-      key: 'anh',
+      dataIndex: 'image',
+      key: 'image',
       render: (text) => <Avatar src={text} className="me-2" />
     },
     {
@@ -111,23 +110,23 @@ function CustomerOrder({ handleSelect }) {
     },
     {
       title: 'Họ tên',
-      dataIndex: 'hoTen',
-      key: 'hoTen'
+      dataIndex: 'fullName',
+      key: 'fullName'
     },
     {
       title: 'Ngày sinh',
-      dataIndex: 'ngaySinh',
-      key: 'ngaySinh'
+      dataIndex: 'dateOfBirth',
+      key: 'dateOfBirth'
     },
     {
       title: 'Số điện thoại',
-      dataIndex: 'soDienThoai',
-      key: 'soDienThoai'
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber'
     },
     {
       title: 'Giới tính',
-      dataIndex: 'gioiTinh',
-      key: 'gioiTinh'
+      dataIndex: 'gender',
+      key: 'gender'
     },
     {
       title: 'Thao tác',
@@ -150,20 +149,20 @@ function CustomerOrder({ handleSelect }) {
 
   const handleAddCustomer = (data) => {
     const formData = new FormData();
-    formData.append('anh', Anh);
-    formData.append('diaChiRequest.hoTen', data.hoTen);
-    formData.append('diaChiRequest.soDienThoai', data.soDienThoai);
-    formData.append('diaChiRequest.diaChiMacDinh', true);
-    formData.append('diaChiRequest.thanhPho', dataAddress.thanhPho);
-    formData.append('diaChiRequest.huyen', dataAddress.huyen);
-    formData.append('diaChiRequest.phuong', dataAddress.phuong);
-    formData.append('diaChiRequest.diaChiCuThe', data.diaChiCuThe);
+    formData.append('image', Anh);
+    formData.append('addressRepuest.fullName', data.fullName);
+    formData.append('addressRepuest.phoneNumber', data.phoneNumber);
+    formData.append('addressRepuest.defaultAddress', true);
+    formData.append('addressRepuest.city', dataAddress.city);
+    formData.append('addressRepuest.district', dataAddress.district);
+    formData.append('addressRepuest.ward', dataAddress.ward);
+    formData.append('addressRepuest.detailedAddress', data.detailedAddress);
 
-    formData.append('hoTen', data.hoTen);
-    formData.append('gioiTinh', data.gioiTinh);
-    formData.append('ngaySinh', data.ngaySinh);
+    formData.append('fullName', data.fullName);
+    formData.append('gender', data.gender);
+    formData.append('dateOfBirth', data.dateOfBirth);
     formData.append('email', data.email);
-    formData.append('soDienThoai', data.soDienThoai);
+    formData.append('phoneNumber', data.phoneNumber);
     Modal.confirm({
       title: 'Xác nhận',
       maskClosable: true,
@@ -196,13 +195,14 @@ function CustomerOrder({ handleSelect }) {
     <>
       <div className="d-flex">
         <div className="flex-grow-1 me-1">
-          <Button type="primary" className="bg-warning text-dark" onClick={showModalSelectCustomer}>
+          <Button type="primary" style={{ background: '#a55eea' }} className="text-white" onClick={showModalSelectCustomer}>
             Chọn khách hàng
           </Button>
         </div>
       </div>
-
-      <Modal title="Khách hàng mới" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1000} footer="">
+  
+      {/* Modal thêm khách hàng mới */}
+      <Modal title="Khách hàng mới" open={isModalOpen} onCancel={handleCancel} width={1000} footer={null}>
         <Form onFinish={handleAddCustomer} layout="vertical" form={form}>
           <Row gutter={24}>
             <Col span={8}>
@@ -221,7 +221,7 @@ function CustomerOrder({ handleSelect }) {
                       setAnh(null);
                     }}
                   >
-                    <FaTrash className="text-danger" />
+                    <i className="fas fa-trash text-danger"></i>
                   </Button>
                 </div>
               ) : (
@@ -245,8 +245,8 @@ function CustomerOrder({ handleSelect }) {
                 </div>
               )}
               <Form.Item
-                label={'Tên khách hàng'}
-                name={'hoTen'}
+                label="Tên khách hàng"
+                name="fullName"
                 rules={[
                   { required: true, message: 'Tên không được để trống!' },
                   {
@@ -262,48 +262,32 @@ function CustomerOrder({ handleSelect }) {
               <Row gutter={10}>
                 <Col span={24}>
                   <Form.Item
-                    label={'Giới tính'}
-                    name={'gioiTinh'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Giới tính không được để trống!'
-                      }
-                    ]}
+                    label="Giới tính"
+                    name="gender"
+                    rules={[{ required: true, message: 'Giới tính không được để trống!' }]}
                   >
                     <Radio.Group>
-                      <Radio value={'Nam'}>Nam</Radio>
-                      <Radio value={'Nữ'}>Nữ</Radio>
+                      <Radio value="Nam">Nam</Radio>
+                      <Radio value="Nữ">Nữ</Radio>
                     </Radio.Group>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Ngày sinh'}
-                    name={'ngaySinh'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Ngày sinh không được để trống!'
-                      }
-                    ]}
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    rules={[{ required: true, message: 'Ngày sinh không được để trống!' }]}
                   >
-                    <DatePicker placeholder="Chọn ngày sinh" format={'DD/MM/YYYY'} className="w-100" />
+                    <DatePicker placeholder="Chọn ngày sinh" format="DD/MM/YYYY" className="w-100" />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Email'}
-                    name={'email'}
+                    label="Email"
+                    name="email"
                     rules={[
-                      {
-                        required: true,
-                        message: 'Email không được để trống!'
-                      },
-                      {
-                        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Email không hợp lệ'
-                      }
+                      { required: true, message: 'Email không được để trống!' },
+                      { type: 'email', message: 'Email không hợp lệ!' }
                     ]}
                   >
                     <Input placeholder="Nhập email khách hàng..." />
@@ -311,17 +295,11 @@ function CustomerOrder({ handleSelect }) {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Số điện thoại'}
-                    name={'soDienThoai'}
+                    label="Số điện thoại"
+                    name="phoneNumber"
                     rules={[
-                      {
-                        required: true,
-                        message: 'Số điện thoại không được để trống!'
-                      },
-                      {
-                        pattern: /^(03|05|07|08|09)\d{8}$/,
-                        message: 'Số điện thoại không hợp lệ'
-                      }
+                      { required: true, message: 'Số điện thoại không được để trống!' },
+                      { pattern: /^(03|05|07|08|09)\d{8}$/, message: 'Số điện thoại không hợp lệ!' }
                     ]}
                   >
                     <Input placeholder="Nhập số điện thoại..." />
@@ -329,14 +307,9 @@ function CustomerOrder({ handleSelect }) {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Địa chỉ cụ thể'}
-                    name={'diaChiCuThe'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Địa chỉ không được để trống!'
-                      }
-                    ]}
+                    label="Địa chỉ cụ thể"
+                    name="detailedAddress"
+                    rules={[{ required: true, message: 'Địa chỉ không được để trống!' }]}
                   >
                     <Input.TextArea rows={2} placeholder="Nhập địa chỉ cụ thể..." />
                   </Form.Item>
@@ -357,14 +330,15 @@ function CustomerOrder({ handleSelect }) {
           </Row>
         </Form>
       </Modal>
-
+  
+      {/* Modal chọn khách hàng */}
       <Modal
         title="Chọn khách hàng"
         open={isModalKHOpen}
         onOk={handleKHOk}
         onCancel={handleKHCancel}
         width={1000}
-        footer=""
+        footer={null}
       >
         <AutoComplete
           style={{ width: '100%', marginBottom: '16px' }}
@@ -376,6 +350,7 @@ function CustomerOrder({ handleSelect }) {
       </Modal>
     </>
   );
+  
 }
 
 export default CustomerOrder;

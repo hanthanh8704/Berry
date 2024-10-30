@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table, Tooltip,Tag } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import { EditOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
@@ -25,10 +25,13 @@ function Brand() {
         loadData(currentPage, pageSize, searchValue, statusBrand);
     }, [currentPage, pageSize, searchValue, statusBrand]);
 
-    const loadData = async (page, size, search, status) => {
+    const loadData = async (page, size, searchValue, status) => {
         try {
             const response = await request.get("/brand", {
-                params: { name: search, page, sizePage: size, status },
+                params: {
+                    name: searchValue ? `%${searchValue}%` : null,
+                    page, sizePage: size, status
+                },
             });
             setBrandList(response.data);
             setTotalPages(response.totalPages);
@@ -72,7 +75,7 @@ function Brand() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = brandList.some(brand => brand.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = brandList.some(brand => brand.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên thương hiệu đã tồn tại!");
                         return;
@@ -102,7 +105,7 @@ function Brand() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = brandList.some(brand => brand.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = brandList.some(brand => brand.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên thương hiệu đã tồn tại!");
                         return;
@@ -136,7 +139,7 @@ function Brand() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten,
+            name: record.name,
             trangThai: record.trangThai,
         });
     };
@@ -155,6 +158,7 @@ function Brand() {
                     <label className="mb-1">Thương hiệu</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        value={searchValue}
                         placeholder="Tìm kiếm thương hiệu theo tên..."
                     />
                 </Col>
@@ -182,32 +186,20 @@ function Brand() {
                     },
                     {
                         title: "Tên Thương Hiệu",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
-                            >
-                              {text}
-                            </Tag>
-                          )
                     },
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -261,7 +253,7 @@ function Brand() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Tên thương hiệu"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên thương hiệu!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -298,7 +290,7 @@ function Brand() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Tên thương hiệu"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên thương hiệu!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },

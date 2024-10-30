@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import ProtectedRoute from './ProtectedRoute';
 
 // project imports
 import MainLayout from 'layout/MainLayout';
@@ -11,22 +12,24 @@ import Material from 'views/pages/products/attribute/Material';
 import Category from 'views/pages/products/attribute/Category';
 import Sleeve from 'views/pages/products/attribute/Sleeve';
 import Collar from 'views/pages/products/attribute/Collar';
-
 import ShirtInfo from 'views/pages/products/shirt/ShirtInfo';
 import AddShirt from 'views/pages/products/shirt-detail/AddShirt';
 import { element } from 'prop-types';
-
+import Payment from 'views/pages/payment/Payment';
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/pages/dashboard')));
 
 // Bill
 const Bill = Loadable(lazy(() => import('views/pages/bill/bill.jsx')));
+// const TabBills = Loadable(lazy(() => import('views/pages/bill/TabBills.jsx')));
+const FormSearch = Loadable(lazy(() => import('views/pages/bill/formSearch.jsx')));
 const BillDetail = Loadable(lazy(() => import('views/pages/bill/billDetail.jsx')));
 const ExportPdf = Loadable(lazy(() => import('views/pages/export-pdf/ExportBill.jsx')));
 const BillHistory = Loadable(lazy(() => import('views/pages/bill/billHistory.jsx')));
-const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
-const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
+// const changeBill = Loadable(lazy(() => import('views/pages/bill/changeBill.jsx')));
+// const changeCustomer = Loadable(lazy(() => import('views/pages/bill/changeCustomer.jsx')));
 const Orders = Loadable(lazy(() => import('views/pages/order/newOder.jsx')));
+//const Payment = Loadable(lazy(() => import('views/pages/payment/Payment.jsx')));
 
 // Dot giam gia của Đức
 const DotGiamGia = Loadable(lazy(() => import('views/pages/promotion/DotGiamGia.jsx')));
@@ -49,7 +52,6 @@ const Customer = Loadable(lazy(() => import('views/pages/customer/Customer.jsx')
 const AddCustomer = Loadable(lazy(() => import('views/pages/customer/AddCustomer.jsx')));
 const DetailCustomer = Loadable(lazy(() => import('views/pages/customer/DetailCustomer.jsx')));
 
-
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
@@ -57,20 +59,35 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
+// Statitiscal
+const Statitiscal = Loadable(lazy(() => import('views/pages/statisticall/statistical.jsx')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
   path: '/',
-  element: <MainLayout />,
+  element: <ProtectedRoute><MainLayout /></ProtectedRoute>,
   children: [
     // Bill
     {
       path: '/orders',
       element: <Orders />
     },
+    // {
+    //   path: '/admin/vnpay-payment',
+    //   element: <Payment />
+    // },
+    { 
+      path: '/vnpay-payment', 
+      element: <Payment />
+    },
     {
       path: '/bill',
       element: <Bill />
+    },
+    {
+      path: '/dashboard',
+      element: <Statitiscal />
     },
     {
       path: '/bill/:id',
@@ -122,7 +139,7 @@ const MainRoutes = {
       path: '/export-pdf/:id',
       element: <ExportPdf />
     },
-    
+
     // Promotion
     {
       path: '/voucher',
@@ -142,21 +159,22 @@ const MainRoutes = {
       ]
     },
 
-    // Employee 
+    // Employee
     {
       path: '/',
       children: [
         {
           path: '/nhan-vien',
-          element: <Nhanvien/>
-        },{
-          path:"/nhan-vien/add",
-          element:<AddNhanVien/>
+          element: <Nhanvien />
         },
         {
-          path:"/nhan-vien/:id",
-          element:<NhanVienDetail/>
+          path: '/nhan-vien/add',
+          element: <AddNhanVien />
         },
+        {
+          path: '/nhan-vien/:id',
+          element: <NhanVienDetail />
+        }
       ]
     },
 

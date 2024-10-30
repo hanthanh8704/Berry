@@ -1,14 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, List, Tag, Tooltip, Typography } from "antd";
-import {
-  IconBrandOpenai,
-  IconFileInvoice,
-  IconCheck,
-  IconTruckDelivery,
-  IconCalendarClock,
-  IconCreditCardPay,
-  IconCircleXFilled,
-} from "@tabler/icons-react";
+import {IconBrandOpenai,IconFileInvoice,IconCheck,IconTruckDelivery,IconCalendarClock,IconCreditCardPay,IconCircleXFilled,} from "@tabler/icons-react";
 import FormatDate from "views/utilities/FormatDate";
 import "./bill.css";
 import { margin } from "@mui/system";
@@ -45,24 +37,24 @@ function BillHistory({ props }) {
   const handleCancel = () => setIsModalOpen(false);
 
   const renderItem = (item) => (
-    <List.Item key={item.ngayTao} className="bill-history-item">
+    <List.Item key={item.createdAt} className="bill-history-item">
       <List.Item.Meta
-        avatar={<Tooltip title={item.trangThai}>{statusIconMap[item.trangThai]}</Tooltip>}
+        avatar={<Tooltip title={item.status}>{statusIconMap[item.invoiceStatus]}</Tooltip>}
         title={
           <span>
-            <Tag color={statusColorMap[item.trangThai]}>{item.trangThai}</Tag>
-            <span className="bill-history-nhanvien">{item.nhanVien}</span>
+            <Tag color={statusColorMap[item.invoiceStatus]}>{item.invoiceStatus}</Tag>
+            <span className="bill-history-nhanvien">{item.employeeName}</span>
           </span>
         }
         description={
           <div className="bill-history-description">
             <div>
               <strong>Thời gian: </strong>
-              <FormatDate date={item.ngayTao} />
+              <FormatDate date={item.createdAt} />
             </div>
             <div>
               <strong>Ghi chú: </strong>
-              {item.ghiChu}
+              {item.actionDescription}
             </div>
           </div>
         }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table,Tag, Tooltip } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import { EditOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
@@ -25,10 +25,13 @@ function TayAo() {
         loadData(currentPage, pageSize, searchValue, statusTayAo);
     }, [currentPage, pageSize, searchValue, statusTayAo]);
 
-    const loadData = async (page, size, search, trangThai) => {
+    const loadData = async (page, size, searchValue, trangThai) => {
         try {
             const response = await request.get("/sleeve", {
-                params: { name: search, page, sizePage: size, trangThai },
+                params: {
+                    name: searchValue ? `%${searchValue}%` : null,
+                    page, sizePage: size, trangThai
+                },
             });
             setTayAoList(response.data);
             setTotalPages(response.totalPages);
@@ -72,7 +75,7 @@ function TayAo() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = tayAoList.some(sleeve => sleeve.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = tayAoList.some(sleeve => sleeve.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên tay áo đã tồn tại!");
                         return;
@@ -103,7 +106,7 @@ function TayAo() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = tayAoList.some(sleeve => sleeve.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = tayAoList.some(sleeve => sleeve.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên tay áo đã tồn tại!");
                         return;
@@ -137,7 +140,7 @@ function TayAo() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten, // Điều chỉnh tên trường theo tên trường của bạn
+            name: record.name, // Điều chỉnh tên trường theo tên trường của bạn
         });
     };
 
@@ -155,6 +158,7 @@ function TayAo() {
                     <label className="mb-1">Tay áo</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        value={searchValue}
                         placeholder="Tìm kiếm tay áo theo tên..."
                     />
                 </Col>
@@ -182,32 +186,20 @@ function TayAo() {
                     },
                     {
                         title: "Tên Tay Áo",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
-                            >
-                              {text}
-                            </Tag>
-                          )
                     },
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -261,7 +253,7 @@ function TayAo() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Tên tay áo"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên tay áo!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -298,7 +290,7 @@ function TayAo() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Tên tay áo"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên tay áo!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },

@@ -6,7 +6,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import GHN from "ui-component/GHN";
 import { toast } from "react-toastify";
 
-function CreateAddressModal({ idCustomer, onSuccess }) {
+function CreateAddressModal({ idKhachHang, onSuccess }) {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
   const [form] = Form.useForm();
   const [dataAddress, setDataAddress] = useState(null);
@@ -14,7 +14,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
   const { confirm } = Modal;
 
   const handleAdd = (data) => {
-    data.account = idCustomer;
+    data.account = idKhachHang;
     confirm({
       title: "Xác nhận ",
       icon: <ExclamationCircleFilled />,
@@ -73,7 +73,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24} sm={12}>
               <Form.Item
                 label={"Tên"}
-                name={"hoTen"}
+                name={"fullName"}
                 rules={[
                   { required: true, message: "Tên không được để trống!" },
                 ]}
@@ -84,7 +84,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24} sm={12}>
               <Form.Item
                 label={"Số điện thoại"}
-                name={"soDienThoai"}
+                name={"phoneNumber"}
                 rules={[
                   {
                     required: true,
@@ -98,7 +98,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24}>
               <Form.Item
                 label={"Địa chỉ cụ thể"}
-                name={"diaChiCuThe"}
+                name={"detailedAddress"}
                 rules={[
                   {
                     required: true,
@@ -112,9 +112,9 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={12}>
               <GHN
                 dataAddress={setDataAddress}
-                distr={autoFillAddress.thanhPho}
-                prov={autoFillAddress.phuong}
-                war={autoFillAddress.huyen}
+                city={autoFillAddress.city}
+                district={autoFillAddress.district}
+                ward={autoFillAddress.ward}
               />
             </Col>
           </Row>
@@ -124,6 +124,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
               <i className="fas fa-plus-circle me-1"></i> Thêm
             </Button>
           </div>
+          <ToastContainer />
         </Form>
       </Modal>
     </>

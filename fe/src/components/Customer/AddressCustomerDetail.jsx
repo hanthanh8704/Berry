@@ -6,11 +6,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import ItemAddress from './ItemAddress';
 import * as request from 'views/utilities/httpRequest';
 import { useParams } from 'react-router-dom';
-import Loading from 'ui-component/Loading';
+import { useNavigate } from "react-router-dom";
 
 const AddressCustomerDetail = () => {
+  const navigate = useNavigate();
   const [listAddress, setListAddress] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(2);
@@ -25,6 +25,7 @@ const AddressCustomerDetail = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
 
+  console.log("ID Khách hàng : " + id);
   const configApi = {
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +39,6 @@ const AddressCustomerDetail = () => {
   }, [id, currentPage, pageSize]);
 
   const loadData = (id, currentPage, pageSize) => {
-    setLoading(true);
     request
       .get(`/address/${id}`, {
         params: {
@@ -50,7 +50,6 @@ const AddressCustomerDetail = () => {
       .then((response) => {
         setListAddress(response.content);
         setTotalPages(response.totalPages);
-        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
@@ -150,9 +149,9 @@ const AddressCustomerDetail = () => {
   useEffect(() => {
     if (dataAddress) {
       dataAddress({
-        thanhPho: selectedProvince,
-        huyen: selectedDistrict,
-        phuong: selectedWard,
+        city: selectedProvince,
+        district: selectedDistrict,
+        ward: selectedWard,
       });
     }
   }, [selectedProvince, selectedDistrict, selectedWard, dataAddress]);
@@ -174,7 +173,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={12}>
                     <Form.Item
                       label="Tên"
-                      name="hoTen"
+                      name="fullName"
                       rules={[{ required: true, message: 'Tên không được để trống!' }]}
                     >
                       <Input placeholder="Nhập tên người nhận..." />
@@ -183,7 +182,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={12}>
                     <Form.Item
                       label="Số điện thoại"
-                      name="soDienThoai"
+                      name="phoneNumber"
                       rules={[{ required: true, message: 'Số điện thoại không được để trống!' }]}
                     >
                       <Input placeholder="Nhập số điện thoại..." />
@@ -192,7 +191,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={24}>
                     <Form.Item
                       label="Địa chỉ cụ thể"
-                      name="diaChiCuThe"
+                      name="detailedAddress"
                       rules={[{ required: true, message: 'Địa chỉ cụ thể không được để trống!' }]}
                     >
                       <Input placeholder="Nhập địa chỉ cụ thể ..." />
@@ -200,8 +199,8 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="thanhPho"
-                      label="Thành phố"
+                      name="city"
+                      label="Thành Phố"
                       rules={[{ required: true, message: "Thành phố không được để trống!" }]}
                     >
                       <Select
@@ -222,7 +221,7 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="huyen"
+                      name="district"
                       label="Huyện"
                       rules={[{ required: true, message: "Huyện không được để trống!" }]}
                     >
@@ -244,7 +243,7 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="phuong"
+                      name="ward"
                       label="Phường"
                       rules={[{ required: true, message: "Phường không được để trống!" }]}
                     >

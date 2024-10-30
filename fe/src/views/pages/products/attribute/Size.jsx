@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Input, Modal, Row, Table, Tooltip, Form,Tag } from "antd";
+import { Button, Col, Input, Modal, Row, Table, Tooltip, Form } from "antd";
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
@@ -23,10 +23,13 @@ function Size() {
         loadData(currentPage, pageSize, searchValue);
     }, [currentPage, pageSize, searchValue]);
 
-    const loadData = async (page, size, search) => {
+    const loadData = async (page, size, searchValue) => {
         try {
             const response = await request.get("/size", {
-                params: { name: search, page, sizePage: size },
+                params: {
+                    name: searchValue ? `%${searchValue}%` : null,
+                    page, sizePage: size
+                },
             });
             setSizeList(response.data);
             setTotalPages(response.totalPages);
@@ -71,7 +74,7 @@ function Size() {
             async onOk() {
                 try {
 
-                    const duplicate = sizeList.some(size => size.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = sizeList.some(size => size.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên kích cỡ đã tồn tại!");
                         return;
@@ -101,7 +104,7 @@ function Size() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = sizeList.some(size => size.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = sizeList.some(size => size.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên kích cỡ đã tồn tại!");
                         return;
@@ -135,7 +138,7 @@ function Size() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten,
+            name: record.name,
         });
     };
 
@@ -153,6 +156,7 @@ function Size() {
                     <label className="mb-1">Kích cỡ</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        value={searchValue}
                         placeholder="Tìm kiếm kích cỡ theo tên..."
                     />
                 </Col>
@@ -181,32 +185,20 @@ function Size() {
                     },
                     {
                         title: "Tên Kích Cỡ",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
-                            >
-                              {text}
-                            </Tag>
-                          )
                     },
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -255,7 +247,7 @@ function Size() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Kích cỡ"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên kích cỡ!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -288,7 +280,7 @@ function Size() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Kích cỡ"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên kích cỡ!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },

@@ -6,16 +6,14 @@ const ProductSelectModal = ({ visible, onClose, product, quantity, setQuantity, 
 
   return (
     <Modal
-      title={product.ten}
+      title={product.name}
       visible={visible}
       onCancel={onClose}
       footer={null}
     >
       <div>
-        <p>Loại giày: {product.loaiGiay}</p>
-        <p>Thương hiệu: {product.thuongHieu}</p>
         <p>Kích cỡ: {product.size}</p>
-        <p>Giá: <strike>{product.oldPrice} VND</strike> <strong>{product.newPrice} VND</strong></p>
+        <p>Giá: <strike>{product.oldPrice} VND</strike> <strong>{product.price} VND</strong></p>
         <p>Số lượng: 
           <InputNumber min={1} max={100} value={quantity} onChange={setQuantity} />
         </p>

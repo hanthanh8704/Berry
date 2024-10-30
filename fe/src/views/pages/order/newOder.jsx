@@ -19,8 +19,8 @@ function Orders() {
     request
       .get(`/bill/new-bill`, {
         params: {
-          idNhanVien: 1,
-          trangThaiDonHang: 'Tạo đơn hàng'
+          idEmployee: 1,
+          invoiceStatus: 0 
         }
       })
       .then((response) => {
@@ -33,7 +33,6 @@ function Orders() {
   };
 
   const creatOrder = () => {
-    loadOrders();
     setWaitCreate(true);
     const timeout = setTimeout(async () => {
       try {
@@ -42,6 +41,7 @@ function Orders() {
           .then((response) => {
             if (response.status === 200) {
               toast.success('Tạo mới thành công');
+              loadOrders();
             }
           })
           .catch((e) => {
@@ -49,19 +49,13 @@ function Orders() {
           });
         setWaitCreate(false);
       } catch (e) {}
-    }, 500);
+    }, 3000);
     return () => clearTimeout(timeout);
   };
 
-  const tabItems = listHoaDon.map((order, index) => ({
-    key: order.ma,
-    tab: `Đơn hàng ${index + 1} - ${order.ma}`,
-    children: <OrderItem props={order} index={index + 1} onSuccess={loadOrders} />,
-  }));
-
   return (
     <>
-      <div className="d-flex">
+      <div className="d-flex" >
         <div className="flex-grow-1">
           <Button onClick={() => creatOrder()} className="bg-warning text-dark" type="primary" loading={waitCreate}>
             Tạo mới đơn hàng
@@ -70,7 +64,13 @@ function Orders() {
         <div className=""></div>
       </div>
       <div className="mt-3">
-        <Tabs items={tabItems} />
+        <Tabs>
+          {listHoaDon.length > 0 && listHoaDon.map((order, index) => (
+            <Tabs.TabPane key={order.code} tab={`Đơn hàng ${index+1} (${order.code})`}>
+              <OrderItem props={order} index={index + 1} />
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
       </div>
     </>
   );

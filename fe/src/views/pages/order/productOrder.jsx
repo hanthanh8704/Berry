@@ -3,7 +3,6 @@ import React, { useState,useEffect } from 'react'
 import { toast } from 'react-toastify';
 import FormatCurrency from 'views/utilities/FormatCurrency';
 import * as request from 'views/utilities/httpRequest';
-import { M } from 'vite/dist/node/types.d-aGj9QkWt';
 
 function ProductOrder({ sanPham, idHoaDon }) {
     const [isModalDetailOpen, setIsModalDetailOpen] = useState(false);
@@ -20,9 +19,9 @@ function ProductOrder({ sanPham, idHoaDon }) {
     useEffect(() => {
         request.get('/shirt-detail', {
             params: {
-                sanPham: sanPham.id,
-                mauSac: mauSac,
-                kichCo: kichCo
+                sanPham: product.id,
+                mauSac: color,
+                kichCo: size
             }
         }).then(response => {
             if (kichCo !== null && mauSac !== null) {
@@ -46,7 +45,7 @@ function ProductOrder({ sanPham, idHoaDon }) {
                 toast.error("Sản phẩm này không tồn tại!");
             } else {
                 data.sanPhamChiTiet = sanPhamChiTiet?.code;
-                data.hoaDon = id;
+                data.bill = id;
                 console.log(data);
                 request.post('/bill-detail', data).then(response => {
                     toast.success('Thêm thành công!');
@@ -61,12 +60,12 @@ function ProductOrder({ sanPham, idHoaDon }) {
     return (
         <>
             <i className='fas fa-cart-plus w-100' onClick={() => setIsModalDetailOpen(true)}></i>
-            <Modal title={sanPham.ten} 
+            <Modal title={sanPham.name} 
             open={isModalDetailOpen} onCancel={() =>
              setIsModalDetailOpen(false)} footer="" width={800} key={sanPham.id}>
                 <Row gutter={10}>
                     <Col xl={8}>
-                        <Carousel autoplay autoplaySpeed={3000} dots={false} arrows={false} className='w-100'>
+                        <Carousel autoplay autoplaySpeed={2700} dots={false} arrows={false} className='w-100'>
                             {sanPhamChiTiet != null | sanPhamChiTiet != undefined ?
                                 sanPhamChiTiet.images.split(',').map((image, index) => (
                                     <div className="" style={{ height: "300px" }}>
@@ -100,9 +99,9 @@ function ProductOrder({ sanPham, idHoaDon }) {
                             </li>
                             <li className='mb-2 fw-semibold fs-5 text-danger'>
                                 {sanPhamChiTiet != null | sanPhamChiTiet != undefined ? (<FormatCurrency value={sanPhamChiTiet?.gia} />) : (
-                                    // <>
-                                    //     <FormatCurrency value={sanPham.minPrice} /> - <FormatCurrency value={shoe.maxPrice} />
-                                    // </>
+                                    <>
+                                        <FormatCurrency value={sanPham.minPrice} /> - <FormatCurrency value={shoe.maxPrice} />
+                                    </>
                                 )}
                             </li>
                             <li className='mb-2'>
@@ -154,4 +153,4 @@ function ProductOrder({ sanPham, idHoaDon }) {
         </>
     )
 }
-export default ProductOrder
+export default ProductOrder;

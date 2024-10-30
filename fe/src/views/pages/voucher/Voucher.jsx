@@ -23,9 +23,9 @@ const Voucher = () => {
     const [filterKieuGiam, setFilterKieuGiam] = useState('All');
     const [filterLoai, setFilterLoai] = useState('All');
     const [filterTrangThai, setFilterTrangThai] = useState('All');
-    const [giaTu, setGiaTu] = useState('');
+    const [giaTu, setGiaTu] = useState();
     const [selectedDates, setSelectedDates] = useState({});
-    const [giaDen, setGiaDen] = useState([0, 1000000000]);
+    const [giaDen, setGiaDen] = useState();
 
     useEffect(() => {
         const successMessage = sessionStorage.getItem('voucherAddSuccess') || sessionStorage.getItem('voucherUpdateSuccess');
@@ -37,8 +37,8 @@ const Voucher = () => {
         loadVoucher();
         const intervalId = setInterval(() => {
             loadVoucher({
-                ten: `%${searchValue}%`,
-                ma: `%${searchValue}%`,
+                name: `%${searchValue}%`,
+                code: `%${searchValue}%`,
                 filterKieuGiam,
                 filterLoai,
                 filterTrangThai,
@@ -56,18 +56,18 @@ const Voucher = () => {
         try {
             const response = await request.get('/voucher', {
                 params: {
-                    ma: `%${searchValue}%` || null,
-                    ten: `%${searchValue}%` || null,
+                    code: `%${searchValue}%` || null,
+                    name: `%${searchValue}%` || null,
                     page: currentPage,
                     sizePage: pageSize,
-                    hinhThucGiam: filterKieuGiam !== 'All' ? filterKieuGiam : null,
-                    loai: filterLoai !== 'All' ? filterLoai : null,
-                    trangThai: filterTrangThai !== 'All' ? filterTrangThai : null,
+                    discountMethod: filterKieuGiam !== 'All' ? filterKieuGiam : null,
+                    type: filterLoai !== 'All' ? filterLoai : null,
+                    status: filterTrangThai !== 'All' ? filterTrangThai : null,
                    
-                    nguoiSua: selectedDates?.fromDate,
-                    nguoiTao: selectedDates?.toDate,
-                    giaTriHoaDonDuocApDung: giaTu || null,
-                    giaTriHoaDonDuocGiam: giaDen || null,
+                    updatedBy: selectedDates?.fromDate,
+                    createdBy: selectedDates?.toDate,
+                    minOrderValue: giaTu || null,
+                    discountValue: giaDen || null,
                 },
             }).then(response => {
                 setVoucher(response.data);
@@ -134,56 +134,62 @@ const Voucher = () => {
         },
         {
             title: 'Mã',
-            dataIndex: 'ma',
-            key: 'ma',
+            dataIndex: 'code',
+            key: 'code',
         },
         {
             title: 'Tên',
-            dataIndex: 'ten',
-            key: 'ten',
+            dataIndex: 'name',
+            key: 'name',
         },
         {
             title: 'Giá trị giảm',
-            dataIndex: 'giaTriHoaDonDuocGiam',
-            key: 'giaTriHoaDonDuocGiam',
+            dataIndex: 'discountValue',
+            key: 'discountValue',
             render: (text, record) => (
                 <span>
-                    <FormatCurrency1 value={record.giaTriHoaDonDuocGiam} /> {record.hinhThucGiam}
+                    <FormatCurrency1 value={record.discountValue} /> {record.discountMethod}
                 </span>
             ),
         },
         {
             title: 'Loại',
-            dataIndex: 'loai',
-            key: 'loai',
+            dataIndex: 'type',
+            key: 'type',
         },
         {
             title: 'Giá trị tối thiểu',
-            dataIndex: 'giaTriHoaDonDuocApDung',
-            key: 'giaTriHoaDonDuocApDung',
+            dataIndex: 'minOrderValue',
+            key: 'minOrderValue',
+            render: (text) => <FormatCurrency value={text} />,
+        },
+        {
+            title: 'Giá trị tối đa',
+            dataIndex: 'maxDiscountValue',
+            key: 'maxDiscountValue',
             render: (text) => <FormatCurrency value={text} />,
         },
         {
             title: 'Số lượng',
-            dataIndex: 'soLuong',
-            key: 'soLuong',
+            dataIndex: 'quantity',
+            key: 'quantity',
         },
         {
             title: 'Ngày bắt đầu',
-            dataIndex: 'ngayBatDau',
-            key: 'ngayBatDau',
+            dataIndex: 'startDate',
+            key: 'startDate',
             render: (text) => <FormatDate date={text} />,
         },
         {
             title: 'Ngày kết thúc',
-            dataIndex: 'ngayKetThuc',
-            key: 'ngayKetThuc',
+            dataIndex: 'endDate',
+            key: 'endDate',
             render: (text) => <FormatDate date={text} />,
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'trangThai',
-            key: 'trangThai',
+            dataIndex: 'status',
+            key: 'status',
             render: (text) => (
                 <div style={{
                     width: '100px',

@@ -10,7 +10,7 @@ import UpdateShirt from "./UpdateShirt";
 import UpdateShirtDetail from "./UpdateShirtDetail";
 import FormatCurrency from "views/utilities/FormatCurrency.jsx";
 import Title from "antd/es/typography/Title";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Option } from "antd/es/mentions";
 import { IconEdit, IconTrash, IconSettings } from "@tabler/icons-react";
@@ -34,7 +34,7 @@ function ShirtInfo() {
     const [listSize, setListSize] = useState([]);
     const [searchSize, setSearchSize] = useState('');
     const [listColor, setListColor] = useState([]);
-    const [listSole, setListSole] = useState([]);
+    const [listMaterial, setListMaterial] = useState([]);
     const [listSleeve, setListSleeve] = useState([]);
     const [listCollar, setListCollar] = useState([]);
     const [listBrand, setListBrand] = useState([]);
@@ -51,6 +51,9 @@ function ShirtInfo() {
         selectedRowKeys,
         onChange: onSelectChange,
     };
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
 
     //QRCODE
     const downloadAllQRCode = () => {
@@ -63,7 +66,7 @@ function ShirtInfo() {
 
         shoeDetailSelect.forEach((item, index) => {
             const qr = QRCode(0, 'H');
-            qr.addData(item.ma);
+            qr.addData(item.detailCode);
             qr.make();
 
             const canvas = document.createElement('canvas');
@@ -86,15 +89,15 @@ function ShirtInfo() {
 
                     if (base64Data) {
                         const folder = zip.folder('qrcodes');
-                        folder.file(`${item.ma}${index + 1}.png`, base64Data, { base64: true });
+                        folder.file(`${item.detailCode}.png`, base64Data, { base64: true });
                     } else {
-                        console.error(`Failed to process base64 data for item ${item.ma}`);
+                        console.error(`Failed to process base64 data for item ${item.detailCode}`);
                     }
                 } else {
-                    console.error(`Failed to generate data URL for item ${item.ma}`);
+                    console.error(`Failed to generate data URL for item ${item.detailCode}`);
                 }
             } catch (error) {
-                console.error(`Error generating QR code for item ${item.ma}:`, error);
+                console.error(`Error generating QR code for item ${item.detailCode}:`, error);
             }
         });
 
@@ -104,15 +107,29 @@ function ShirtInfo() {
             console.error('Error generating ZIP file:', error);
         });
     };
+    // Hàm thay đổi cân nặng
+    const handleWeightChange = (value, id) => {
+        const x = listProductDetail.find((detail) => detail.id === id); // Tìm sản phẩm trong danh sách chi tiết
+        const index = listUpdate.findIndex((item) => item.id === id); // Tìm chỉ mục trong danh sách cập nhật
+
+        if (index !== -1) {
+            // Nếu sản phẩm đã tồn tại trong danh sách cập nhật, cập nhật cân nặng
+            listUpdate[index].weight = value;
+        } else {
+            // Nếu chưa tồn tại, thêm mới sản phẩm vào danh sách cập nhật
+            listUpdate.push({ id: id, weight: value, price: x.price, quantity: 0 }); // Số lượng có thể là 0 nếu không thay đổi
+        }
+        console.log(listUpdate);
+    };
 
     //Hàm thay đổi só lượng
     const handleQuantityChange = (value, id) => {
         const x = listProductDetail.find((detail) => detail.id === id);
         const index = listUpdate.findIndex((item) => item.id === id);
         if (index !== -1) {
-            listUpdate[index].soLuong = value;
+            listUpdate[index].quantity = value;
         } else {
-            listUpdate.push({ id: id, soLuong: value, giaBan: x.giaBan });
+            listUpdate.push({ id: id, quantity: value, price: x.price });
         }
         console.log(listUpdate);
     }
@@ -120,43 +137,41 @@ function ShirtInfo() {
         const x = listProductDetail.find((detail) => detail.id === id);
         const index = listUpdate.findIndex((item) => item.id === id);
         if (index !== -1) {
-            listUpdate[index].giaBan = value;
+            listUpdate[index].price = value;
         } else {
-            listUpdate.push({ id: id, soLuong: x.soLuong, giaBan: value });
+            listUpdate.push({ id: id, quantity: x.quantity, price: value });
         }
         console.log(listUpdate);
     }
 
-
-    //Hàm call api của TTSP
     useEffect(() => {
-        request.get('/size', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
+        request.get('/size', { params: { name: searchSize } }).then(response => {
             setListSize(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/color', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
+        request.get('/color', { params: { name: searchSize } }).then(response => {
             setListColor(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/material', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
-            setListSole(response.data.data);
+        request.get('/material', { params: { name: searchSize } }).then(response => {
+            setListMaterial(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/sleeve', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
-            setListSleeve(response.data.data);
-        }).catch(e => {
-            console.log(e);
-        })
-        request.get('/collar', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
+        request.get('/collar', { params: { name: searchSize } }).then(response => {
             setListCollar(response.data.data);
         }).catch(e => {
             console.log(e);
         })
-        request.get('/brand', { params: { name: searchSize, status: false, sizePage: 1_000_000 } }).then(response => {
+        request.get('/brand', { params: { name: searchSize } }).then(response => {
             setListBrand(response.data.data);
+        }).catch(e => {
+            console.log(e);
+        })
+        request.get('/sleeve', { params: { name: searchSize } }).then(response => {
+            setListSleeve(response.data.data);
         }).catch(e => {
             console.log(e);
         })
@@ -176,44 +191,77 @@ function ShirtInfo() {
             title: '#',
             dataIndex: 'index',
             key: 'index',
+            align: 'center'
         },
 
         {
             title: 'Tên',
-            dataIndex: 'ten',
-            key: 'ten',
+            dataIndex: 'name',
+            key: 'name',
+            width: 130,
+
+            // render: (x, record) => (
+            //     <>
+            //         {x}
+            //         <br />
+            //         {record.discountPercentage !== null && <small className="fw-semibold">SALE <span className="text-danger">{record.discountPercentage} %</span></small>}
+            //     </>
+            // )
+        },
+        {
+            title: 'Chất liệu',
+            dataIndex: 'material',
+            key: 'material',
+        },
+        {
+            title: 'Thương hiệu',
+            dataIndex: 'brand',
+            key: 'brand',
+            width: 115,
+        },
+        {
+            title: 'Tay áo',
+            dataIndex: 'sleeve',
+            key: 'sleeve',
+            width: 110,
+        },
+        {
+            title: 'Cổ áo',
+            dataIndex: 'collar',
+            key: 'collar',
+            width: 119,
+        },
+        {
+            title: 'Cân nặng',
+            dataIndex: 'weight',
+            key: 'weight',
+            width: 100,
             render: (x, record) => (
                 <>
-                    {x}
-                    <br />
-                    {/* {record.discountValue !== null && <small className="fw-semibold">SALE <span className="text-danger">{record.discountPercent} %</span></small>} */}
+                    {selectedRowKeys.includes(record.id) ? (
+                        <InputNumber
+                            defaultValue={x}
+                            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            parser={(value) => (value !== null && value !== undefined ? value.replace(/\$\s?|(,*)/g, "") : "")}
+                            controls={false}
+                            min={0}
+                            onChange={(value) => handleWeightChange(value, record.id)} // Hàm xử lý thay đổi cân nặng
+                            onBlur={() => {
+                                if (isNaN(x)) {
+                                    handleWeightChange(0, record.id); // Reset to 0 nếu giá trị không phải số
+                                }
+                            }}
+                        />
+                    ) : (
+                        <>{x}</>
+                    )}
                 </>
             )
         },
         {
-            title: 'Chất liệu',
-            dataIndex: 'chatLieu',
-            key: 'chatLieu',
-        },
-        {
-            title: 'Thương hiệu',
-            dataIndex: 'thuongHieu',
-            key: 'thuongHieu',
-        },
-        {
-            title: 'Tay áo',
-            dataIndex: 'tayAo',
-            key: 'tayAo',
-        },
-        {
-            title: 'Cổ áo',
-            dataIndex: 'coAo',
-            key: 'coAo',
-        },
-        {
             title: 'Số lượng',
-            dataIndex: 'soLuong',
-            key: 'soLuong',
+            dataIndex: 'quantity',
+            key: 'quantity',
             render: (x, record) => (
                 <>
                     {selectedRowKeys.includes(record.id) ? (
@@ -238,8 +286,9 @@ function ShirtInfo() {
         },
         {
             title: 'Đơn giá',
-            dataIndex: 'giaBan',
-            key: 'giaBan',
+            dataIndex: 'price',
+            key: 'price',
+            width: 120,
             render: (x, record) => (
                 <>
                     {selectedRowKeys.includes(record.id) ? (
@@ -293,12 +342,13 @@ function ShirtInfo() {
             title: 'Hành động',
             dataIndex: 'id',
             key: 'action',
+            width: 120,
             render: (x, record) => (
                 <>
                     <UpdateShirtDetail props={record} onSuccess={() => loadShoeDetail(id, currentPage, pageSize)} />
-                    <Tooltip placement="bottom" title="Xóa">
+                    {/* <Tooltip placement="bottom" title="Xóa">
                         <Button type="text"><i className="fas fa-trash text-danger"><IconTrash /></i></Button>
-                    </Tooltip>
+                    </Tooltip> */}
                 </>
             )
         },
@@ -315,7 +365,7 @@ function ShirtInfo() {
             // if (response.status === 200) {
             setProduct(response.data);
             console.log(response.data);
-            console.log(product.danhMuc.ten);
+            console.log(product.category.name);
             setLoading(false);
             // }
         }).catch(e => {
@@ -332,14 +382,15 @@ function ShirtInfo() {
     const loadShoeDetail = (id, currentPage, pageSize) => {
         request.get('/shirt-detail', {
             params: {
-                ten: dataFilter.ten,
-                kichCo: dataFilter.kichCo,
-                mauSac: dataFilter.mauSac,
-                chatLieu: dataFilter.chatLieu,
-                tayAo: dataFilter.tayAo,
-                coAo: dataFilter.coAo,
-                thuongHieu: dataFilter.thuongHieu,
-                sanpham: id,
+                name: dataFilter.name,
+                size: dataFilter.size,
+                color: dataFilter.color,
+                material: dataFilter.material,
+                sleeve: dataFilter.sleeve,
+                collar: dataFilter.collar,
+                brand: dataFilter.brand,
+
+                product: id,
                 page: currentPage,
                 sizePage: pageSize,
             }
@@ -375,10 +426,10 @@ function ShirtInfo() {
 
     return (
         <>
-            <ToastContainer />
+
             <div className="bg-white rounded-3 p-1">
                 <Breadcrumb className="mt-1 m-2"
-                    items={[{ href: "/" }, { href: "/free/products", title: "Danh sách sản phẩm" }, { title: `${product.ten}` },]}
+                    items={[{ href: "/" }, { href: "/admin/products", title: "Danh sách sản phẩm" }, { title: `${product.name}` },]}
                 />
                 {/* Thông tin chung sản phẩm */}
                 <Row gutter={24} >
@@ -393,7 +444,7 @@ function ShirtInfo() {
                     <Col xl={8}>
                         <ul className="list-unstyled">
                             <li className="my-2 ms-3">
-                                Danh mục: <span className="float-end fw-semibold">Áo</span>
+                                Danh mục: <span className="float-end fw-semibold">Shirt</span>
                             </li>
 
                         </ul>
@@ -401,10 +452,10 @@ function ShirtInfo() {
                     <Col xl={8}>
                         <ul className="list-unstyled me-3" >
                             <li>
-                                Người tạo: <span className="float-end fw-semibold">{product.nguoiTao ? product.nguoiTao : 'Đạt Thành'}</span>
+                                Người tạo: <span className="float-end fw-semibold">{product.createdBy ? product.createdBy : ' Thành Đạt'}</span>
                             </li>
                             <li>
-                                Người chỉnh sửa: <span className="float-end fw-semibold">{product.nguoiSua ? product.nguoiSua : 'Đạt Thành'}</span>
+                                Người chỉnh sửa: <span className="float-end fw-semibold">{product.createdBy ? product.createdBy : 'Thành Đạt'}</span>
                             </li>
                         </ul>
                     </Col>
@@ -446,7 +497,7 @@ function ShirtInfo() {
                                     <Option value="">Chọn kích cỡ</Option>
                                     {listSize.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
@@ -458,55 +509,55 @@ function ShirtInfo() {
                                     <Option value="">Chọn màu sắc</Option>
                                     {listColor.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="Chất liệu" name={"chatLieu"}>
+                            <Form.Item label="Chất liệu" name={"material"}>
                                 <Select showSearch placeholder="Chọn chất liệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
                                     <Option value="">Chọn chất liệu</Option>
-                                    {listSole.map((item) => (
+                                    {listMaterial.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="Thương hiệu" name={"thuongHieu"}>
+                            <Form.Item label="Thương hiệu" name={"brand"}>
                                 <Select showSearch placeholder="Chọn thương hiệu..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
                                     <Option value="">Chọn thương hiệu</Option>
                                     {listBrand.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="Tay áo" name={"tayAo"}>
+                            <Form.Item label="Tay áo" name={"sleeve"}>
                                 <Select showSearch placeholder="Chọn tay áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
                                     <Option value="">Chọn tay áo</Option>
                                     {listSleeve.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="Cổ áo" name={"coAo"}>
+                            <Form.Item label="Cổ áo" name={"collar"}>
                                 <Select showSearch placeholder="Chọn cổ áo..." optionFilterProp="children" style={{ width: "100%" }} onSearch={setSearchSize}>
                                     <Option value="">Chọn cổ áo</Option>
                                     {listCollar.map((item) => (
                                         <Option key={item.id} value={item.id}>
-                                            {item.ten}
+                                            {item.name}
                                         </Option>
                                     ))}
                                 </Select>
@@ -515,7 +566,7 @@ function ShirtInfo() {
                     </Row>
                     <div className="text-center">
                         <Button className='me-1 bg-secondary' onClick={() => { formFilter.resetFields() }} type='primary' icon={<i class="fa-solid fa-rotate-left"></i>}>Làm mới</Button>
-                        <Button htmlType='submit' className=' text-white' style={{ backgroundColor: '#5e35b1' }} type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
+                        <Button htmlType='submit' className='text-white' onClick={() => { formFilter.getFieldValue }} style={{ backgroundColor: '#5e35b1' }} type='primary' icon={<i className='fas fa-search'></i>}>Tìm kiếm</Button>
                     </div>
                 </Form>
                 <Table dataSource={listProductDetail} columns={columns} className="mt-3"

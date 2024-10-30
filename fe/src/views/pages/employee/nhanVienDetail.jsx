@@ -1,124 +1,126 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as request from 'views/utilities/httpRequest';
-import { Modal, Form, Input,Col } from 'antd';
-import { toast } from 'react-toastify';
+import { Modal, Form, Input, Radio } from 'antd'; // Import đầy đủ từ antd
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
-import {Paper,Box,Typography,TextField,Button,Grid,RadioGroup,Radio,FormControlLabel,FormControl,FormLabel,DialogActions} from '@mui/material';
-import { Option } from "antd/es/mentions";
-import GHNDetail from 'ui-component/GHNDetail';
+import { Paper, Box, Typography, Button, DialogActions, Grid } from '@mui/material'; // Material-UI
 
 const NhanVienDetail = () => {
   const { id } = useParams();
   const [form] = Form.useForm();
-  const [anh, setAnh] = useState(null);
+  const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({
     id: id,
-    ma: '',
-    cccd: '',
-    soDienThoai: '',
-    ten: '',
-    trangThai: 'Đang hoạt động',
-    gioiTinh: '',
-    diaChi: '',
-    thanhPho: '',
-    huyen: '',
-    phuong: '',
+    image: '',
+    code: '',
+    nationalId: '',
+    phoneNumber: '',
+    name: '',
+    status: 'Đang hoạt động',
+    gender: '',
+    detailedAddress: '',
     email: '',
-    ngaySinh: '',
-    chucVu: ''
+    dateOfBirth: ''
   });
 
-  const [thanhPho, setThanhPho] = useState([]);
-  const [huyen, setHuyen] = useState([]);
-  const [phuong, setPhuong] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
+  // Validate form logic remains the same
+  const validateForm = () => {
+    const { name, phoneNumber, email, dateOfBirth, nationalId, detailedAddress } = formValues;
+    const errors = {};
 
-  const configApi = {
-    headers: {
-      "Content-Type": "application/json",
-      Token: "693d8a79-3a3d-11ef-8e53-0a00184fe694",
-      ShopId: 192796,
-    },
+    if (!name) {
+      errors.name = 'Tên nhân viên không được để trống.';
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneNumber) {
+      errors.phoneNumber = 'Số điện thoại không được để trống.';
+    } else if (!phoneRegex.test(phoneNumber)) {
+      errors.phoneNumber = 'Số điện thoại không hợp lệ.';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      errors.email = 'Email không được để trống.';
+    } else if (!emailRegex.test(email)) {
+      errors.email = 'Email không hợp lệ.';
+    }
+
+    if (!dateOfBirth) {
+      errors.dateOfBirth = 'Ngày sinh không được để trống.';
+    }
+
+    if (!nationalId) {
+      errors.nationalId = 'CCCD không được để trống.';
+    }
+
+    if (!detailedAddress) {
+      errors.detailedAddress = 'Địa chỉ không được để trống.';
+    }
+
+    if (!image) {
+      errors.image = 'Hình ảnh không được để trống.';
+    }
+
+    return errors;
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await request.get(`/nhan-vien/${id}`);
-        console.log('API Response:', response);
-        const nhanvienData = response;
-        setFormValues({
-          anh: nhanvienData.anh || '',
-          ma: nhanvienData.ma || '',
-          cccd: nhanvienData.cccd || '',
-          soDienThoai: nhanvienData.soDienThoai || '',
-          ten: nhanvienData.ten || '',
-          trangThai: nhanvienData.trangThai || 'Đang hoạt động',
-          gioiTinh: nhanvienData.gioiTinh || '',
-          diaChi: nhanvienData.diaChi || '',
-          thanhPho: nhanvienData.thanhPho || '',
-          phuong: nhanvienData.phuong || '',
-          huyen: nhanvienData.huyen || '',
-          email: nhanvienData.email || '',
-          ngaySinh: nhanvienData.ngaySinh || '',
-          chucVu: nhanvienData.chucVu || ''
-        });
+    if (id) {
+      loadNhanVien(id); // Load thông tin nhân viên nếu có id
+    }
+  }, [id]);
 
-        if (nhanvienData.anh) {
-          setPreviewUrl(nhanvienData.anh);
-        }
-      } catch (error) {
-        console.error('Error fetching employee data:', error);
-      }
-    };
-    
+  const loadNhanVien = async (id) => {
+    try {
+      const response = await request.get(`/nhan-vien/${id}`);
 
-    fetchData();
+      // Log toàn bộ response trước
+      console.log('Response:', response);
 
-    // Fetch provinces data
-    request.get("https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province", configApi)
-      .then((response) => {
-        setProvinces(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
+      // Log từng trường dữ liệu
+      console.log('Image:', response.image || '');
+      console.log('Code:', response.code || '');
+      console.log('National ID:', response.nationalId || '');
+      console.log('Phone Number:', response.phoneNumber || '');
+      console.log('Name:', response.name || '');
+      console.log('Status:', response.status || 'Đang hoạt động');
+      console.log('Gender:', response.gender || '');
+      console.log('Detailed Address:', response.detailedAddress || '');
+      console.log('Email:', response.email || '');
+      console.log('Date of Birth:', response.dateOfBirth || '');
+
+      setFormValues({
+        image: response.image || '',
+        code: response.code || '',
+        nationalId: response.nationalId || '',
+        phoneNumber: response.phoneNumber || '',
+        name: response.name || '',
+        status: response.status || 'Đang hoạt động',
+        gender: response.gender || '',
+        detailedAddress: response.detailedAddress || '',
+        email: response.email || '',
+        dateOfBirth: response.dateOfBirth || ''
       });
 
-    // If huyen and phuong are defined, fetch districts and wards data
-    if (formValues.huyen !== undefined && formValues.phuong !== undefined) {
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${formValues.thanhPho}`, configApi)
-        .then((response) => {
-          setDistricts(response.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-
-      request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${formValues.huyen}`, configApi)
-        .then((response) => {
-          setWards(response.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      // Log preview URL if available
+      if (response.image) {
+        console.log('Setting preview URL:', response.image);
+        setPreviewUrl(response.image);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu nhân viên:', error);
     }
-  }, [id, formValues.huyen, formValues.phuong, formValues.thanhPho]);
+  };
 
   const handleImageSelect = (event) => {
-    try {
-      const file = event.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setPreviewUrl(imageUrl);
-      setAnh(file);
-    } catch (e) {
-      setPreviewUrl(null);
-    }
+    const file = event.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewUrl(imageUrl);
+    setImage(file);
   };
 
   const handleChange = (event) => {
@@ -127,175 +129,183 @@ const NhanVienDetail = () => {
   };
 
   const onSubmit = async () => {
-    const formData = new FormData();
-    Object.keys(formValues).forEach((key) => {
-      formData.append(key, formValues[key]);
-    });
-    if (anh) {
-      formData.append('anh', anh);
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      Object.values(validationErrors).forEach((error) => {
+        toast.error(error, { autoClose: 2000 });
+      });
+      return;
     }
-
+  
+    const formData = new FormData();
+  
+    // Thêm tất cả các trường dữ liệu khác (ngoại trừ ảnh)
+    Object.keys(formValues).forEach((key) => {
+      if (key !== 'image') {
+        formData.append(key, formValues[key]);
+      }
+    });
+  
+    // Kiểm tra tình huống ảnh:
+    if (image) {
+      // Trường hợp có ảnh mới
+      formData.append('image', image); 
+    } else if (formValues.image === '') {
+      // Trường hợp ảnh bị xóa
+      formData.append('image', ''); 
+    }
+  
     Modal.confirm({
       title: 'Xác nhận',
       maskClosable: true,
       content: 'Xác nhận cập nhật nhân viên?',
       okText: 'Xác nhận',
       cancelText: 'Hủy',
-      onOk: () => {
-        setTimeout(() => {
-          request
-            .put(`/nhan-vien/update/${id}`, formData)
-            .then((response) => {
-              if (response.status === 200) {
-                sessionStorage.setItem('employeeUpdateSuccess', 'Sửa thành công!');
-                navigate('/nhan-vien');
-              }
-            })
-            .catch((error) => {
-              toast.error('Cập nhật nhân viên thất bại', { autoClose: 2000 });
-            });
-        }, 1000);
-      },
-      onCancel() {}
+      onOk: async () => {
+        try {
+          const response = await request.put(`/nhan-vien/update/${id}`, formData);
+          if (response.status === 200) {
+            sessionStorage.setItem('employeeUpdateSuccess', 'Sửa thành công!');
+            navigate('/nhan-vien');
+          }
+        } catch (error) {
+          toast.error('Cập nhật nhân viên thất bại', { autoClose: 2000 });
+        }
+      }
     });
   };
-
-  const handleProvinceChange = (provinceCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceCode}`, configApi)
-      .then((response) => {
-        setDistricts(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-    setSelectedProvince(provinceCode);
-    setFormValues({ ...formValues, thanhPho: provinceCode });
-  };
-
-  const handleDistrictChange = (districtCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtCode}`, configApi)
-      .then((response) => {
-        setWards(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-    setSelectedDistrict(districtCode);
-    setFormValues({ ...formValues, huyen: districtCode });
-  };
-
-  const handleWardChange = (wardCode) => {
-    setSelectedWard(wardCode);
-    setFormValues({ ...formValues, phuong: wardCode });
-  };
+  
 
   return (
     <>
       <ToastContainer />
       <Box>
         <Paper elevation={3}>
-          <Typography variant="h6" component="h2" gutterBottom style={{ padding: '15px 0 0 15px' }}>
+          <Typography variant="h4" gutterBottom style={{ padding: '15px 0 0 15px' }}>
             Cập nhật thông tin nhân viên
           </Typography>
-          <Box p={3}>
-            <Form form={form} layout="vertical" onFinish={onSubmit}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} className="text-center">
-                  {previewUrl ? (
-                    <div className="text-center">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        style={{ width: '162px', height: '162px' }}
-                        className="mt-2 border border-warning shadow-lg bg-body-tertiary rounded-circle object-fit-contain"
-                      />
-                      <Button
-                        className="position-absolute border-0"
-                        onClick={() => {
-                          setPreviewUrl(null);
-                          setAnh(null);
-                        }}
-                      >
-                        Xóa ảnh
-                      </Button>
+
+          {/* Bố trí flexbox để ảnh sang phải và form sang trái */}
+          <Box p={4} display="flex" justifyContent="space-between" alignItems="flex-start">
+            {/* Phần form bên trái */}
+            <Box flex={1}>
+              <Form form={form} layout="vertical" onFinish={onSubmit}>
+                <Grid container spacing={2}>
+                  {/* Dùng lưới để thu gọn form */}
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Mã nhân viên">
+                      <Input name="code" value={formValues.code} onChange={handleChange} disabled />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Tên nhân viên">
+                      <Input name="name" value={formValues.name} onChange={handleChange} />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Số điện thoại">
+                      <Input name="phoneNumber" value={formValues.phoneNumber} onChange={handleChange} />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Email">
+                      <Input name="email" value={formValues.email} onChange={handleChange} />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Ngày sinh">
+                      <Input name="dateOfBirth" value={formValues.dateOfBirth} onChange={handleChange} type="date" />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="CCCD">
+                      <Input name="nationalId" value={formValues.nationalId} onChange={handleChange} />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Form.Item label="Địa chỉ">
+                      <Input name="detailedAddress" value={formValues.detailedAddress} onChange={handleChange} style={{ width: '100%' }} />
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Giới tính">
+                      <Radio.Group name="gender" value={formValues.gender} onChange={handleChange}>
+                        <Radio value="Nam">Nam</Radio>
+                        <Radio value="Nữ">Nữ</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Form.Item label="Trạng thái">
+                      <Radio.Group name="status" value={formValues.status} onChange={handleChange}>
+                        <Radio value="Đang hoạt động">Đang hoạt động</Radio>
+                        <Radio value="Ngừng hoạt động">Ngừng hoạt động</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Grid>
+                </Grid>
+
+                {/* Nút Lưu và Hủy */}
+                <Box mt={4} display="flex" justifyContent="flex-end">
+                  <DialogActions>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      style={{
+                        backgroundColor: '#5e35b1',
+                        borderColor: '#5e35b1',
+                        borderRadius: '6px',
+                        fontWeight: '600',
+                        marginRight: '10px'
+                      }}
+                    >
+                      Lưu
+                    </Button>
+                    <Button variant="contained" onClick={() => navigate('/nhan-vien')} style={{ borderRadius: '6px', fontWeight: '600' }}>
+                      Hủy
+                    </Button>
+                  </DialogActions>
+                </Box>
+              </Form>
+            </Box>
+
+            {/* Phần ảnh bên phải */}
+            <Box ml={3} style={{ width: '500px' }}>
+              <Form.Item>
+                {previewUrl || formValues.image ? ( // Hiển thị ảnh nếu có preview hoặc ảnh cũ
+                  <div className="text-center position-relative">
+                    <img
+                      src={previewUrl || formValues.image} // Hiển thị ảnh mới hoặc ảnh cũ
+                      alt="Preview"
+                      style={{ width: '162px', height: '162px' }}
+                      className="mt-2 border border-warning shadow-lg bg-body-tertiary rounded-circle object-fit-contain"
+                    />
+                    <Button
+                      className="position-absolute"
+                      onClick={() => {
+                        setPreviewUrl(null);
+                        setImage(null);
+                        setFormValues({ ...formValues, image: '' });
+                      }}
+                      style={{ top: '10px', right: '10px', borderRadius: '50%' }}
+                    >
+                      Xóa ảnh
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div
+                      className="position-relative rounded-circle border border-warning mt-2 d-flex align-items-center justify-content-center"
+                      style={{ width: '162px', height: '162px' }}
+                    >
+                      <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" />
+                      <div className="text-center text-secondary">Chọn ảnh</div>
                     </div>
-                  ) : (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <div
-                        className="position-relative rounded-circle border border-warning mt-2 d-flex align-items-center justify-content-center"
-                        style={{ width: '162px', height: '162px' }}
-                      >
-                        <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" />
-                        <div className="text-center text-secondary">
-                          <img
-                            src={formValues.anh}
-                            alt="Preview"
-                            style={{ width: '162px', height: '162px' }}
-                            className="border border-warning shadow-lg bg-body-tertiary rounded-circle object-fit-contain"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Mã nhân viên" name="ma" value={formValues.ma} onChange={handleChange} disabled />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Tên nhân viên" name="ten" value={formValues.ten} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Số điện thoại" name="soDienThoai" value={formValues.soDienThoai} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Email" name="email" value={formValues.email} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Ngày sinh" name="ngaySinh" value={formValues.ngaySinh} onChange={handleChange} type="date" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="CCCD" name="cccd" value={formValues.cccd} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth label="Địa chỉ" name="diaChi" value={formValues.diaChi} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl>
-                    <FormLabel>Giới tính</FormLabel>
-                    <RadioGroup name="gioiTinh" value={formValues.gioiTinh} onChange={handleChange} row>
-                      <FormControlLabel value="Nam" control={<Radio />} label="Nam" />
-                      <FormControlLabel value="Nữ" control={<Radio />} label="Nữ" />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl>
-                    <FormLabel>Trạng thái</FormLabel>
-                    <RadioGroup name="trangThai" value={formValues.trangThai} onChange={handleChange} row>
-                      <FormControlLabel value="Đang hoạt động" control={<Radio />} label="Đang hoạt động" />
-                      <FormControlLabel value="Ngừng hoạt động" control={<Radio />} label="Ngừng hoạt động" />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <GHNDetail
-                  dataAddress={(addressData) => setFormValues({ ...formValues, ...addressData })}
-                  thanhPho={formValues.thanhPho}
-                  huyen={formValues.huyen}
-                  phuong={formValues.phuong}
-                  disabledValue={false} // Adjust this based on your logic
-                />
-              </Grid>
-              <Box mt={2}>
-                <DialogActions>
-                  <Button variant="contained" color="primary" type="submit">
-                    Lưu
-                  </Button>
-                  <Button variant="contained" onClick={() => navigate('/nhan-vien')}>
-                    Hủy
-                  </Button>
-                </DialogActions>
-              </Box>
-            </Form>
+                  </div>
+                )}
+              </Form.Item>
+            </Box>
           </Box>
         </Paper>
       </Box>

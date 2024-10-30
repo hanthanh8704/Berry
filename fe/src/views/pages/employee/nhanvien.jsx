@@ -1,11 +1,11 @@
-import { Col, Input, Row, Table, Tooltip, Tag, Button, Form, Select, InputNumber, DatePicker, Radio, Typography } from 'antd';
+import { Col, Input, Row, Table, Tooltip, Tag, Button, Select } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SearchOutlined, EditOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as request from 'views/utilities/httpRequest';
-import { IconEdit, IconPlus } from '@tabler/icons-react';
+import { IconEdit, IconPlus, IconFilterFilled, IconList } from '@tabler/icons-react';
 const { Option } = Select;
 
 function Staff() {
@@ -23,17 +23,22 @@ function Staff() {
       sessionStorage.removeItem('employeeAddSuccess');
       sessionStorage.removeItem('employeeUpdateSuccess');
     }
+    fetchStaffData(); // Gọi hàm để lấy dữ liệu
+  }, [pageSize, filterTrangThai, currentPage]);
+
+  // Hàm lấy dữ liệu nhân viên từ API
+  const fetchStaffData = () => {
     request
       .get('/nhan-vien', {
         params: {
-          ma: `%${searchValue}%` || null,
-          ten: `%${searchValue}%` || null,
-          cccd: `%${searchValue}%` || null,
-          soDienThoai: `%${searchValue}%` || null,
+          code: `%${searchValue}%` || null,
+          name: `%${searchValue}%` || null,
+          nationalId: `%${searchValue}%` || null,
+          phoneNumber: `%${searchValue}%` || null,
           email: `%${searchValue}%` || null,
           page: currentPage,
           sizePage: pageSize,
-          trangThai: filterTrangThai !== 'All' ? filterTrangThai : null
+          status: filterTrangThai !== 'All' ? filterTrangThai : null,
         }
       })
       .then((response) => {
@@ -43,36 +48,32 @@ function Staff() {
       .catch((e) => {
         console.log(e);
       });
-  }, [searchValue, pageSize, filterTrangThai, currentPage]);
+  };
 
   const handleStatusChange = (value) => {
     setFilterTrangThai(value);
     setCurrentPage(1);
   };
 
+  const handleSearch = () => {
+    setCurrentPage(1); // Đặt lại trang về 1 khi tìm kiếm
+    fetchStaffData(); // Gọi lại hàm để tìm kiếm
+  };
+
+  const handleResetFilters = () => {
+    setSearchValue('');
+    setFilterTrangThai('All');
+    setCurrentPage(1); // Đặt lại trang về 1 khi làm mới bộ lọc
+    fetchStaffData(); // Gọi lại hàm để làm mới danh sách
+  };
+
   const FormatDate = ({ date }) => {
     const formattedDate = new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
     });
     return <span>{formattedDate}</span>;
-  };
-
-  const renderTrangThai = (trangThai) => {
-    const style = {
-      width: '150px',
-      borderRadius: '20px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '2px',
-      border: '2px solid',
-      color: 'white',
-      backgroundColor: trangThai === 'Ngừng hoạt động' ? '#e84118' : trangThai === 'Đang hoạt động' ? '#4cd137' : '#4cd137'
-    };
-
-    return <div style={style}>{trangThai}</div>;
   };
 
   const columns = [
@@ -84,44 +85,39 @@ function Staff() {
     },
     {
       title: 'Mã',
-      dataIndex: 'ma',
-      key: 'ma'
+      dataIndex: 'code',
+      key: 'code'
     },
     {
       title: 'Tên',
-      dataIndex: 'ten',
-      key: 'ten'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'CCCD',
-      dataIndex: 'cccd',
-      key: 'cccd'
+      dataIndex: 'nationalId',
+      key: 'nationalId'
     },
     {
       title: 'SĐT',
-      dataIndex: 'soDienThoai',
-      key: 'soDienThoai'
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber'
     },
     {
       title: 'Giới tính',
-      dataIndex: 'gioiTinh',
-      key: 'gioiTinh'
+      dataIndex: 'gender',
+      key: 'gender'
     },
     {
       title: 'Ngày sinh',
-      dataIndex: 'ngaySinh',
-      key: 'ngaySinh',
+      dataIndex: 'dateOfBirth',
+      key: 'dateOfBirth',
       render: (x) => <FormatDate date={x} />
     },
     {
-      title: 'Chức vụ',
-      dataIndex: 'chucVu',
-      key: 'chucVu'
-    },
-    {
       title: 'Trạng thái',
-      dataIndex: 'trangThai',
-      key: 'trangThai',
+      dataIndex: 'status',
+      key: 'status',
       render: (text) => (
         <Tag
           style={{ width: '120px' }}
@@ -142,8 +138,8 @@ function Staff() {
             <Link
               to={'/nhan-vien/' + id}
               style={{
-                color: '#5e35b1' /* Màu chữ trắng */,
-                border: 'none' /* Loại bỏ viền */
+                color: '#5e35b1',
+                border: 'none'
               }}
             >
               <IconEdit />
@@ -155,59 +151,168 @@ function Staff() {
   ];
 
   return (
-    <Row gutter={16}>
-      {/* Search Bar */}
-      <Col xs={24} md={16}>
-        <Input placeholder="Tìm kiếm khách hàng theo tên, email, số điện thoại ..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} suffix={<SearchOutlined />} />
+    <Row
+      gutter={16}
+      style={{
+        padding: '20px',
+        backgroundColor: 'white',
+        borderRadius: '10px',
+      }}
+    >
+      {/* Bộ lọc tìm kiếm */}
+      <Col
+        xs={24}
+        style={{
+          padding: '20px',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+          border: '1px solid #d9d9d9',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+          <IconFilterFilled />
+          <h5 style={{ marginLeft: '8px' }}>Bộ lọc</h5>
+        </div>
+
+        <Row gutter={[16, 16]} justify="center">
+          {/* Hàng chứa tiêu đề và ô input */}
+          <Col xs={24} md={12} lg={7}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <label style={{ marginRight: '8px', marginBottom: '10px' }}>Tìm kiếm:</label>
+              <Input
+                placeholder="Tìm kiếm nhân viên theo tên, cccd, số điện thoại..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                suffix={<SearchOutlined />}
+                style={{
+                  borderRadius: '8px',
+                  flex: 1, // Để ô input chiếm phần còn lại
+                  marginBottom: '10px', // Khoảng cách dưới ô input
+                }}
+              />
+            </div>
+          </Col>
+
+          {/* Hàng chứa tiêu đề và select */}
+          <Col xs={24} md={6} lg={5}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <label style={{ marginRight: '8px' }}>Trạng thái:</label>
+              <Select
+                value={filterTrangThai}
+                onChange={handleStatusChange}
+                style={{
+                  width: '100%',
+                  borderRadius: '8px',
+                  flex: 1,
+                  // Khoảng cách giữa label và select
+                }}
+              >
+                <Option value="All">Tất cả</Option>
+                <Option value="Đang hoạt động">Đang hoạt động</Option>
+                <Option value="Ngừng hoạt động">Ngừng hoạt động</Option>
+              </Select>
+            </div>
+          </Col>
+
+        </Row>
+
+        <Row gutter={[16, 16]} style={{ marginTop: '10px', justifyContent: 'center' }}>
+          {/* Các nút ở hàng dưới cùng */}
+          <Col xs={24} md={6} lg={4} style={{ textAlign: 'center' }}>
+            <Button
+              type="primary"
+              onClick={handleSearch}
+              style={{
+                backgroundColor: '#4169E1',
+                color: 'white',
+                borderRadius: '8px',
+                width: '100%',
+              }}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+
+          <Col xs={24} md={6} lg={4} style={{ textAlign: 'center' }}>
+            <Button
+              onClick={handleResetFilters}
+              style={{
+                borderRadius: '8px',
+                width: '100%',
+                backgroundColor: '#d9d9d9',
+              }}
+            >
+              Làm mới
+            </Button>
+          </Col>
+        </Row>
       </Col>
 
-      {/* Filter by Status */}
-      <Col xs={24} md={4}>
-        <Select value={filterTrangThai} onChange={handleStatusChange} style={{ width: '100%' }}>
-          <Option value="All">Tất cả</Option>
-          <Option value="Đang hoạt động">Đang hoạt động</Option>
-          <Option value="Ngừng hoạt động">Ngừng hoạt động</Option>
-        </Select>
-      </Col>
 
-      <Col xs={24} md={4}>
-        <Link to={'/nhan-vien/add'}>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: '#5e35b1' /* Màu nền tím */,
-              color: 'white' /* Màu chữ trắng */
-            }}
-          >
-            <IconPlus />
-            Thêm nhân viên
-          </Button>
-        </Link>
-      </Col>
+      {/* Bảng nhân viên */}
+      <Col
+        xs={24}
+        style={{
+          marginTop: '40px',
+          marginBottom: '20px',
+          padding: '20px',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+          border: '1px solid #d9d9d9',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <IconList size={30} color="black" style={{ fontWeight: 'bold' }} />
+            <h5 style={{ marginLeft: '8px', fontWeight: 'bold', fontSize: '18px' }}>Danh sách nhân viên</h5>
+          </div>
+          <Link to="/nhan-vien/add">
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: '#5e35b1',
+                color: 'white',
+                borderRadius: '8px', width: '100%',
+                marginTop: '10px',
+              }}
+            >
+              <IconPlus /> Thêm nhân viên
+            </Button>
+          </Link>
+        </div>
 
-      <Col xs={24}>
         <Table
           dataSource={staffList}
           columns={columns}
           pagination={{
             showSizeChanger: true,
             current: currentPage,
-            pageSize: pageSize,
+            pageSize,
             pageSizeOptions: [5, 10, 20, 50, 100],
             showQuickJumper: true,
             total: totalPages * pageSize,
             onChange: (page, pageSize) => {
               setCurrentPage(page);
               setPageSize(pageSize);
-            }
+            },
           }}
           rowKey="id"
-          style={{ marginTop: '20px' }}
+          style={{
+            backgroundColor: '#fff',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+          }}
         />
       </Col>
+
+      {/* Thông báo Toast */}
       <ToastContainer />
     </Row>
   );
+
 }
 
 export default Staff;

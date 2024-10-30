@@ -1,11 +1,4 @@
-/* Bill.css */
-.custom-table {
-    background-color: #7bbffb; /* Màu nền của bảng */
-  }
-  
-  .custom-table .ant-table-thead {
-    background-color: #1890ff; 
-  }
+Bill.css
 
   /* custom-button.css */
 .custom-button {
@@ -37,12 +30,6 @@
     color: #ff9900; /* Màu của icon */
   }
 
-  .custom-table-header .ant-table-thead th.ant-table-cell {
-  background-color: #1890ff; /* Màu nền xanh dương */
-  color: white; /* Màu chữ trắng */
-  font-weight: bold; /* Chữ in đậm */
-}
-
   
   .Timeline-wrapper-1 {
     position: relative;
@@ -50,13 +37,7 @@
     width: 98%;
   }
 
-  .table-header {
-    position: sticky;
-    top: 0;
-    padding: auto;
-    background-color: rgb(162, 195, 252);
-  }
-  
+
   .table-body td {
     padding: 8px;
   }
@@ -138,16 +119,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng */
 }
 
-.highlight-container .btn-primary {
-  background-color: #007bff; /* Màu xanh dương đậm */
-  border-color: #007bff; /* Màu viền */
-  color: #fff; /* Màu chữ trắng */
-}
 
-.highlight-container .btn-primary:hover {
-  background-color: #0056b3; /* Màu khi hover */
-  border-color: #0056b3; /* Màu viền khi hover */
-}
 
 .ml-auto {
   margin-left: auto;

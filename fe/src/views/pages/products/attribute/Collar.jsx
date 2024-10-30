@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table, Tooltip, Select ,Tag} from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip, Select } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import { EditOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
@@ -26,10 +26,13 @@ function Collar() {
         loadData(currentPage, pageSize, searchValue);
     }, [currentPage, pageSize, searchValue]);
 
-    const loadData = async (page, size, search) => {
+    const loadData = async (page, size, searchValue) => {
         try {
             const response = await request.get("/collar", {
-                params: { name: search, page, sizePage: size },
+                params: {
+                    name: searchValue ? `%${searchValue}%` : null,
+                    page, sizePage: size
+                },
             });
             setCollarList(response.data);
             setTotalPages(response.totalPages);
@@ -74,7 +77,7 @@ function Collar() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = collarList.some(collar => collar.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = collarList.some(collar => collar.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên cổ áo đã tồn tại!");
                         return;
@@ -104,7 +107,7 @@ function Collar() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = collarList.some(collar => collar.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = collarList.some(collar => collar.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên cổ áo đã tồn tại!");
                         return;
@@ -138,7 +141,7 @@ function Collar() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten,
+            name: record.name,
             trangThai: record.trangThai,
         });
     };
@@ -157,6 +160,7 @@ function Collar() {
                     <label className="mb-1">Cổ áo</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        searchValue
                         placeholder="Tìm kiếm cổ áo theo tên..."
                     />
                 </Col>
@@ -184,32 +188,20 @@ function Collar() {
                     },
                     {
                         title: "Tên Cổ Áo",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
-                            >
-                              {text}
-                            </Tag>
-                          )
                     },
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -264,7 +256,7 @@ function Collar() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Cổ áo"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên cổ áo!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -302,7 +294,7 @@ function Collar() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Cổ áo"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên cổ áo!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
