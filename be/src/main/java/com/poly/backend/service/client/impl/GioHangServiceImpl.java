@@ -207,7 +207,7 @@ public class GioHangServiceImpl implements GioHangService {
         return ma;
     }
 
-
+    //can sua lai
     @Override
     public ResponseObject thanhToan(HoaDonRequest request) {
         // Lấy phương thức thanh toán từ request

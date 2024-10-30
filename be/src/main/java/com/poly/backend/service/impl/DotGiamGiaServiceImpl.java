@@ -266,7 +266,7 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
             if (spctOptional.isPresent()) {
                 ProductDetail spct = spctOptional.get();
                 List<ProductDetailPromotion> dotGiamGiaDDG = dotGiamGiaDetailList.stream()
-                        .filter(detail -> detail.getProductDetail().getId().equals(idSPCT) && detail.getStartDate().isBefore(currentDateTime) && detail.getEndDate().isAfter(now))
+                        .filter(detail -> detail.getProductDetail().getId().equals(idSPCT) && detail.getStartDate().isBefore(currentDateTime) && detail.getEndDate().isAfter(currentDateTime))
                         .collect(Collectors.toList());
 
                 if (dotGiamGiaDetail.getStartDate().isAfter(currentDateTime)) {

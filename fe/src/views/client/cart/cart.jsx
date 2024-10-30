@@ -665,13 +665,7 @@ import { Modal as AntdModal, message } from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const configApi = {
-    headers: {
-        "Content-Type": "application/json",
-        Token: "693d8a79-3a3d-11ef-8e53-0a00184fe694",
-        ShopId: 192796,
-    },
-};
+
 
 const Cart = () => {
 
@@ -748,7 +742,14 @@ const Cart = () => {
     }, [gioHang]);
 
 
-
+    const configApi = {
+        headers: {
+            "Content-Type": "application/json",
+            Token: "693d8a79-3a3d-11ef-8e53-0a00184fe694",  // Thay token đúng nếu cần
+            ShopId: 192796,
+        },
+    };
+    
     // Gọi API phí vận chuyển
     useEffect(() => {
         if (tongTien >= 1000000) {
