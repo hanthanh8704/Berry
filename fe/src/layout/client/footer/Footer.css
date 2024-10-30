@@ -1,0 +1,67 @@
+/* .footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    padding: 20px 0;
+}
+
+.footer-title {
+    color: #6A0DAD;
+    font-weight: bold;
+}
+
+.footer h6 {
+    color: #6A0DAD;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.footer ul {
+    padding: 0;
+    list-style: none;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.input-group .form-control {
+    border-radius: 20px 0 0 20px;
+}
+
+.btn-subscribe {
+    border-radius: 0 20px 20px 0;
+    background-color: #6A0DAD;
+    color: white;
+}
+
+.footer-icon {
+    color: #6A0DAD;
+    transition: color 0.3s ease;
+}
+
+.footer-icon:hover {
+    color: #2196F3;
+} */
+
+.btn-subscribe {
+    background-color: #6A0DAD;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    /* Adjust to get the rounded corners */
+    padding: 0.375rem 0.75rem;
+    /* Adjust for desired padding */
+    font-size: 1rem;
+    /* Adjust for desired font size */
+}
+
+.btn-subscribe:hover {
+    background-color: #4a056e;
+    /* Darker shade on hover */
+}
+.footer-icon:hover {
+    opacity: 0.8; /* Example hover effect */
+  }
+.list-unstyled li:hover {
+    color: #6A0DAD;
+}

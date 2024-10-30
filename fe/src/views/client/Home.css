@@ -1,0 +1,33 @@
+
+.image-container {
+  position: relative;
+
+}
+
+.object-fit-contain {
+ 
+  object-fit: contain;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: red;
+  /* Nền đỏ */
+  color: white;
+  /* Chữ trắng */
+  padding: 2px 5px;
+  border-radius: 5px;
+  /* Bo góc */
+  font-weight: bold;
+  font-size: 12px;
+  /* Kích thước chữ */
+  margin: 0;
+  /* Đảm bảo không có margin mặc định */
+  z-index: 1;
+  /* Đảm bảo thẻ này luôn hiển thị trên ảnh */
+}
+
+
+

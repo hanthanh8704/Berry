@@ -14,7 +14,7 @@ const statistical = {
       id: 'statistical',
       title: 'Thống Kê',
       type: 'item',
-      url: '/dashboard/statistical',
+      url: '/dashboard',
       icon: icons.IconChartBar,
       breadcrumbs: false
     }

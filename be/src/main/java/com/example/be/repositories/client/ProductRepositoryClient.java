@@ -1,0 +1,63 @@
+package com.example.be.repositories.client;
+
+import com.example.be.entities.Image;
+import com.example.be.entities.Product;
+import com.example.be.entities.ProductDetail;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface ProductRepositoryClient extends JpaRepository<Product, Integer> {
+    @Query("select pc from  ProductDetail pc  where pc.createdAt >= :oneWeekAgo and pc.product.id =:id")
+    List<ProductDetail> findAllByNewProductDetail(@Param("oneWeekAgo") LocalDateTime oneWeekAgo , @Param("id") Integer idSP);
+    @Query("SELECT spct FROM ProductDetail spct " +
+            "JOIN spct.product sp " +
+            "WHERE sp.id = :idSP")
+    List<ProductDetail> findAllSPCTBySanPhamId(@Param("idSP") Integer idSP);
+
+    @Query("SELECT anh FROM Image anh " +
+            "JOIN FETCH anh.productDetail spct " +  // LEFT JOIN FETCH để tải dữ liệu SPCT cùng với ảnh
+            "WHERE spct.id = :idSPCT")
+    List<Image> findAllAnhBySanPhamCTId(@Param("idSPCT") Integer idSPCT);
+
+
+    //Hien thi san pham theo idDM
+    @Query("SELECT sp FROM Product sp " +
+            "JOIN FETCH sp.category dm " +  // LEFT JOIN FETCH để tải dữ liệu SPCT cùng với ảnh
+            "WHERE dm.id = :idDM")
+    List<Product> findAllByIdDanhMuc(@Param("idDM") Integer idDM);
+    @Query("SELECT spct FROM ProductDetail spct WHERE spct.product.id = :idSP")
+    List<ProductDetail> findByIdSP(@Param("idSP") Integer idSP);
+
+    //Clinet
+    @Query("SELECT spct FROM ProductDetail spct JOIN Product sp ON sp.id = spct.product.id " +
+            "WHERE (:idMS IS NULL OR spct.color.id = :idMS) AND " +
+            "(:idSP IS NULL OR sp.id = :idSP) AND " +
+            "(:idTH IS NULL OR spct.brand.id = :idTH) AND " +
+            "(:idKC IS NULL OR spct.size.id = :idKC) AND " +
+            "(:priceRange IS NULL OR " +
+            "(:priceRange = 'under300' AND COALESCE(spct.discountPrice, spct.price) < 300000) OR " +
+            "(:priceRange = '300to700' AND COALESCE(spct.discountPrice, spct.price) BETWEEN 300000 AND 700000) OR " +
+            "(:priceRange = 'above700' AND COALESCE(spct.discountPrice, spct.price) > 700000))")
+    List<ProductDetail> findFilteredProducts(@Param("idMS") Integer idMS,
+                                             @Param("idSP") Integer idSP,
+                                             @Param("idTH") Integer idTH,
+                                             @Param("idKC") Integer idKC,
+                                             @Param("priceRange") String priceRange);
+    @Query("SELECT sp FROM Product sp " +
+            "WHERE sp.id IN :idSP")
+    List<Product> findByIds(@Param("idSP") List<Integer> idSP);
+    @Query("select sp from ProductDetail sp where sp.color.id = :idMau and sp.size.id = :idSize and sp.product.id = :idSP")
+    ProductDetail findByIdMauSacAndIdKichCo(@Param("idMau") Integer idMau, @Param("idSize") Integer idSize, @Param("idSP") Integer idSP);
+    @Query("select pc from  Product pc join ProductDetail p on p.product.id = pc.id where p.createdAt >= :oneWeekAgo ")
+    List<Product> findAllByNewProduct(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
+
+
+
+
+}

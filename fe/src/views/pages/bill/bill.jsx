@@ -1,210 +1,322 @@
-import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Pagination from '@mui/material/Pagination';
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, Typography, Button, Divider } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import * as request from 'views/utilities/httpRequest';
+import FormatDate from 'views/utilities/FormatDate';
+import FormatCurrency from 'views/utilities/FormatCurrency';
+import { Badge, Button, DatePicker, Input, Table, Tabs, Tag, Tooltip, Select } from 'antd';
+import { Link } from 'react-router-dom';
+import { IconArrowsMove, IconEdit, IconPrinter, IconEye } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import 'bootstrap/dist/css/bootstrap.min.css';
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
-// Dummy data for orders
-const orders = [
-  { 
-    id: 1, 
-    code: 'HD001', 
-    customer: 'John Doe', 
-    totalMoney: 1000, 
-    status: 'Completed', 
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 
-    history: [
-      { timestamp: '2024-06-20T10:00:00Z', status: 'Processing' },
-      { timestamp: '2024-06-20T11:30:00Z', status: 'Packed' },
-      { timestamp: '2024-06-20T13:00:00Z', status: 'Shipped' },
-      { timestamp: '2024-06-20T15:00:00Z', status: 'Delivered' },
-    ]
-  },
-  { 
-    id: 2, 
-    code: 'HD002', 
-    customer: 'Jane Smith', 
-    totalMoney: 1500, 
-    status: 'Pending', 
-    details: 'Nulla vitae elit libero, a pharetra augue.', 
-    history: [
-      { timestamp: '2024-06-21T14:30:00Z', status: 'Processing' },
-    ]
-  },
-  // Add more orders as needed
+const listStatus = [
+  { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON", icon: <ClockCircleOutlined /> },
+  { id: 1, name: "Chờ xác nhận", status: "CHO_XAC_NHAN", icon: <ClockCircleOutlined /> },
+  { id: 2, name: "Xác nhận", status: "XAC_NHAN", icon: <CheckCircleOutlined /> },
+  { id: 3, name: "Chờ vận chuyển", status: "CHO_VAN_CHUYEN", icon: <ClockCircleOutlined /> },
+  { id: 4, name: "Vận chuyển", status: "VAN_CHUYEN", icon: <CheckCircleOutlined /> },
+  { id: 5, name: "Thanh toán", status: "DA_THANH_TOAN", icon: <CheckCircleOutlined /> },
+  { id: 6, name: "Thành công", status: "THANH_CONG", icon: <CheckCircleOutlined /> },
+  { id: 7, name: "Đã hủy", status: "DA_HUY", icon: <CloseCircleOutlined /> },
 ];
 
-const Bill = () => {
+const listStatusType = [
+  { name: "Trực tuyến", status: "TRUC_TUYEN" },
+  { name: "Tại quầy", status: "TAI_QUAY" },
+]
+
+const Bill = ({ onload }) => {
+  const [listHoaDon, setListHoaDon] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5);
-  const [searchValue, setSearchValue] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [ma, setMa] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [pageSize, setPageSize] = useState(5);
+  const [trangThaiHoaDon, setTrangThaiHoaDon] = useState('');
+  const [tabs, setTabs] = useState([]);
 
-  const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage);
+  const [selectedDates, setSelectedDates] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    loadOrders();
+  }, [currentPage, pageSize, ma, trangThaiHoaDon, fromDate, toDate, onload, selectedDates]);
+
+  // Hàm load danh sách hóa đơn
+  const loadOrders = async () => {
+    try {
+      const response = await request.get(`bill`, {
+        params: {
+          page: currentPage,
+          sizePage: pageSize,
+          code: `%${ma}%` || null,
+          recipientPhone: `%${ma}%` || null,
+          invoiceStatus: trangThaiHoaDon !== '' ? trangThaiHoaDon : null,
+          fromDate: selectedDates?.fromDate,
+          toDate: selectedDates?.toDate
+        }
+      });
+      console.log('Bill data:', response);
+      setListHoaDon(response.data);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      console.error('Lỗi', error);
+    }
+
+    try {
+      const response = await request.get('/bill/statistic-bill-status');
+      setTabs(response);
+      console.log('Statistic data:', response);
+    } catch (error) {
+      console.error('Error fetching bill status:', error);
+    }
   };
 
-  const handleStatusChange = (event) => {
-    setFilterStatus(event.target.value);
-    setCurrentPage(1); // Reset page when status filter changes
+  const handleDateChange = (dates) => {
+    if (dates !== null) {
+      setSelectedDates({
+        fromDate: dates[0].format('YYYY-MM-DD'),
+        toDate: dates[1].format('YYYY-MM-DD')
+      });
+    } else {
+      setSelectedDates(null);
+    }
+    console.log(selectedDates);
   };
 
-  const handleViewDetails = (order) => {
-    setSelectedOrder(order);
+  const handleSearch = () => {
+    loadOrders();
   };
 
-  const handleClearDetails = () => {
-    setSelectedOrder(null);
+  const handleDetail = (id) => {
+    navigate(`/bill-detail/${id}`);
   };
 
-  const filteredOrders = orders.filter(order =>
-    (filterStatus === 'All' || order.status === filterStatus) &&
-    (order.code.toLowerCase().includes(searchValue.toLowerCase()) ||
-    order.customer.toLowerCase().includes(searchValue.toLowerCase()))
-  );
+  const items = [
+    {
+      key: '',
+      label: (
+        <Badge offset={[8, 0]} size="small">
+          Tất cả
+        </Badge>
+      )
+    },
+    ...tabs.map((item) => ({
+      key: item.invoiceStatus,
+      label: (
+        <Badge count={item.totalCount} offset={[8, 0]} size="small">
+          {item.statusName}
+        </Badge>
+      )
+    }))
+  ];
 
-  const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const columns = [
+    {
+      title: 'STT',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1
+    },
+    {
+      title: 'Mã',
+      dataIndex: 'code',
+      key: 'code'
+    },
+    {
+      title: 'Khách hàng',
+      dataIndex: 'nameCustomer',
+      key: 'nameCustomer',
+      render: (text) => text || 'Khách hàng lẻ'
+    },
+    {
+      title: 'Nhân viên',
+      dataIndex: 'employee',
+      key: 'employee',
+      render: (text) => (text ? text : 'Chưa có')
+    },
+    {
+      title: 'SDT',
+      dataIndex: 'recipientPhone',
+      key: 'recipientPhone',
+      render: (text, record) => {
+        const soDienThoai = record.recipientPhone || record.soDienThoai;
+        return soDienThoai || '-';
+      }
+    },
+    {
+      title: 'Tổng tiền',
+      dataIndex: 'totalMoney',
+      key: 'totalMoney',
+      render: (totalMoney, record) => (
+        <span className="fw-semibold text-danger">
+          <FormatCurrency value={totalMoney + (record.shippingFee || 0)} />
+        </span>
+      )
+    },
+
+    {
+      title: 'Trạng thái',
+      dataIndex: 'invoiceStatus',
+      key: 'invoiceStatus',
+      render: (invoiceStatus) => {
+        const statusItem = listStatus.find((status) => status.id === invoiceStatus);
+
+        if (statusItem) {
+          return (
+            <Tag
+              style={{ width: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              color={
+                statusItem.id === 0
+                  ? '#87d068'
+                  : statusItem.id === 1
+                    ? '#ffce31'
+                    : statusItem.id === 2
+                      ? '#108ee9'
+                      : statusItem.id === 3
+                        ? '#6c5ce7'
+                        : statusItem.id === 4
+                          ? '#2ed573'
+                          : statusItem.id === 5
+                            ? '#487eb0'
+                            : statusItem.id === 6
+                              ? '#f6b93b'
+                              : statusItem.id === 7
+                                ? '#f50'
+                                : '#636e72'
+              }
+            >
+              {statusItem.icon} {/* Hiển thị icon */}
+              <span style={{ marginLeft: '5px' }}>{statusItem.name}</span> {/* Hiển thị tên trạng thái */}
+            </Tag>
+          );
+        }
+
+        // Trường hợp không tìm thấy status
+        return <Tag color="#636e72">Không xác định</Tag>;
+      }
+    },
+
+
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt) => <FormatDate date={createdAt} />
+    },
+
+    {
+      title: 'Loại đơn hàng',
+      dataIndex: 'invoiceType',
+      key: 'invoiceType',
+      render: (invoiceType) => {
+        // Tìm đối tượng trong listStatusType dựa trên giá trị invoiceType
+        const typeItem = listStatusType.find((type) => type.status === invoiceType);
+
+        if (typeItem) {
+          return (
+            <Tag
+              style={{ width: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              color={invoiceType === 'TAI_QUAY' ? '#87d068' : invoiceType === 'TRUC_TUYEN' ? '#108ee9' : '#636e72'}
+            >
+              {invoiceType === 'TAI_QUAY' ? (
+                <i className="fas fa-shop me-1"></i> // Icon cho Tại quầy
+              ) : invoiceType === 'TRUC_TUYEN' ? (
+                <i className="fas fa-truck-fast me-1"></i> // Icon cho Trực tuyến
+              ) : (
+                <i className="fas fa-plus me-1"></i> // Icon mặc định
+              )}
+              <span style={{ marginLeft: '5px' }}>{typeItem.name}</span> {/* Hiển thị tên loại đơn hàng */}
+            </Tag>
+          );
+        }
+
+        // Trường hợp không tìm thấy loại đơn hàng
+        return <Tag color="#636e72">Không xác định</Tag>;
+      }
+    },
+
+    {
+      title: 'Hành động',
+      dataIndex: 'id',
+      key: 'action',
+      render: (id, record) => (
+        <>
+          <Tooltip title="Xem chi tiết">
+            <Link to={`/bill/${id}`}>
+              <Button type="text" icon={<IconEdit />} className="custom-button" />
+            </Link>
+          </Tooltip>
+          {record.status !== 'Tạo đơn hàng' && (
+            <Tooltip title="In hóa đơn">
+              <Link className="px-2" target="blank" to={`/export-pdf/${record.id}`}>
+                <IconPrinter />
+              </Link>
+            </Tooltip>
+          )}
+        </>
+      )
+    }
+  ];
 
   return (
-    <Grid container spacing={3}>
-      {/* Search Bar */}
-      <Grid item xs={12} md={6}>
-        <Box display="flex" alignItems="center">
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Search orders..."
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <IconButton>
-                  <SearchIcon />
-                </IconButton>
-              )
-            }}
-          />
-        </Box>
-      </Grid>
-
-      {/* Filter by Status */}
-      <Grid item xs={12} md={3}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="filter-status-label">Filter by Status</InputLabel>
-          <Select
-            labelId="filter-status-label"
-            id="filter-status"
-            value={filterStatus}
-            onChange={handleStatusChange}
-            label="Filter by Status"
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Completed">Completed</MenuItem>
-            <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="Cancelled">Cancelled</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
-
-      {/* Orders Table */}
-      <Grid item xs={12}>
-        {selectedOrder ? (
-          // Detail View
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h5" gutterBottom>
-              Order Details
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              <strong>Code:</strong> {selectedOrder.code}<br />
-              <strong>Customer:</strong> {selectedOrder.customer}<br />
-              <strong>Total Money:</strong> {selectedOrder.totalMoney} đ<br />
-              <strong>Status:</strong> {selectedOrder.status}<br />
-              <strong>Details:</strong> {selectedOrder.details}<br />
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              Order History
-            </Typography>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Timestamp</TableCell>
-                    <TableCell>Status</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {selectedOrder.history.map((step, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{step.timestamp}</TableCell>
-                      <TableCell>{step.status}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Button variant="contained" color="primary" onClick={handleClearDetails} sx={{ mt: 2 }}>
-              Back to Orders
-            </Button>
-          </Paper>
-        ) : (
-          // Orders Table
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>#</TableCell>
-                  <TableCell>Mã hóa đơn</TableCell>
-                  <TableCell>Khách hàng</TableCell>
-                  <TableCell>Tổng tiền</TableCell>
-                  <TableCell>Trạng thái</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedOrders.map((order, index) => (
-                  <TableRow key={order.id}>
-                    <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
-                    <TableCell>{order.code}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.totalMoney} đ</TableCell>
-                    <TableCell>{order.status}</TableCell>
-                    <TableCell>
-                      <Button variant="outlined" color="primary" onClick={() => handleViewDetails(order)}>
-                        Chi tiết
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Grid>
-
-      {/* Pagination */}
-      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-        <Pagination
-          count={Math.ceil(filteredOrders.length / pageSize)}
-          page={currentPage}
-          onChange={handleChangePage}
-          color="primary"
+    <div className="bg-white p-4 rounded-3">
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+        <Input
+          style={{ width: '300px', marginRight: '10px' }}
+          placeholder="Tìm kiếm theo mã"
+          value={ma}
+          onChange={(e) => setMa(e.target.value)}
+          onPressEnter={handleSearch}
         />
-      </Grid>
-    </Grid>
+        <Select
+          placeholder="Chọn trạng thái"
+          style={{ width: '300px', marginRight: '10px' }}
+          onChange={(value) => setTrangThaiHoaDon(value)} // Không cần e.target.value, value đủ rồi
+          value={trangThaiHoaDon}
+        >
+          <Option value="">Tất cả</Option>
+          {listStatus.map((item) => (
+            <Option key={item.id} value={item.id}>
+              {item.name} ({tabs.find((tab) => tab.invoiceStatus === item.id)?.totalCount || 0})
+            </Option>
+          ))}
+        </Select>
+
+        <RangePicker onChange={handleDateChange} style={{ marginRight: '10px' }} />
+        <Button type="primary" onClick={handleSearch}>
+          Tìm kiếm
+        </Button>
+      </div>
+      <Tabs
+        defaultActiveKey={1}
+        items={items}
+        tabBarGutter={45}
+        onChange={(key) => {
+          setTrangThaiHoaDon(key);
+        }}
+      />
+      <Table
+        dataSource={listHoaDon}
+        columns={columns}
+        pagination={{
+          showSizeChanger: true,
+          current: currentPage,
+          pageSize: pageSize,
+          pageSizeOptions: [5, 10, 20, 50],
+          showQuickJumper: false,
+          total: totalPages * pageSize,
+          onChange: (page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }
+        }}
+        className="custom-table"
+      />
+    </div>
   );
 };
 

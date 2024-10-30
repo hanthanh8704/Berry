@@ -1,0 +1,43 @@
+.navbar-nav .nav-item .nav-link {
+    text-transform: uppercase;
+    font-size: 15px;
+    color: #000;
+    /* Màu chữ mặc định */
+    transition: color 0.2s ease-in-out;
+    /* Hiệu ứng chuyển đổi màu chữ */
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    color: #6A0DAD;
+    /* Màu chữ khi hover */
+}
+
+.navbar-nav .nav-item .nested-nav {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    /* Optional styling for nested nav */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* Optional box shadow */
+    z-index: 1000;
+    /* Ensure it overlays other content */
+}
+.navbar-nav .nav-item .nested-nav ul {
+    list-style-type: none;
+  }
+
+/* Show nested nav on hover */
+.navbar-nav .nav-item:hover .nested-nav {
+    display: block;
+}
+
+.dropdown-menu {
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.navbar-nav .nav-item {
+    position: relative;
+}

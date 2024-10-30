@@ -22,20 +22,20 @@ const account = {
 
       children: [
         {
-          id: 'employee-list',
-          title: 'Danh Sách Nhân Viên',
-          type: 'item',
-          url: '/account/employees',
-          target: true,
-          icon: icons.IconUsers
-        },
-        {
           id: 'customer-list',
           title: 'Danh Sách Khách Hàng',
           type: 'item',
-          url: '/account/customers',
-          target: true,
+          url: 'api/customer',
+          target: false,
           icon: icons.IconUserShield
+        },
+        {
+          id: 'employee-list',
+          title: 'Danh Sách Nhân Viên',
+          type: 'item',
+          url: '/nhan-vien',
+          target: false,
+          icon: icons.IconUsers
         }
       ]
     }
