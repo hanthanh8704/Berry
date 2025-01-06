@@ -1,0 +1,49 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+.chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+  
+  /* Hiệu ứng hover cho nút */
+  .chatbot-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Hộp chatbot */
+  .chatbot-container {
+    position: fixed;
+    bottom: 100px; /* Vị trí phía trên nút */
+    right: 20px;
+    z-index: 999;
+    width: 350px;
+    max-height: 500px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }

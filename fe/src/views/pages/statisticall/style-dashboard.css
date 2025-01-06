@@ -1,0 +1,371 @@
+.row-header {
+  height: 50px;
+  color: #fff;
+  font-family: 'Times New Roman', Times, serif;
+  text-align: center;
+}
+.content-child{
+  font-family: 'Times New Roman', Times, serif;
+}
+.col-header {
+  margin-top: 15px;
+  margin-left: 35px;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.content-header {
+  background-color: white;
+}
+
+.row-body {
+  width: 99%;
+  margin-left: 5px;
+  height: 800px;
+  margin-top: 20px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.row-footer-left {
+  width: 52%;
+  margin-left: 5px;
+  height: 1190px;
+  margin-top: 35px;
+  background-color: rgb(226, 226, 226);
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.row-footer-right {
+  width: 46%;
+  margin-left: 15px;
+  height: 1300px;
+  margin-top: 26px;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.row-footer-right .content-1 {
+  background-color: rgb(226, 226, 226);
+  border-radius: 15px;
+  height: 490px;
+}
+
+.row-footer-right .content-2 {
+  margin-top: 20px;
+  background-color: rgb(226, 226, 226);
+  border-radius: 15px;
+  height: 680px;
+}
+.row-footer-right .content-2 .content-child {
+  margin-top: 9px;
+  margin-left: 15px;
+  background: #47474d;
+  border-radius: 15px;
+  width: 95%;
+  height: 88px;
+  float: left;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng nhẹ */
+}
+
+.row-footer-right .content-2 .content-child .icon {
+  margin-top: 30px;
+  margin-left: 17px;
+  font-size: 20px;
+  font-family: 'Times New Roman', Times, serif;
+  color: white; /* Đổi màu biểu tượng sang trắng để nổi bật */
+}
+
+.row-footer-right .content-2 .content-child .title {
+  margin-top: 30px;
+  margin-left: 20px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 16px; /* Điều chỉnh kích thước */
+  color: white; /* Đổi màu chữ tiêu đề sang trắng */
+  width: 100px;
+}
+
+.row-footer-right .content-2 .content-child .content-x {
+  margin-top: 30px;
+  margin-left: 10px;
+  float: left;
+  width: 200px;
+  color: white; /* Đổi màu chữ nội dung sang trắng */
+}
+
+
+.row-footer-right .content-2 .content-child .content-y {
+  margin-top: 30px;
+  float: left;
+  width: 30px;
+  margin-left: 3%;
+}
+
+.content-1{
+  border: solid 1px rgb(211, 206, 206);
+}
+
+.content-2{
+  border: solid 1px rgb(211, 206, 206);
+}
+
+.row-footer-left{
+  border: solid 1px rgb(211, 206, 206);
+  background-color: #FFF;
+}
+
+
+.header-date {
+  margin-left: 100px;
+}
+
+.row-body-container {
+  margin-bottom: 159px;
+}
+
+.color-text-topic {
+  color: rgb(150, 150, 150);
+  text-align: center;
+}
+
+.color-text-topic-1,
+.color-text-topic-2,
+.color-text-topic-3,
+.color-text-topic-4 {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.color-text-content {
+  color: #9c88ff;
+  text-align: center;
+}
+
+.chart-container .chartjs-legend {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  font-family: 'Times New Roman', Times, serif;
+  color: #333;
+}
+
+#chartdivChart {
+  width: 1130px;
+  height: 590px;
+  margin-right: 50px;
+}
+
+#chartdivPie {
+  width: 100%;
+  height: 390px;
+}
+
+.header-date .option-time {
+  width: 100%;
+  text-align: right;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.header-date .option-time .button-time {
+  margin-left: 5px;
+  border-radius: 5px;
+  background-color: #8c7ae6;
+  color: #FFF;
+  border: 1px solid #fedec7;
+  width: 90px;
+  height: 38px;
+  font-size: 13px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.header-date .option-time .button-time-block {
+  margin-top: 40px;
+  margin-left: 5px;
+  border-radius: 5px;
+  background-color: #fff;
+  color: rgb(135, 129, 129);
+  border: none;
+  width: 90px;
+  height: 38px; 
+  font-size: 13px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.header-date .option-time .button-time-from {
+  margin-left: 5px;
+  margin-top: 15px;
+  border-radius: 5px;
+  width: 150px;
+  font-size: 10px;
+  font-family: 'Times New Roman', Times, serif;
+  border: 0px solid transparent;
+  height: 38px !important;
+  background-color: #f0f0f0;
+}
+
+.header-date .button-time-from .p-calendar .p-inputtext {
+  height: 30px !important;
+}
+
+.header-date .button-time-to .p-calendar .p-inputtext {
+  height: 30px !important;
+}
+
+.header-date .option-time .button-time-to {
+  margin-left: 5px;
+  border-radius: 5px;
+  width: 150px;
+  font-size: 10px;
+  font-family: 'Times New Roman', Times, serif;
+  border: 0px solid transparent;
+  height: 39px !important;
+  background-color: #f0f0f0;
+}
+
+.header-date .option-time .input-name {
+  width: 20%;
+  height: 30px !important;
+}
+
+.header-date .option-time .celendar-picker {
+  height: 30px;
+  /* margin-top: 15px; */
+}
+
+/* Neww */
+
+.row-header {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col-header-1 {
+  border-radius: 10px;
+  margin-left: 40px;
+  margin-top: 10px;
+  padding: 25px;
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.col-header-2 {
+  border-radius: 8px;
+  margin-right: 28px;
+  margin-left: 28px;
+  margin-top: 8px;
+  padding: 25px;
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.col-header-3{
+  border-radius: 8px;
+  margin-right: 2px;
+  margin-left: 40px;
+  margin-top: 8px;
+  padding: 25px;
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.col-header-4 {
+  border-radius: 8px;
+  margin-right: 28px;
+  margin-left: 28px;
+  margin-top: 8px;
+  padding: 25px;
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.col-header-1 {
+  background: linear-gradient(45deg, #4a69bd, #6a89cc); /* Xanh biển đậm hơn cho "Hôm nay" */
+  color: white;
+}
+
+.col-header-2{
+  background: linear-gradient(45deg, #5e35b1, #7e57c2); /* Tím đậm rõ nét hơn cho "Tuần này" */
+  color: white;
+}
+
+.col-header-3 {
+  background: linear-gradient(45deg, #38a169, #78e08f); /* Xanh lá đậm rõ ràng cho "Tháng này" */
+  color: white;
+}
+
+.col-header-4 {
+  background: linear-gradient(45deg, #0a3d62, #3c6382); /* Xanh dương đậm hơn, dễ nhìn hơn cho "Năm nay" */
+  color: white;
+}
+
+
+
+.color-text-contentt-1,
+.color-text-contentt-2,
+.color-text-contentt-3,
+.color-text-contentt-4,
+.color-text-contentt {
+  font-size: 15px;
+  font-family: 'Times New Roman', Times, serif;
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.color-text-contentt-3 {
+  font-size: 15px;
+  font-family: 'Times New Roman', Times, serif;
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.color-text-content-1,
+.color-text-content-2,
+.color-text-content-3,
+.color-text-content-4,
+.color-text-content {
+  font-size: 15px;
+  font-family: 'Times New Roman', Times, serif;
+  margin-top: 8px;
+}
+
+
+.color-text-content {
+  color: #ffffff; /* Đặt màu chữ trắng */
+}
+
+.content-header-1,
+.content-header-2,
+.content-header-3,
+.content-header-4{
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .col-header-1,
+  .col-header-2,
+  .col-header-3,
+  .col-header-4 {
+    width: 100%;
+  }
+}
+
+
+
+
+
+
+
+
+

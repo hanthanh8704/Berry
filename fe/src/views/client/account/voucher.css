@@ -1,0 +1,20 @@
+.voucher-button {
+    border: 1px solid #6A0DAD;
+    color: #6A0DAD;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.voucher-button:hover {
+    background-color: #6A0DAD;
+    color: white;
+    box-shadow: 0 4px 8px rgba(106, 13, 173, 0.3);
+    transform: scale(1.05);
+}
+
+.empty-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}

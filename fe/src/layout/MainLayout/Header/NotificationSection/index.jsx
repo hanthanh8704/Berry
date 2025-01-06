@@ -58,9 +58,7 @@ const NotificationSection = () => {
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
-  /**
-   * anchorRef is used on different componets and specifying one type leads to other components throwing an error
-   * */
+  const [showAll, setShowAll] = useState(false);  // State to control showing all notifications
   const anchorRef = useRef(null);
 
   const handleToggle = () => {
@@ -84,6 +82,14 @@ const NotificationSection = () => {
 
   const handleChange = (event) => {
     if (event?.target.value) setValue(event?.target.value);
+  };
+
+  const handleViewAll = () => {
+    setShowAll(true);  // Show all notifications when "View All" is clicked
+  };
+
+  const handleCollapse = () => {
+    setShowAll(false);  // Collapse notifications when "Collapse" is clicked
   };
 
   return (
@@ -170,7 +176,7 @@ const NotificationSection = () => {
                     <Grid item xs={12}>
                       <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 205px)', overflowX: 'hidden' }}>
                         <Grid container direction="column" spacing={2}>
-                          <Grid item xs={12}>
+                          {/* <Grid item xs={12}>
                             <Box sx={{ px: 2, pt: 0.25 }}>
                               <TextField
                                 id="outlined-select-currency-native"
@@ -189,19 +195,19 @@ const NotificationSection = () => {
                                 ))}
                               </TextField>
                             </Box>
-                          </Grid>
+                          </Grid> */}
                           <Grid item xs={12} p={0}>
                             <Divider sx={{ my: 0 }} />
                           </Grid>
                         </Grid>
-                        <NotificationList />
+                        <NotificationList showAll={showAll} />  {/* Pass the showAll state to NotificationList */}
                       </PerfectScrollbar>
                     </Grid>
                   </Grid>
                   <Divider />
                   <CardActions sx={{ p: 1.25, justifyContent: 'center' }}>
-                    <Button size="small" disableElevation>
-                      View All
+                    <Button size="small" disableElevation onClick={showAll ? handleCollapse : handleViewAll}>
+                      {showAll ? 'Thu gọn' : 'Tất cả'}
                     </Button>
                   </CardActions>
                 </MainCard>

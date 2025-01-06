@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Button, Col, Collapse, Divider, Row, Pagination, Select } from 'antd';
+import { Modal, Form, Input, Button, Col, Collapse, Divider, Row, Pagination, Select, notification } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ItemAddress from './ItemAddress';
 import * as request from 'views/utilities/httpRequest';
 import { useParams } from 'react-router-dom';
-import Loading from 'ui-component/Loading';
+import { useNavigate } from "react-router-dom";
 
-const AddressCustomerDetail = () => {
+const AddressCustomerDetail = (idCustomer) => {
+  const navigate = useNavigate();
   const [listAddress, setListAddress] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(2);
@@ -25,6 +25,10 @@ const AddressCustomerDetail = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
 
+  
+  const customerId = idCustomer.idCustomer ? idCustomer.idCustomer : id;
+
+  console.log("ID Khách hàng : " + customerId);
   const configApi = {
     headers: {
       "Content-Type": "application/json",
@@ -34,13 +38,12 @@ const AddressCustomerDetail = () => {
   };
 
   useEffect(() => {
-    loadData(id, currentPage, pageSize);
-  }, [id, currentPage, pageSize]);
+    loadData(customerId, currentPage, pageSize);
+  }, [customerId, currentPage, pageSize]);
 
-  const loadData = (id, currentPage, pageSize) => {
-    setLoading(true);
+  const loadData = (customerId, currentPage, pageSize) => {
     request
-      .get(`/address/${id}`, {
+      .get(`/address/${customerId}`, {
         params: {
           page: currentPage,
           sizePage: pageSize,
@@ -50,7 +53,6 @@ const AddressCustomerDetail = () => {
       .then((response) => {
         setListAddress(response.content);
         setTotalPages(response.totalPages);
-        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
@@ -58,7 +60,7 @@ const AddressCustomerDetail = () => {
   };
 
   const handleAdd = (data) => {
-    data.idKhachHang = id;
+    data.idKhachHang = customerId;
     confirm({
       title: 'Xác nhận',
       icon: <ExclamationCircleFilled />,
@@ -67,14 +69,17 @@ const AddressCustomerDetail = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk() {
-        data.idKhachHang = id;
+        data.idKhachHang = customerId;
         request
           .post('/address', data)
           .then((response) => {
             setCurrentPage(1);
-            loadData(id, currentPage, pageSize);
+            loadData(customerId, currentPage, pageSize);
             form.resetFields();
-            toast.success('Thêm mới thành công!');
+            notification.success({
+              message: 'Thêm mới thành công!',
+              duration: 2, 
+            });
           })
           .catch((e) => console.log(e));
       },
@@ -150,9 +155,9 @@ const AddressCustomerDetail = () => {
   useEffect(() => {
     if (dataAddress) {
       dataAddress({
-        thanhPho: selectedProvince,
-        huyen: selectedDistrict,
-        phuong: selectedWard,
+        city: selectedProvince,
+        district: selectedDistrict,
+        ward: selectedWard,
       });
     }
   }, [selectedProvince, selectedDistrict, selectedWard, dataAddress]);
@@ -174,7 +179,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={12}>
                     <Form.Item
                       label="Tên"
-                      name="hoTen"
+                      name="fullName"
                       rules={[{ required: true, message: 'Tên không được để trống!' }]}
                     >
                       <Input placeholder="Nhập tên người nhận..." />
@@ -183,7 +188,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={12}>
                     <Form.Item
                       label="Số điện thoại"
-                      name="soDienThoai"
+                      name="phoneNumber"
                       rules={[{ required: true, message: 'Số điện thoại không được để trống!' }]}
                     >
                       <Input placeholder="Nhập số điện thoại..." />
@@ -192,7 +197,7 @@ const AddressCustomerDetail = () => {
                   <Col xl={24}>
                     <Form.Item
                       label="Địa chỉ cụ thể"
-                      name="diaChiCuThe"
+                      name="detailedAddress"
                       rules={[{ required: true, message: 'Địa chỉ cụ thể không được để trống!' }]}
                     >
                       <Input placeholder="Nhập địa chỉ cụ thể ..." />
@@ -200,8 +205,8 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="thanhPho"
-                      label="Thành phố"
+                      name="city"
+                      label="Thành Phố"
                       rules={[{ required: true, message: "Thành phố không được để trống!" }]}
                     >
                       <Select
@@ -222,7 +227,7 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="huyen"
+                      name="district"
                       label="Huyện"
                       rules={[{ required: true, message: "Huyện không được để trống!" }]}
                     >
@@ -244,7 +249,7 @@ const AddressCustomerDetail = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="phuong"
+                      name="ward"
                       label="Phường"
                       rules={[{ required: true, message: "Phường không được để trống!" }]}
                     >
@@ -287,7 +292,7 @@ const AddressCustomerDetail = () => {
             {
               key: `${item.index}`,
               label: <span className="fw-semibold">Địa chỉ {item.index}</span>,
-              children: <ItemAddress props={item} onSuccess={() => loadData(id, currentPage, pageSize)} />,
+              children: <ItemAddress props={item} onSuccess={() => loadData(customerId, currentPage, pageSize)} />,
               className: 'border-bottom-0',
             },
           ]}

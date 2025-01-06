@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Modal, Select, Space } from "antd";
 import * as request from "views/utilities/httpRequest";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { Button, Form, Input, Modal, Select, Space, Tooltip, message } from "antd";
 import { IconPlus } from "@tabler/icons-react";
 import AddProperties from "./AddProperties";
 
@@ -10,55 +8,40 @@ function AddShirtModal({ onAddSuccess }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
     const [searchCate, setSearchCate] = useState(null);
-    const [searchShirt, setSearchShirt] = useState(null);
     const [cateList, setCateList] = useState([]);
+    const [searchShirt, setSearchShirt] = useState(null);
     const [shirtList, setShirtList] = useState([]);
 
     const showModal = () => {
         setIsModalOpen(true);
     };
 
-    useEffect(() => {
-        loadShirts();
-    }, [searchShirt]);
-
-    const loadShirts = () => {
-        request
-            .get("/shirt", { params: { name: searchShirt, status: false, sizePage: 1_000_000 } })
-            .then((response) => {
-                setShirtList(response.data);
-            })
-            .catch((error) => {
-                console.error("Lỗi khi tải danh sách áo:", error);
-            });
-    };
-
-    const handleOk = async (data) => {
-        const duplicate = shirtList.some(shirt => shirt.ten.toLowerCase() === data.ten.toLowerCase());
+    const handleOk = (data) => {
+        const duplicate = shirtList.some(shirt => shirt.name.toLowerCase() === data.name.toLowerCase());
         if (duplicate) {
-            form.setFields([
-                {
-                    name: 'ten',
-                    errors: ['Tên áo đã tồn tại. Vui lòng chọn tên khác.'],
-                },
-            ]);
+            form.setFields([{ name: "name", errors: ["Tên áo đã tồn tại. Vui lòng chọn tên khác."] }]);
+            message.error("Tên áo đã tồn tại. Vui lòng chọn tên khác.", 2); // 2 giây
             return;
-
         }
 
-        try {
-            const response = await request.post('/shirt/create', data);
-            if (response.status === 200) {
-                toast.success('Thông báo thành công!', { autoClose: 3000, closeOnClick: true });
-                onAddSuccess(loadShirts);
-
-                form.resetFields();
-                setIsModalOpen(false);
-            }
-        } catch (e) {
-            console.log(e);
-            toast.error(e.response.data);
-        }
+        // Gửi yêu cầu POST thêm áo
+        request.post("/shirt/create", data, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    message.success("Thêm thành công!", 2); // Thông báo thành công
+                    onAddSuccess();
+                    form.resetFields();
+                    setIsModalOpen(false);
+                }
+            })
+            .catch((e) => {
+                console.error("Lỗi khi thêm áo:", e);
+                message.error(e.response ? e.response.data : "Lỗi không xác định", 2); // Thông báo lỗi
+            });
     };
 
     const handleCancel = () => {
@@ -66,8 +49,7 @@ function AddShirtModal({ onAddSuccess }) {
     };
 
     const loadCate = () => {
-        request
-            .get("/category", { params: { name: searchCate, status: false, sizePage: 1_000_000 } })
+        request.get("/category", { params: { name: searchCate } })
             .then((response) => {
                 setCateList(response.data);
             })
@@ -76,22 +58,37 @@ function AddShirtModal({ onAddSuccess }) {
             });
     };
 
+    const loadShirts = () => {
+        request.get("/shirt", { params: { name: searchShirt } })
+            .then((response) => {
+                setShirtList(response.data);
+            })
+            .catch((error) => {
+                console.error("Lỗi khi tải danh sách áo:", error);
+            });
+    };
+
+    useEffect(() => {
+        loadShirts();
+    }, [searchShirt]);
+
     useEffect(() => {
         loadCate();
     }, [searchCate]);
 
     return (
         <>
-            <ToastContainer autoClose={3000} closeOnClick />
-            <Button type="primary" onClick={showModal}
-                style={{ backgroundColor: '#5e35b1' }} size="large">
-                <IconPlus />
-            </Button>
-            <Modal title="Thêm áo" visible={isModalOpen} onCancel={handleCancel} footer="">
+            <Tooltip placement="bottom" title="Thêm mới sản phẩm">
+                <Button title="Thêm sản phẩm" type="primary" onClick={showModal} style={{ backgroundColor: "#5e35b1" }} size="large">
+                    <IconPlus />
+                </Button>
+            </Tooltip>
+
+            <Modal title="Thêm áo" open={isModalOpen} onCancel={handleCancel} footer="">
                 <Form form={form} onFinish={handleOk} layout="vertical">
                     <Form.Item
                         label="Tên áo"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên áo!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -103,10 +100,8 @@ function AddShirtModal({ onAddSuccess }) {
 
                     <Form.Item
                         label="Danh mục"
-                        name="danhMuc"
-                        rules={[
-                            { required: true, message: "Vui lòng chọn tên danh mục!" },
-                        ]}
+                        name="category"
+                        rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
                     >
                         <Select
                             showSearch
@@ -118,11 +113,7 @@ function AddShirtModal({ onAddSuccess }) {
                                 <>
                                     {menu}
                                     <Space className="my-2 ms-2">
-                                        <AddProperties
-                                            placeholder="danh mục"
-                                            name="category"
-                                            onSuccess={() => loadCate()}
-                                        />
+                                        <AddProperties placeholder="danh mục" name="category" onSuccess={loadCate} />
                                     </Space>
                                 </>
                             )}
@@ -130,13 +121,14 @@ function AddShirtModal({ onAddSuccess }) {
                             <Select.Option value="">-- Chọn danh mục --</Select.Option>
                             {cateList.map((item) => (
                                 <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
+                                    {item.name}
                                 </Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
+
                     <div className="d-flex justify-content-end">
-                        <Button type="primary" htmlType="submit" style={{ backgroundColor: '#5e35b1' }}>
+                        <Button type="primary" htmlType="submit" style={{ backgroundColor: "#5e35b1" }}>
                             <IconPlus /> Thêm
                         </Button>
                     </div>

@@ -1,18 +1,15 @@
-import { AutoComplete, Avatar, Button, Col, Table, DatePicker, Divider, Drawer, Form, Input, Modal, Radio, Row } from 'antd';
+import { AutoComplete, Avatar, Button, Col, Table, DatePicker, Divider, Drawer, Form, Input, Modal, Radio, Row, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import * as request from 'views/utilities/httpRequest';
-import FormatTime from 'views/utilities/FormatTime';
-import GHNDetail from 'ui-component/GHNDetail';
-import { IconEdit, IconPlus } from '@tabler/icons-react';
 
-function CustomerOrder({ handleSelect }) {
+function CustomerOrder({ idBill,handleSelect,onClosed }) {
   const [customerData, setCustomerData] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalKHOpen, setIsModalKHOpen] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState('left');
 
@@ -31,10 +28,12 @@ function CustomerOrder({ handleSelect }) {
 
   const handleKHOk = () => {
     setIsModalKHOpen(false);
+    onClosed();
   };
 
   const handleKHCancel = () => {
     setIsModalKHOpen(false);
+    onClosed();
   };
 
   const handleOk = () => {
@@ -42,6 +41,7 @@ function CustomerOrder({ handleSelect }) {
   };
 
   const handleCancel = () => {
+    onClosed();
     setIsModalOpen(false);
   };
 
@@ -57,23 +57,46 @@ function CustomerOrder({ handleSelect }) {
 
   useEffect(() => {
     loadCustomer('');
-  }, []);
+  }, [currentPage, pageSize]);
+  const token = localStorage.getItem('token');
+  // Lấy dữ liệu từ localStorage
+  const idNhanVienInt = localStorage.getItem('employeeId');
 
   const loadCustomer = (value) => {
-    const successMessage = sessionStorage.getItem('customerAddSuccess') || sessionStorage.getItem('customerUpdateSuccess');
-    if (successMessage) {
-      toast.success(successMessage);
-      sessionStorage.removeItem('customerAddSuccess');
-      sessionStorage.removeItem('customerUpdateSuccess');
-    }
+    // const successMessage = sessionStorage.getItem('customerAddSuccess') || sessionStorage.getItem('customerUpdateSuccess');
+    // if (successMessage) {
+    //   toast.success(successMessage);
+    //   sessionStorage.removeItem('customerAddSuccess');
+    //   sessionStorage.removeItem('customerUpdateSuccess');
+    // }
     request
       .get('/customer', {
         params: {
-          hoTen: value
-        }
+          page: currentPage,
+          sizePage: pageSize
+        },
       })
       .then((response) => {
         setCustomerData(response.data);
+        console.log("Dataaa :", customerData);
+      })
+      .catch((error) => {
+        console.error('Error fetching customer data:', error);
+      });
+  };
+  const addCustomer = (value) => {
+    const requestData = {
+      customerId: value.id, // Lấy từ statvvvvvve
+      recipientName: value.fullName, // Lấy từ statvvvvvve
+      recipientPhone: value.phoneNumber, // Lấy từ statvvvvvve
+    };
+    console.log(requestData);
+    
+    request
+      .put('/bill/change-info-customer/'+idBill.id+'/'+idNhanVienInt, requestData,{
+      })
+      .then((response) => {
+        console.error('Error fetching customer ninh:');
       })
       .catch((error) => {
         console.error('Error fetching customer data:', error);
@@ -87,21 +110,22 @@ function CustomerOrder({ handleSelect }) {
 
   const onSelect = (value) => {
     setSearchValue('');
+    addCustomer(value)
     handleSelect(value);
-    setIsModalKHOpen(false); // Tự động đóng form khi chọn khách hàng
+    onClosed();
+    setIsModalKHOpen(false);
   };
 
   const columns = [
     {
       title: 'STT',
-      dataIndex: 'stt',
-      key: 'stt',
-      render: (text, record, index) => index + 1
+      dataIndex: 'integer',
+      key: 'integer'
     },
     {
       title: 'Ảnh đại diện',
-      dataIndex: 'anh',
-      key: 'anh',
+      dataIndex: 'image',
+      key: 'image',
       render: (text) => <Avatar src={text} className="me-2" />
     },
     {
@@ -111,28 +135,28 @@ function CustomerOrder({ handleSelect }) {
     },
     {
       title: 'Họ tên',
-      dataIndex: 'hoTen',
-      key: 'hoTen'
+      dataIndex: 'fullName',
+      key: 'fullName'
     },
     {
       title: 'Ngày sinh',
-      dataIndex: 'ngaySinh',
-      key: 'ngaySinh'
+      dataIndex: 'dateOfBirth',
+      key: 'dateOfBirth'
     },
     {
       title: 'Số điện thoại',
-      dataIndex: 'soDienThoai',
-      key: 'soDienThoai'
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber'
     },
     {
       title: 'Giới tính',
-      dataIndex: 'gioiTinh',
-      key: 'gioiTinh'
+      dataIndex: 'gender',
+      key: 'gender'
     },
     {
       title: 'Thao tác',
       key: 'action',
-      render: (text, record) => <Button onClick={() => onSelect(record.id)}>Chọn</Button> // Thay handleSelect bằng onSelect
+      render: (text, record) => <Button onClick={() => onSelect(record)}>Chọn</Button> // Thay handleSelect bằng onSelect
     }
   ];
 
@@ -150,20 +174,20 @@ function CustomerOrder({ handleSelect }) {
 
   const handleAddCustomer = (data) => {
     const formData = new FormData();
-    formData.append('anh', Anh);
-    formData.append('diaChiRequest.hoTen', data.hoTen);
-    formData.append('diaChiRequest.soDienThoai', data.soDienThoai);
-    formData.append('diaChiRequest.diaChiMacDinh', true);
-    formData.append('diaChiRequest.thanhPho', dataAddress.thanhPho);
-    formData.append('diaChiRequest.huyen', dataAddress.huyen);
-    formData.append('diaChiRequest.phuong', dataAddress.phuong);
-    formData.append('diaChiRequest.diaChiCuThe', data.diaChiCuThe);
+    formData.append('image', Anh);
+    formData.append('addressRequest.fullName', data.fullName);
+    formData.append('addressRequest.phoneNumber', data.phoneNumber);
+    formData.append('addressRequest.defaultAddress', true);
+    formData.append('addressRequest.city', dataAddress.city);
+    formData.append('addressRequest.district', dataAddress.district);
+    formData.append('addressRequest.ward', dataAddress.ward);
+    formData.append('addressRequest.detailedAddress', data.detailedAddress);
 
-    formData.append('hoTen', data.hoTen);
-    formData.append('gioiTinh', data.gioiTinh);
-    formData.append('ngaySinh', data.ngaySinh);
+    formData.append('fullName', data.fullName);
+    formData.append('gender', data.gender);
+    formData.append('dateOfBirth', data.dateOfBirth);
     formData.append('email', data.email);
-    formData.append('soDienThoai', data.soDienThoai);
+    formData.append('phoneNumber', data.phoneNumber);
     Modal.confirm({
       title: 'Xác nhận',
       maskClosable: true,
@@ -182,27 +206,35 @@ function CustomerOrder({ handleSelect }) {
               setIsModalOpen(false);
               form.resetFields();
               loadCustomer('');
+              handleSelect();
+              onClosed();
             }
           })
           .catch((e) => {
             console.log(e);
-            toast.error(e.response.data);
+            message.error(e.response.data);
           });
       }
     });
   };
 
+  useEffect(() => {
+    loadCustomer('');
+    onClosed();
+  }, [currentPage, pageSize]);
+
   return (
     <>
       <div className="d-flex">
         <div className="flex-grow-1 me-1">
-          <Button type="primary" className="bg-warning text-dark" onClick={showModalSelectCustomer}>
+          <Button type="primary" style={{ background: '#a55eea' }} className="text-white" onClick={showModalSelectCustomer}>
             Chọn khách hàng
           </Button>
         </div>
       </div>
-
-      <Modal title="Khách hàng mới" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1000} footer="">
+  
+      {/* Modal thêm khách hàng mới */}
+      <Modal title="Khách hàng mới" open={isModalOpen} onCancel={handleCancel} width={1000} footer={null}>
         <Form onFinish={handleAddCustomer} layout="vertical" form={form}>
           <Row gutter={24}>
             <Col span={8}>
@@ -221,7 +253,7 @@ function CustomerOrder({ handleSelect }) {
                       setAnh(null);
                     }}
                   >
-                    <FaTrash className="text-danger" />
+                    <i className="fas fa-trash text-danger"></i>
                   </Button>
                 </div>
               ) : (
@@ -245,8 +277,8 @@ function CustomerOrder({ handleSelect }) {
                 </div>
               )}
               <Form.Item
-                label={'Tên khách hàng'}
-                name={'hoTen'}
+                label="Tên khách hàng"
+                name="fullName"
                 rules={[
                   { required: true, message: 'Tên không được để trống!' },
                   {
@@ -262,48 +294,32 @@ function CustomerOrder({ handleSelect }) {
               <Row gutter={10}>
                 <Col span={24}>
                   <Form.Item
-                    label={'Giới tính'}
-                    name={'gioiTinh'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Giới tính không được để trống!'
-                      }
-                    ]}
+                    label="Giới tính"
+                    name="gender"
+                    rules={[{ required: true, message: 'Giới tính không được để trống!' }]}
                   >
                     <Radio.Group>
-                      <Radio value={'Nam'}>Nam</Radio>
-                      <Radio value={'Nữ'}>Nữ</Radio>
+                      <Radio value="Nam">Nam</Radio>
+                      <Radio value="Nữ">Nữ</Radio>
                     </Radio.Group>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Ngày sinh'}
-                    name={'ngaySinh'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Ngày sinh không được để trống!'
-                      }
-                    ]}
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    rules={[{ required: true, message: 'Ngày sinh không được để trống!' }]}
                   >
-                    <DatePicker placeholder="Chọn ngày sinh" format={'DD/MM/YYYY'} className="w-100" />
+                    <DatePicker placeholder="Chọn ngày sinh" format="DD/MM/YYYY" className="w-100" />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Email'}
-                    name={'email'}
+                    label="Email"
+                    name="email"
                     rules={[
-                      {
-                        required: true,
-                        message: 'Email không được để trống!'
-                      },
-                      {
-                        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Email không hợp lệ'
-                      }
+                      { required: true, message: 'Email không được để trống!' },
+                      { type: 'email', message: 'Email không hợp lệ!' }
                     ]}
                   >
                     <Input placeholder="Nhập email khách hàng..." />
@@ -311,17 +327,11 @@ function CustomerOrder({ handleSelect }) {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Số điện thoại'}
-                    name={'soDienThoai'}
+                    label="Số điện thoại"
+                    name="phoneNumber"
                     rules={[
-                      {
-                        required: true,
-                        message: 'Số điện thoại không được để trống!'
-                      },
-                      {
-                        pattern: /^(03|05|07|08|09)\d{8}$/,
-                        message: 'Số điện thoại không hợp lệ'
-                      }
+                      { required: true, message: 'Số điện thoại không được để trống!' },
+                      { pattern: /^(03|05|07|08|09)\d{8}$/, message: 'Số điện thoại không hợp lệ!' }
                     ]}
                   >
                     <Input placeholder="Nhập số điện thoại..." />
@@ -329,14 +339,9 @@ function CustomerOrder({ handleSelect }) {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={'Địa chỉ cụ thể'}
-                    name={'diaChiCuThe'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Địa chỉ không được để trống!'
-                      }
-                    ]}
+                    label="Địa chỉ cụ thể"
+                    name="detailedAddress"
+                    rules={[{ required: true, message: 'Địa chỉ không được để trống!' }]}
                   >
                     <Input.TextArea rows={2} placeholder="Nhập địa chỉ cụ thể..." />
                   </Form.Item>
@@ -357,14 +362,15 @@ function CustomerOrder({ handleSelect }) {
           </Row>
         </Form>
       </Modal>
-
+  
+      {/* Modal chọn khách hàng */}
       <Modal
         title="Chọn khách hàng"
         open={isModalKHOpen}
         onOk={handleKHOk}
         onCancel={handleKHCancel}
         width={1000}
-        footer=""
+        footer={null}
       >
         <AutoComplete
           style={{ width: '100%', marginBottom: '16px' }}
@@ -372,10 +378,31 @@ function CustomerOrder({ handleSelect }) {
           onChange={handleSearch}
           placeholder="Tìm kiếm khách hàng..."
         />
-        <Table dataSource={customerData} columns={columns} rowKey="id" />
+        <Button type="primary" onClick={showModal}>
+                Thêm khách hàng
+              </Button>
+        <Table 
+        dataSource={customerData}
+         columns={columns} rowKey="id" 
+         pagination={{
+          showSizeChanger: true,
+          current: currentPage,
+          pageSize: pageSize,
+          pageSizeOptions: [5, 10, 20, 50],
+          showQuickJumper: false,
+          total: totalPages * pageSize,
+          onChange: (page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+            loadCustomer(searchValue); // Tải lại dữ liệu với trang mới
+          },
+        }} 
+          className="custom-table" />
       </Modal>
+      
     </>
   );
+  
 }
 
 export default CustomerOrder;

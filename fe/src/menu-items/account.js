@@ -16,7 +16,7 @@ const account = {
   children: [
     {
       id: 'employee-management',
-      title: 'Quản Lý Nhân Viên',
+      title: 'Quản Lý Tài Khoản',
       type: 'collapse',
       icon: icons.IconUsers,
 
@@ -25,7 +25,7 @@ const account = {
           id: 'customer-list',
           title: 'Danh Sách Khách Hàng',
           type: 'item',
-          url: 'api/customer',
+          url: 'customer',
           target: false,
           icon: icons.IconUserShield
         },
@@ -33,7 +33,7 @@ const account = {
           id: 'employee-list',
           title: 'Danh Sách Nhân Viên',
           type: 'item',
-          url: '/nhan-vien',
+          url: '/employee',
           target: false,
           icon: icons.IconUsers
         }

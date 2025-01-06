@@ -1,28 +1,32 @@
 import React, { useState } from "react";
-import { Button, Col, Form, Input, Modal, Row, Switch, Typography, Divider } from "antd";
-import { toast } from "react-toastify";
+import { Button, Col, Form, Input, Modal, Row, Switch, Typography, Divider, notification } from "antd";
+import { ToastContainer, toast } from 'react-toastify';
 import GHNDetail from "ui-component/GHNDetail";
 import * as request from 'views/utilities/httpRequest';
+import 'react-toastify/dist/ReactToastify.css';
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 function ItemAddress({ props, onSuccess }) {
-  // debugger
   const [dataAddress, setDataAddress] = useState({
-    thanhPho: props.thanhPho,
-    huyen: props.huyen,
-    phuong: props.phuong,
+    city: props?.city,
+    district: props?.district,
+    ward: props?.ward,
   });
-  const [diaChiMacDinh, setDiaChiMacDinh] = useState(props.diaChiMacDinh);
+  const [defaultAddress, setDiaChiMacDinh] = useState(props?.defaultAddress);
   const { confirm } = Modal;
+  const navigate = useNavigate();
 
   const handleUpdate = (values) => {
     const data = {
       ...values,
-      thanhPho: dataAddress.thanhPho || props.thanhPho,
-      huyen: dataAddress.huyen || props.huyen,
-      phuong: dataAddress.phuong || props.phuong,
-      diaChiMacDinh: diaChiMacDinh !== props.diaChiMacDinh ? diaChiMacDinh : props.diaChiMacDinh,
+      city: dataAddress.city || props.city,
+      district: dataAddress.district || props.district,
+      ward: dataAddress.ward || props.ward,
+      defaultAddress: defaultAddress !== props.defaultAddress ? defaultAddress : props.defaultAddress,
     };
+
+    console.log('Preparing to update address:', data);
 
     confirm({
       title: "Xác nhận",
@@ -34,20 +38,27 @@ function ItemAddress({ props, onSuccess }) {
       onOk() {
         request
           .put(`/address/${props.id}`, data)
-          console.log('Hihihi',data)
           .then((response) => {
-            console.log(response);
-            toast.success("Cập nhật địa chỉ thành công!");
-            onSuccess();
+            console.log('Update success:', response);
+            notification.success({
+              message: 'Cập nhật thành công!',
+              duration: 2,
+            });
           })
           .catch((e) => {
-            console.log(e);
+            console.error('Update error:', e);
+            notification.error({
+              message: 'Cập nhật thất bại !',
+              duration: 2,
+            });
           });
       },
       onCancel() {
         console.log("Cancel");
       },
     });
+
+
   };
 
   const showDeleteConfirm = () => {
@@ -63,12 +74,19 @@ function ItemAddress({ props, onSuccess }) {
           .remove(`/address/${props.id}`)
           .then((response) => {
             if (response.status === 200) {
-              toast.success("Thành công!");
+              notification.success({
+                message: 'Địa chỉ đã bị xóa thành công!',
+                duration: 2, 
+              });
               onSuccess();
             }
           })
           .catch((e) => {
-            console.log(e);
+            console.error('Delete error:', e);
+            notification.error({
+              message: 'Lỗi khi xóa địa chỉ!!',
+              duration: 2, 
+            });
           });
       },
       onCancel() {
@@ -84,10 +102,10 @@ function ItemAddress({ props, onSuccess }) {
       <Form
         layout="vertical"
         initialValues={{
-          hoTen: props.hoTen,
-          soDienThoai: props.soDienThoai,
-          diaChiCuThe: props.diaChiCuThe,
-          diaChiMacDinh: props.diaChiMacDinh,
+          fullName: props?.fullName,
+          phoneNumber: props?.phoneNumber,
+          detailedAddress: props?.detailedAddress,
+          defaultAddress: props?.defaultAddress,
         }}
         onFinish={handleUpdate}
       >
@@ -95,7 +113,7 @@ function ItemAddress({ props, onSuccess }) {
           <Col span={12}>
             <Form.Item
               label={"Tên"}
-              name={"hoTen"}
+              name={"fullName"}
               rules={[{ required: true, message: "Tên không được để trống!" }]}
             >
               <Input placeholder="Nhập tên ..." />
@@ -104,7 +122,7 @@ function ItemAddress({ props, onSuccess }) {
           <Col span={12}>
             <Form.Item
               label={"Số điện thoại"}
-              name={"soDienThoai"}
+              name={"phoneNumber"}
               rules={[{ required: true, message: "Số điện thoại không được để trống!" }]}
             >
               <Input placeholder="Nhập số điện thoại ..." />
@@ -113,46 +131,43 @@ function ItemAddress({ props, onSuccess }) {
           <Col span={24}>
             <Form.Item
               label={"Địa chỉ cụ thể"}
-              name={"diaChiCuThe"}
+              name={"detailedAddress"}
               rules={[{ required: true, message: "Địa chỉ cụ thể không được để trống!" }]}
             >
               <Input placeholder="Nhập địa chỉ cụ thể..." />
             </Form.Item>
           </Col>
           <GHNDetail
-            thanhPho={props.thanhPho}
-            huyen={props.huyen}
-            phuong={props.phuong}
+            city={props?.city}
+            district={props?.district}
+            ward={props?.ward}
             dataAddress={setDataAddress}
           />
           <Col span={24}>
             <Form.Item label="Địa chỉ mặc định">
               <Switch
-                checked={diaChiMacDinh}
+                checked={defaultAddress}
                 onChange={setDiaChiMacDinh}
                 checkedChildren={<i className="fa-solid fa-check"></i>}
                 unCheckedChildren={<i className="fa-solid fa-xmark"></i>}
-                defaultChecked={props.diaChiMacDinh}
+                defaultChecked={props.defaultAddress}
               />
               <Typography.Text style={{ marginLeft: '8px' }}>
-                {diaChiMacDinh ? 'Đang hoạt động' : 'Không hoạt động'}
+                {defaultAddress ? 'Đang hoạt động' : 'Không hoạt động'}
               </Typography.Text>
             </Form.Item>
           </Col>
           <Col span={24} style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-            <Button
-              onClick={() => showDeleteConfirm(props.id)}
-              type="primary"
-              danger
-            >
+            <Button onClick={() => showDeleteConfirm(props.id)} type="primary" danger>
               Xóa
             </Button>
-            <Button type="primary" htmlType="submit" className="bg-warning">
+            <Button type="primary" htmlType="submit" style={{ backgroundColor: "#5e35b1", borderColor: "#5e35b1", borderRadius: "6px", fontWeight: "600" }}>
               Cập nhật
             </Button>
           </Col>
         </Row>
       </Form>
+      <ToastContainer />
     </div>
   );
 }

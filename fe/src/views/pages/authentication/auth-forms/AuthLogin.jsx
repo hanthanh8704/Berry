@@ -1,13 +1,9 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-
-// material-ui
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -18,33 +14,21 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
-
-// assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-import Google from 'assets/images/icons/social-google.svg';
-
-// ============================|| FIREBASE - LOGIN ||============================ //
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AuthLogin = ({ ...others }) => {
   const theme = useTheme();
-  const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-  const customization = useSelector((state) => state.customization);
+  const navigate = useNavigate();
   const [checked, setChecked] = useState(true);
-
-  const googleHandler = async () => {
-    console.error('Login');
-  };
-
   const [showPassword, setShowPassword] = useState(false);
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -53,63 +37,38 @@ const AuthLogin = ({ ...others }) => {
     event.preventDefault();
   };
 
+  // Thiết lập interceptor cho Axios
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response.status === 401) {
+          localStorage.removeItem('token'); // Xóa token khi không hợp lệ
+          navigate('/login'); // Điều hướng đến trang đăng nhập
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [navigate]);
+
+  // Kiểm tra trạng thái đăng nhập
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   return (
     <>
       <Grid container direction="column" justifyContent="center" spacing={2}>
-        <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              disableElevation
-              fullWidth
-              onClick={googleHandler}
-              size="large"
-              variant="outlined"
-              sx={{
-                color: 'grey.700',
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              Sign in with Google
-            </Button>
-          </AnimateButton>
-        </Grid>
-        <Grid item xs={12}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex'
-            }}
-          >
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-
-            <Button
-              variant="outlined"
-              sx={{
-                cursor: 'unset',
-                m: 2,
-                py: 0.5,
-                px: 7,
-                borderColor: `${theme.palette.grey[100]} !important`,
-                color: `${theme.palette.grey[900]}!important`,
-                fontWeight: 500,
-                borderRadius: `${customization.borderRadius}px`
-              }}
-              disableRipple
-              disabled
-            >
-              OR
-            </Button>
-
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-          </Box>
-        </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1">Sign in with Email address</Typography>
+            <Typography variant="subtitle1">Đăng nhập với địa chỉ Email</Typography>
           </Box>
         </Grid>
       </Grid>
@@ -121,14 +80,63 @@ const AuthLogin = ({ ...others }) => {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().email('Phải đúng là email').max(255).required('Email đang trống'),
+          password: Yup.string().max(255).required('Password đang trống')
         })}
+        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+          try {
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
+              email: values.email,
+              password: values.password
+            });
+
+            if (response.status === 200) {
+              const userData = response.data;
+              console.log('User Data:', userData); // Kiểm tra dữ liệu nhận được
+
+
+              // Lưu thông tin đăng nhập thành công
+              localStorage.setItem('token', userData.token); // Lưu token
+              localStorage.setItem('isAuthenticated', 'true');
+              localStorage.setItem('userRole', userData.role); // Lưu roleName
+              localStorage.setItem('userRoleId', userData.roleId); // Lưu roleId
+              localStorage.setItem('userEmail', userData.email);
+              localStorage.setItem('username', userData.username);
+              localStorage.setItem('employeeId', userData.employeeId);
+              localStorage.setItem('employee', userData.employeeName);
+              localStorage.setItem('phoneNumber', userData.phoneNumber);
+              localStorage.setItem('userProfile', JSON.stringify(userData.profile));
+
+
+              const roleId = parseInt(localStorage.getItem('userRoleId'), 10);
+
+              if (roleId === 2) {
+                toast.error("Bạn không có quyền truy cập vào hệ thống quản trịi.");
+                navigate('/error/404');
+                return;
+              }
+
+              setStatus({ success: true });
+              setSubmitting(false);
+              toast.success('Đăng nhập thành công! Đang chuyển hướng đến trang chủ...');
+
+              // Điều hướng người dùng vào trang phù hợp
+              navigate('/products'); // Hoặc trang admin khác
+            }
+          } catch (err) {
+            setStatus({ success: false });
+
+            // setErrors({ submit: err.response?.data || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.' });
+            setSubmitting(false);
+            toast.error(err.response?.data);
+          }
+        }}
+
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-email-login">Email</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="email"
@@ -136,8 +144,7 @@ const AuthLogin = ({ ...others }) => {
                 name="email"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Email Address / Username"
-                inputProps={{}}
+                label="Email"
               />
               {touched.email && errors.email && (
                 <FormHelperText error id="standard-weight-helper-text-email-login">
@@ -147,7 +154,7 @@ const AuthLogin = ({ ...others }) => {
             </FormControl>
 
             <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password-login">Mật khẩu</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-password-login"
                 type={showPassword ? 'text' : 'password'}
@@ -169,7 +176,6 @@ const AuthLogin = ({ ...others }) => {
                   </InputAdornment>
                 }
                 label="Password"
-                inputProps={{}}
               />
               {touched.password && errors.password && (
                 <FormHelperText error id="standard-weight-helper-text-password-login">
@@ -182,11 +188,8 @@ const AuthLogin = ({ ...others }) => {
                 control={
                   <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
                 }
-                label="Remember me"
+                label="Ghi nhớ đăng nhập"
               />
-              <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
-                Forgot Password?
-              </Typography>
             </Stack>
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
@@ -197,13 +200,14 @@ const AuthLogin = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Sign in
+                  Đăng nhập
                 </Button>
               </AnimateButton>
             </Box>
           </form>
         )}
       </Formik>
+      <ToastContainer />
     </>
   );
 };

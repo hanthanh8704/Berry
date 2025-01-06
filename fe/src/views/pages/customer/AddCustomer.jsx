@@ -1,8 +1,8 @@
-import { Breadcrumb, Button, Col, Divider, Form, Input, Modal, Radio, Row } from "antd";
+import { Breadcrumb, Button, Col, Divider, Form, Input, Modal, Radio, Row, message, notification } from "antd";
 import React, { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import * as request from 'views/utilities/httpRequest';
 import GHN from "ui-component/GHN";
 
@@ -12,48 +12,78 @@ function AddCustomer() {
 
   const [dataAddress, setDataAddress] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [anh, setAnh] = useState(null);
+  const [image, setImage] = useState(null);
 
-  // Hàm xử lý khi chọn ảnh
   const handleImageSelect = (event) => {
     try {
       const file = event.target.files[0];
       const imageUrl = URL.createObjectURL(file);
-      setAnh(file);
+      setImage(file);
       setPreviewUrl(imageUrl);
     } catch (e) {
       setPreviewUrl(null);
     }
   };
 
-  // Hàm xử lý khi thêm khách hàng
   const handleAddCustomer = (data) => {
     if (dataAddress == null) {
-      toast.error("Vui lòng chọn địa chỉ!");
+      message.error("Vui lòng chọn địa chỉ!");
       return;
     }
 
-    if (anh == null) {
-      toast.error("Vui lòng chọn ảnh đại diện!");
+    if (image == null) {
+      message.error("Vui lòng chọn ảnh đại diện!");
       return;
     }
 
     const formData = new FormData();
-    formData.append("anh", anh);
-    formData.append("diaChiRequest.hoTen", data.hoTen);
-    formData.append("diaChiRequest.soDienThoai", data.soDienThoai);
-    formData.append("diaChiRequest.diaChiMacDinh", true);
-    formData.append("diaChiRequest.thanhPho", dataAddress.thanhPho);
-    formData.append("diaChiRequest.huyen", dataAddress.huyen);
-    formData.append("diaChiRequest.phuong", dataAddress.phuong);
-    formData.append("diaChiRequest.diaChiCuThe", data.diaChiCuThe);
+    formData.append("image", image);
+    console.log("Image : ", image);
 
-    formData.append("hoTen", data.hoTen);
-    formData.append("gioiTinh", data.gioiTinh);
-    formData.append("ngaySinh", data.ngaySinh);
+    formData.append("addressRequest.fullName", data.fullName);
+    console.log("Address Request Full name : " + data.fullName);
+
+    formData.append("addressRequest.phoneNumber", data.phoneNumber);
+    console.log("Address Request Phone number : " + data.phoneNumber);
+
+    formData.append("addressRequest.defaultAddress", true);
+    console.log("Address Request Default address : true");
+
+    formData.append("addressRequest.city", dataAddress.city);
+    console.log("Address Request City : " + dataAddress.city);
+
+    formData.append("addressRequest.district", dataAddress.district);
+    console.log("Address Request District : " + dataAddress.district);
+
+    formData.append("addressRequest.ward", dataAddress.ward);
+    console.log("Address Request Ward : " + dataAddress.ward);
+
+    formData.append("addressRequest.detailedAddress", data.detailedAddress);
+    console.log("Address Request Detailed Address : " + data.detailedAddress);
+
+    formData.append("fullName", data.fullName);
+    console.log("Full name : " + data.fullName);
+
+    formData.append("gender", data.gender);
+    console.log("Gender : " + data.gender);
+
+    formData.append("dateOfBirth", data.dateOfBirth);
+    console.log("Date of Birth : " + data.dateOfBirth);
+
     formData.append("email", data.email);
-    formData.append("soDienThoai", data.soDienThoai);
+    console.log("Email : " + data.email);
 
+    formData.append("phoneNumber", data.phoneNumber);
+    console.log("Phone number : " + data.phoneNumber);
+
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
+      message.error("Token không hợp lệ, vui lòng đăng nhập lại.");
+      return;
+    }
+    
+    console.log('Updating customer with data:', formData);
     Modal.confirm({
       title: "Xác nhận",
       maskClosable: true,
@@ -61,23 +91,31 @@ function AddCustomer() {
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: () => {
-        request.post("/customer", formData, { headers: { "Content-Type": "multipart/form-data" } })
+        // Gửi yêu cầu POST kèm token
+        request.post("/customer", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`, // Thêm token vào header
+          },
+        })
           .then((response) => {
             if (response.data.success) {
-              toast.success("Thêm thành công!");
-              navigate("/api/customer");
+              notification.success({
+                message: 'Thêm mới thành công!',
+                duration: 2,
+              }); navigate("/customer");
             } else {
-              toast.error("Đã xảy ra lỗi khi thêm khách hàng.");
+              message.error("Đã xảy ra lỗi khi thêm khách hàng.");
             }
           })
-          .catch((error) => {
-            toast.error(error.message || "Đã xảy ra lỗi khi thêm khách hàng.");
+          .catch((e) => {
+            toast.error(e.response.data.message);
           });
       },
     });
   };
 
-  // Hàm kiểm tra tuổi
+
   const validateAge = (_, value) => {
     if (!value) return Promise.reject("Ngày sinh không được để trống!");
     const birthDate = new Date(value);
@@ -88,37 +126,20 @@ function AddCustomer() {
   };
 
   return (
-    <div>
+    <div style={{ backgroundColor: "#fff", border: "1px solid #ddd", padding: "20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
       <Form onFinish={handleAddCustomer} layout="vertical" form={form}>
         <Row gutter={24}>
-          <Col span={8}>
-            <h6>Thông tin khách hàng</h6>
-            <Divider />
-            <Form.Item
-              label="Tên khách hàng"
-              name="hoTen"
-              rules={[
-                { required: true, message: "Vui lòng nhập tên khách hàng!" },
-                { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
-                {
-                  pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/,
-                  message: "Tên chỉ được chứa các ký tự chữ cái và không được là số!",
-                },
-              ]}
-            >
-              <Input placeholder="Nhập tên khách hàng..." />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
+          {/* Col for Image - Left side */}
+          <Col span={6}>
             {previewUrl !== null ? (
               <div className="text-center">
-                <img src={previewUrl} alt="Preview" style={{ width: "162px", height: "162px" }} className="mt-2 border border-warning shadow-lg bg-body-tertiary rounded-circle object-fit-contain" />
-                <Button className="position-absolute border-0" onClick={() => { setPreviewUrl(null); setAnh(null); }}>Xóa ảnh</Button>
+                <img src={previewUrl} alt="Preview" style={{ width: "100%", maxWidth: "162px", height: "162px", borderRadius: "50%", objectFit: "cover", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }} className="mt-2 border border-warning shadow-lg bg-body-tertiary object-fit-contain" />
+                <Button className="position-absolute border-0" onClick={() => { setPreviewUrl(null); setImage(null); }}>Xóa ảnh</Button>
               </div>
             ) : (
               <div className="d-flex align-items-center justify-content-center">
-                <div className="position-relative rounded-circle border border-warning mt-2 d-flex align-items-center justify-content-center" style={{ width: "162px", height: "162px" }}>
-                  <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" required />
+                <div className="position-relative rounded-circle border border-warning mt-2 d-flex align-items-center justify-content-center" style={{ width: "162px", height: "162px", backgroundColor: "#f7f7f7", borderRadius: "6px" }}>
+                  <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" />
                   <div className="text-center text-secondary">
                     <i className="fas fa-plus"></i> <br />
                     <span>Chọn ảnh đại diện</span>
@@ -127,20 +148,33 @@ function AddCustomer() {
               </div>
             )}
           </Col>
-          <Col span={16}>
-            <h6>Thông tin chi tiết</h6>
+
+          {/* Col for Form - Right side */}
+          <Col span={18}>
+            <h6 style={{ fontWeight: "600", fontSize: "16px", color: "#5e35b1", marginBottom: "20px" }}>Thông tin chi tiết</h6>
             <Divider />
             <Row gutter={10}>
               <Col span={12}>
                 <Form.Item
+                  label="Tên khách hàng"
+                  name="fullName"
+                  rules={[
+                    { required: true, message: "Tên không được để trống!" }, { pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/, message: "Tên phải là chữ" }
+                  ]}
+                >
+                  <Input placeholder="Nhập số điện thoại ..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
                   label="Số điện thoại"
-                  name="soDienThoai"
+                  name="phoneNumber"
                   rules={[
                     { required: true, message: "Số điện thoại không được để trống!" },
                     { pattern: /^0[0-9]{9}$/, message: "Số điện thoại không đúng định dạng!" }
                   ]}
                 >
-                  <Input placeholder="Nhập số điện thoại ..." />
+                  <Input placeholder="Nhập số điện thoại ..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -152,27 +186,43 @@ function AddCustomer() {
                     { type: "email", message: "Email không đúng định dạng!" }
                   ]}
                 >
-                  <Input placeholder="Nhập email ..." />
+                  <Input placeholder="Nhập email ..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Ngày sinh"
-                  name="ngaySinh"
+                  name="dateOfBirth"
                   rules={[
-                    { required: true, message: "Ngày sinh không được để trống!" }
+                    { required: true, message: "Ngày sinh không được để trống!" },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value) {
+                          return Promise.reject(new Error("Ngày sinh không được để trống!"));
+                        }
+                        const today = new Date();
+                        const birthDate = new Date(value);
+                        const age = today.getFullYear() - birthDate.getFullYear();
+                        const monthDiff = today.getMonth() - birthDate.getMonth();
+                        const isUnderage =
+                          monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate());
+
+                        if (age > 18 || (age === 18 && !isUnderage)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error("Nhân viên phải từ 18 tuổi trở lên!"));
+                      },
+                    }),
                   ]}
                 >
-                  <Input type="date" />
+                  <Input type="date" style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Giới tính"
-                  name="gioiTinh"
-                  rules={[
-                    { required: true, message: "Giới tính không được để trống!" }
-                  ]}
+                  name="gender"
+                  rules={[{ required: true, message: "Giới tính không được để trống!" }]}
                 >
                   <Radio.Group>
                     <Radio value="Nam">Nam</Radio>
@@ -180,29 +230,29 @@ function AddCustomer() {
                   </Radio.Group>
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item
                   label="Địa chỉ cụ thể"
-                  name="diaChiCuThe"
-                  rules={[
-                    { required: true, message: "Địa chỉ cụ thể không được để trống!" }
-                  ]}
-                >
-                  <Input placeholder="Nhập địa chỉ cụ thể ..." />
+                  name="detailedAddress"
+                  rules={[{ required: true, message: "Địa chỉ cụ thể không được để trống!" }]}>
+                  <Input placeholder="Nhập địa chỉ cụ thể ..." style={{ borderRadius: "6px", border: "1px solid #ddd" }} />
                 </Form.Item>
               </Col>
               <GHN dataAddress={setDataAddress} />
             </Row>
             <Form.Item className="mt-3 float-end">
-              <Button type="primary" htmlType="submit" className="bg-warning">
+              <Button type="primary" htmlType="submit" style={{ backgroundColor: "#5e35b1", borderColor: "#5e35b1", borderRadius: "6px", padding: "10px 20px", fontWeight: "600", marginRight: '600px' }}>
                 Thêm khách hàng
               </Button>
             </Form.Item>
           </Col>
         </Row>
       </Form>
+      <ToastContainer />
     </div>
   );
 }
 
 export default AddCustomer;
+

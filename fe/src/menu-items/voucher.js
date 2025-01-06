@@ -24,7 +24,7 @@ const voucher = {
           id: 'dot-giam-gia', // ID của mục con
           title: 'Đợt Giảm Giá', // Tiêu đề hiển thị của mục con
           type: 'item', // Loại của mục con (item)
-          url: '/voucher/dot-giam-gia', // URL khi nhấn vào mục này
+          url: '/promotion', // URL khi nhấn vào mục này
           target: false, // Nếu là false không cho mở tab mới ngược lại
           icon: icons.IconCalendarStats // Biểu tượng cho Đợt Giảm Giá
         },
@@ -32,7 +32,7 @@ const voucher = {
           id: 'phieu-giam-gia', // ID của mục con
           title: 'Phiếu Giảm Giá', // Tiêu đề hiển thị của mục con
           type: 'item', // Loại của mục con (item)
-          url: '/api/voucher', // URL khi nhấn vào mục này
+          url: '/voucher', // URL khi nhấn vào mục này
           target: false, // Nếu là false không cho mở tab mới ngược lại
           icon: icons.IconCreditCardRefund // Biểu tượng cho Phiếu Giảm Giá
         }

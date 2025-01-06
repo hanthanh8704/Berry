@@ -1,7 +1,5 @@
-import { Empty, Modal } from "antd";
+import { Empty, Modal, message } from "antd"; // Sử dụng message từ antd
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 import swal from "sweetalert";
 import * as request from "views/utilities/httpRequest";
 import { IconPhotoFilled } from "@tabler/icons-react";
@@ -25,11 +23,10 @@ function ImageModal({ colorName, sttModal, handleChange }) {
     }
 
     const handleImageSelect = (event) => {
-
         const imageUrl = event.target.value;
         if (event.target.checked) {
             if (selectedImages.length >= 3) {
-                toast.error("Chỉ được chọn tối đa 3 hình ảnh!");
+                message.error("Chỉ được chọn tối đa 3 hình ảnh!", 2); // Sử dụng message.error từ antd
                 event.target.checked = false;
             } else {
                 setSelectedImages((prevSelectedImages) => [
@@ -43,9 +40,9 @@ function ImageModal({ colorName, sttModal, handleChange }) {
             );
         }
     };
+
     useEffect(() => {
         handleChange(colorName, sttModal, selectedImages);
-
     }, [selectedImages]);
 
     const handleUploadImage = (event) => {
@@ -58,7 +55,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                 formData.append("images", file);
                 validImages.push(file);
             } else {
-                toast.error(`Tệp ${file.name} không phải là ảnh và sẽ không được thêm.`);
+                message.error(`Tệp ${file.name} không phải là ảnh và sẽ không được thêm.`, 2); // Sử dụng message.error từ antd
             }
         }
         if (validImages.length > 0) {
@@ -73,7 +70,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                     formData.append("folder", colorName);
                     await request.post('/image-gallery', formData, { headers: { "Content-Type": "multipart/form-data" } })
                         .then(response => {
-                            toast.success("Thêm thành công!");
+                            message.success("Thêm thành công!", 2); // Sử dụng message.success từ antd
                             loadImage(colorName);
                         })
                         .catch(e => {
@@ -85,7 +82,7 @@ function ImageModal({ colorName, sttModal, handleChange }) {
                 }
             });
         } else {
-            toast.error("Không tìm thấy ảnh hợp lệ!");
+            message.error("Không tìm thấy ảnh hợp lệ!", 2); // Sử dụng message.error từ antd
         }
     }
 

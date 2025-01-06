@@ -1,13 +1,36 @@
 import { lazy } from 'react';
 
-// project imports
-// import MainLayout from 'layout/MainLayout';
 
 import Loadable from 'ui-component/Loadable';
 import MainClient from 'layout/client/index.jsx';
+import AccountClient from 'layout/client/account/Account.jsx';
 
 // dashboard routing
-const HomeClient = Loadable(lazy(() => import('views/client/Home')));
+const HomeClient = Loadable(lazy(() => import('views/client/home/Home')));
+const ProductDetail = Loadable(lazy(() => import('views/client/product_detail/product_detail')));
+const Product = Loadable(lazy(() => import('views/client/product/product')));
+const Cart = Loadable(lazy(() => import('views/client/cart/cart')));
+const CheckOut = Loadable(lazy(() => import('views/client/checkout/checkout.jsx')));
+const VNPAYMENT = Loadable(lazy(() => import('views/client/vnpay/vnpay')));
+const TracKing = Loadable(lazy(() => import('views/client/tracking/tracking.jsx')));
+const TracKingDetail = Loadable(lazy(() => import('views/client/tracking/tracking_detail')));
+const Search = Loadable(lazy(() => import('views/client/search/Search.jsx')));
+
+const AccountProfile = Loadable(lazy(() => import('views/client/account/profile')));
+const AccountAddress = Loadable(lazy(() => import('views/client/account/address')));
+const AccountOrders= Loadable(lazy(() => import('views/client/account/orders')));
+const AccountPassword = Loadable(lazy(() => import('views/client/account/password')));
+const AccountVouchers = Loadable(lazy(() => import('views/client/account/voucher')));
+
+//Banner
+const ProductBlackFriday = Loadable(lazy(() => import('views/client/banner/ProductBlackFriday')));
+const ProductMale= Loadable(lazy(() => import('views/client/banner/ProductMale')));
+const ProductFemale = Loadable(lazy(() => import('views/client/banner/ProductFemale')));
+
+
+const ProductBestSelling = Loadable(lazy(() => import('views/client/home/ProductBestSelling')));
+const ProductNew = Loadable(lazy(() => import('views/client/home/ProductNew')));
+const Policy = Loadable(lazy(() => import('views/client/policy/Policy')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const ClientRoutes = {
@@ -18,6 +41,98 @@ const ClientRoutes = {
       path: '/home',
       element: <HomeClient />
     },
+    {
+      path: '/products/:id',
+      element: <Product />
+    },
+    {
+      path: '/products/black-friday',
+      element: <ProductBlackFriday />
+    },
+    {
+      path: '/products/tri-an',
+      element: <ProductBlackFriday />
+    },
+    {
+      path: '/products/ao-nam-dep',
+      element: <ProductMale />
+    },
+    {
+      path: '/products/ao-nu-dep',
+      element: <ProductFemale />
+    },
+    {
+      path: '/products/ban-chay-nhat',
+      element: <ProductBestSelling />
+    },
+    {
+      path: '/products/moi-ve',
+      element: <ProductNew />
+    },
+    {
+      path: '/product-detail/:id',
+      element: <ProductDetail />
+    },
+    {
+      path: '/account',
+      element: <AccountClient />,
+      children: [
+        {
+          path: 'profile',
+          element: <AccountProfile />
+        },
+        {
+          path: 'address',
+          element: <AccountAddress />
+        },
+        {
+          path: 'orders',
+          element: <AccountOrders />
+        },
+        {
+          path: 'vouchers',
+          element: <AccountVouchers />
+        },
+        {
+          path: 'password',
+          element: <AccountPassword />
+        },
+      ]
+    },
+    {
+      path: '/cart',
+      element: <Cart />
+    },
+    {
+      path: '/checkout',
+      element: <CheckOut />
+    },
+    {
+      path: '/vnpay-payment',
+      element: <VNPAYMENT />
+    },
+    {
+      path: '/tracking',
+      element: <TracKing />
+    },
+    {
+      path: '/tracking/:ma',
+      element: <TracKingDetail />
+    },
+    {
+      path: '/search/:key',
+      element: <Search />
+    },
+    {
+      path: '/chinh-sach',
+      element: <Policy />,
+      children: [
+        {
+          path: ':policyId',
+          element: <Policy />  // Sử dụng route động để thay đổi policyId
+        },
+      ]
+    }
   ]
 };
 

@@ -1,14 +1,22 @@
-// material-ui
 import { Typography } from '@mui/material';
-
-// project imports
 import NavGroup from './NavGroup';
 import menuItem from 'menu-items';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
 const MenuList = () => {
-  const navItems = menuItem.items.map((item) => {
+  const roleId = parseInt(localStorage.getItem('userRoleId'), 10);
+  const filteredItems = menuItem.items.filter((item) => {
+    if (roleId === 1) {
+      return true;
+    }
+    if (roleId === 3 && (item.id === 'voucher' || item.id === 'account')) {
+      return false;
+    }
+
+    return true;
+  });
+  const navItems = filteredItems.map((item) => {
     switch (item.type) {
       case 'group':
         return <NavGroup key={item.id} item={item} />;

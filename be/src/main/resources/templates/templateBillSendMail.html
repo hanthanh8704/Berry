@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hóa đơn - SHOE BEE</title>
+
+</head>
+<body>
+<div class="invoice">
+  <header class="invoice-header">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <img src="https://res.cloudinary.com/dcoppcfvi/image/upload/v1722160237/chinshoes-logo-dark_vbtb8l.png" alt="ChinShoes Logo" style="width: 100px; height: auto;">
+      <h1 style=" font-size: 24px; color: #333;">CHIN SHOES</h1>
+      <img th:src="${hoaDon.qrImage}" alt="abc" style="width: 100px; height: auto; margin-left: 10px;">
+    </div>
+    <p>Cao đẳng FPT Polytechnic, Phường Canh, Từ Liêm, Hà Nội, Việt Nam</p>
+    <p>SDT: 0866164929</p>
+    <p>Mã hóa đơn: [[${hoaDon.ma}]]</p>
+    <p>[[${hoaDon.ngayTao}]]</p>
+  </header>
+
+  <section class="customer-info" th:if="${hoaDon.khachHang != null}">
+    <p><strong>Khách hàng:</strong> [[${hoaDon.tenNguoiNhan}]]</p>
+    <p><strong>Số điện thoại:</strong> [[${hoaDon.soDienThoai}]]</p>
+    <p th:if="${hoaDon.tinhThanhPho != null}"><strong>Địa chỉ: [[${hoaDon.diaChiCuThe}]], [[${hoaDon.phuongXa}]], [[${hoaDon.quanHuyen}]], [[${hoaDon.tinhThanhPho}]]</strong> </p>
+    <hr>
+  </section>
+
+
+  <section class="order-content">
+    <h2>Danh sách đơn hàng </h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Stt</th>
+        <th>Tên</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Tổng</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="hdctl,stt:${hoadonchitietlist}">
+        <td>[[${stt.index+1}]]</td>
+        <td>[[${hdctl.sanPhamChiTiet.sanPham.ten}]] [[${hdctl.sanPhamChiTiet.mauSac.ten}]] [[${hdctl.sanPhamChiTiet.size.ten}]]</td>
+        <td><p><strong class="price">[[${hdctl.sanPhamChiTiet.donGia}]]</strong> đ</p>
+        </td>
+        <td>[[${hdctl.soLuong}]]</td>
+        <td><p><strong class="price">[[${hdctl.donGia}]]</strong> đ</p>
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="summary">
+    <p>Tổng Tiền hàng: <strong class="price">[[${totalAmount}]]</strong> đ</p>
+    <p>Giảm giá: <strong class="price">[[${giamgia}]]</strong> đ</p>
+    <p>Phí ship: <strong class="price">[[${phiship}]]</strong> đ</p>
+    <p>Tổng hóa đơn: <strong class="price">[[${tongThanhToan}]]</strong> đ</p>
+  </section>
+  <hr>
+  <section class="payment">
+    <p>Tổng thanh toán: <strong class="price">[[${tienkhachtra}]]</strong> đ</p>
+    <p th:if="${tienthoilai >= 0}">Tiền thối lại: <strong class="price">[[${tienthoilai}]]</strong> đ</p>
+  </section>
+</div>
+<script>
+  document.querySelectorAll('.price').forEach(function (el) {
+    var number = parseFloat(el.textContent);
+    el.textContent = number.toLocaleString('vi-VN');
+  });
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .invoice {
+    width: 600px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .invoice-header {
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .invoice-header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+  }
+
+  .customer-info, .order-content, .summary, .payment {
+    margin-bottom: 20px;
+  }
+
+  .customer-info p, .summary p {
+    margin-bottom: 5px;
+  }
+
+  .order-content h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table, th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  th {
+    background-color: #f8f8f8;
+  }
+
+  .summary p, .payment p {
+    font-weight: bold;
+  }
+
+  .payment table {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  hr {
+    border: none;
+    border-top: 2px dotted #0D0A0A;
+    margin: 20px 0;
+  }
+</style>
+</body>
+</html>

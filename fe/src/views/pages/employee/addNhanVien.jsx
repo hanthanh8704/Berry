@@ -1,107 +1,131 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as request from "views/utilities/httpRequest";
-import { Breadcrumb, Button, Col, Divider, Form, Input, Modal, Radio, Row, Select } from "antd";
-import { toast } from "react-toastify";
+import { Breadcrumb, Button, Col, Divider, Form, Input, Modal, Radio, Row, notification } from "antd";
+import { toast, ToastContainer } from "react-toastify";
 import QrCode from "components/QrCode";
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from "react-toastify";
-
-const { Option } = Select;
+import * as request from 'views/utilities/httpRequest';
 
 const AddEmployee = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [anh, setAnh] = useState(null);
+  const [image, setAnh] = useState(null);
   const [isQrModalVisible, setIsQrModalVisible] = useState(false);
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-
-  const configApi = {
-    headers: {
-      "Content-Type": "application/json",
-      Token: "693d8a79-3a3d-11ef-8e53-0a00184fe694",
-      ShopId: 192796,
-    },
-  };
-
-  useEffect(() => {
-    request.get("https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province", configApi)
-      .then((response) => setProvinces(response.data))
-      .catch((e) => console.log(e));
-  }, []);
-
-  const handleProvinceChange = (provinceCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceCode}`, configApi)
-      .then((response) => setDistricts(response.data))
-      .catch((e) => console.log(e));
-  };
-
-  const handleDistrictChange = (districtCode) => {
-    request.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtCode}`, configApi)
-      .then((response) => setWards(response.data))
-      .catch((e) => console.log(e));
-  };
 
   const handleImageSelect = (event) => {
     try {
       const file = event.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setAnh(file);
-      setPreviewUrl(imageUrl);
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        setAnh(file);
+        setPreviewUrl(imageUrl);
+      }
     } catch (e) {
       setPreviewUrl("");
     }
   };
 
   const handleQrSuccess = (value) => {
-    const withoutName = value.substring(14);
-    const splits = withoutName.split("|");
-    const birthday = splits[1];
-    if (value.substring(0, 12).length === 12) {
-      toast.success(`Đã tìm thấy ${splits[0]}!`);
+    try {
+      if (value.length < 14) {
+        throw new Error("QR code không hợp lệ!");
+      }
+
+      const nationalId = value.substring(0, 12);
+      const withoutNationalId = value.substring(14);
+      const splits = withoutNationalId.split("|");
+
+      if (splits.length < 6) {
+        throw new Error("Dữ liệu trong QR code không đầy đủ!");
+      }
+
+      const [__, name, rawBirthday, gender, detailedAddress, _] = splits;
+
+      if (nationalId.length !== 12 || isNaN(Number(nationalId))) {
+        throw new Error("Mã định danh không hợp lệ!");
+      }
+      console.log(name);
+      console.log(rawBirthday);
+      console.log(gender);
+      console.log(detailedAddress);
+      console.log(name);
+      if (!/^\d{8}$/.test(rawBirthday)) {
+        throw new Error("Ngày sinh không hợp lệ! Ngày sinh phải có định dạng ddMMyyyy.");
+      }
+
+      // Đổi định dạng từ ddMMyyyy sang dd-MM-yyyy
+      const formattedBirthday = `${rawBirthday.substring(4)}-${rawBirthday.substring(2, 4)}-${rawBirthday.substring(0, 2)}`;
+      console.log("formattedBirthday:", formattedBirthday); // Kết quả mong muốn: 02-09-2004
+
+      const finalDetailedAddress = detailedAddress === "null null" ? "" : detailedAddress;
+
       form.setFieldsValue({
-        gioiTinh: splits[2],
-        cccd: value.substring(0, 12),
-        ten: splits[0],
-        ngaySinh: `${birthday.substring(4)}-${birthday.substring(2, 4)}-${birthday.substring(0, 2)}`,
-        diaChi: splits[3],
+        gender: gender || "",
+        nationalId: nationalId,
+        name: name || "Chưa rõ",
+        dateOfBirth: formattedBirthday,
+        detailedAddress: finalDetailedAddress,
       });
+
+      toast.success(`Đã tìm thấy thông tin của ${name}!`);
       setIsQrModalVisible(false);
+    } catch (error) {
+      toast.error(error.message || "Lỗi khi xử lý QR code!");
     }
   };
 
-  const handleAddStaff = (data) => {
-    const formData = new FormData();
-    formData.append("anh", anh);
-    formData.append("cccd", data.cccd);
-    formData.append("ten", data.ten);
-    formData.append("gioiTinh", data.gioiTinh);
-    formData.append("ngaySinh", data.ngaySinh);
-    formData.append("email", data.email);
-    formData.append("soDienThoai", data.soDienThoai);
-    formData.append("diaChi",data.diaChi);
-    formData.append("thanhPho",data.thanhPho);
-    formData.append("phuong",data.phuong);
-    formData.append("huyen",data.huyen);
 
-    request
-      .post("/nhan-vien/create", formData, { headers: { "Content-Type": "multipart/form-data" } })
+
+
+  const handleAddStaff = (data) => {
+    const today = new Date();
+    const birthDate = new Date(data.dateOfBirth);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const isUnderage = (monthDiff < 0) || (monthDiff === 0 && today.getDate() < birthDate.getDate());
+
+    // if (isUnderage || age < 13) {
+    //   toast.error("Nhân viên phải từ 13 tuổi trở lên!");
+    //   return;
+    // }
+
+
+    if (!image) {
+      toast.error("Ảnh không được để trống!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("nationalId", data.nationalId);
+    formData.append("name", data.name);
+    formData.append("gender", data.gender);
+    formData.append("dateOfBirth", data.dateOfBirth);
+    formData.append("email", data.email);
+    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("detailedAddress", data.detailedAddress);
+
+    request.post("/nhan-vien/create", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
       .then((response) => {
         if (response.data.success) {
-          if (response.status === 200) {
-            sessionStorage.setItem('employeeAddSuccess', 'Thêm thành công!');
-            navigate("/nhan-vien");
-          }
+          notification.success({
+            message: 'Thêm mới thành công!',
+            duration: 2,
+          }); navigate("/employee");
         } else {
-          toast.error("Có lỗi xảy ra!");
+          notification.error({
+            message: 'Thêm mới thất bại!',
+            duration: 2,
+          });
         }
       })
       .catch((e) => {
-        toast.error(e.response.data);
+        toast.error(e.response.data.message);
       });
+
   };
 
   const showModal = () => {
@@ -113,78 +137,43 @@ const AddEmployee = () => {
   };
 
   return (
-    <div>
-      <Button type="primary" onClick={showModal}>
-        Quét CCCD
-      </Button>
-      <Modal
-        title="Quét CCCD"
-        visible={isQrModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-      >
+    <div style={{ backgroundColor: "#fff", border: "1px solid #ddd", padding: "20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+      <h6 style={{ fontWeight: "600", fontSize: "16px", color: "#5e35b1", marginBottom: "20px" }}>Thông tin nhân viên</h6>
+      <div>
         <QrCode onQrSuccess={handleQrSuccess} />
-      </Modal>
+      </div>
+
       <Form onFinish={handleAddStaff} layout="vertical" form={form}>
         <Row gutter={24}>
-          <Col span={8}>
-            <h6>Thông tin nhân viên</h6>
-            <Divider />
-            <Form.Item
-              label="Tên nhân viên"
-              name="ten"
-              rules={[
-                { required: true, message: "Tên không được để trống!" },
-                {
-                  pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/,
-                  message: "Tên phải là chữ",
-                },
-              ]}
-            >
-              <Input placeholder="Nhập tên nhân viên..." />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            {previewUrl !== null ? (
-              <div className="text-center">
-                <img src={previewUrl} alt="Preview" style={{ width: "200px", height: "200px" }} className="mt-2 border border-warning shadow-lg bg-body-tertiary object-fit-contain" />
-                <Button className="position-absolute border-0" onClick={() => { setPreviewUrl(null); setAnh(null); }}></Button>
-              </div>
-            ) : (
-              <div className="d-flex align-items-center justify-content-center">
-                <div className="position-relative border border-warning mt-2 d-flex align-items-center justify-content-center" style={{ width: "162px", height: "162px" }}>
-                  <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" />
-                  <div className="text-center text-secondary">
-                    <i className="fas fa-plus"></i> <br />
-                    <span>Chọn ảnh đại diện</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Col>
           <Col span={16}>
-            <h6>Thông tin chi tiết</h6>
             <Divider />
             <Row gutter={10}>
               <Col span={12}>
                 <Form.Item
+                  label="Tên nhân viên"
+                  name="name"
+                  rules={[{ required: true, message: "Tên không được để trống!" }, { pattern: /^[^\d!@#$%^&*()_+={}\\:;"'<>,.?/`~|-]+$/, message: "Tên phải là chữ" }]}
+                >
+                  <Input placeholder="Nhập tên nhân viên..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
                   label="Mã định danh (Số CMT/CCCD)"
-                  name="cccd"
-                  rules={[
-                    { required: true, message: "Mã định danh không được để trống!" },
-                    {
-                      pattern: /^([0-9]{9}|[0-9]{12})$/,
-                      message: "Mã định danh phải có 9 hoặc 12 kí tự!",
-                    },
+                  name="nationalId"
+                  rules={[{ required: true, message: "Mã định danh không được để trống!" }, {
+                    pattern: /^[0-9]{12}$/,
+                    message: "Mã định danh phải có 12 chữ số!"
+                  }
                   ]}
                 >
-                  <Input placeholder="Nhập mã định danh..." />
+                  <Input placeholder="Nhập mã định danh..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Giới tính"
-                  name="gioiTinh"
+                  name="gender"
                   rules={[{ required: true, message: "Giới tính không được để trống!" }]}
                 >
                   <Radio.Group>
@@ -196,121 +185,74 @@ const AddEmployee = () => {
               <Col span={12}>
                 <Form.Item
                   label="Ngày sinh"
-                  name="ngaySinh"
+                  name="dateOfBirth"
                   rules={[{ required: true, message: "Ngày sinh không được để trống!" }]}
                 >
-                  <Input type="date" />
+                  <Input type="date" style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Email"
                   name="email"
-                  rules={[{ required: true, message: "Email không được để trống!" }]}
+                  rules={[
+                    { required: true, message: "Email không được để trống!" },
+                    {
+                      validator: (_, value) => {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!value || emailRegex.test(value)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error("Email không đúng định dạng!"));
+                      },
+                    },
+                  ]}
                 >
-                  <Input placeholder="Nhập email ..." />
+                  <Input placeholder="Nhập email ..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Số điện thoại"
-                  name="soDienThoai"
-                  rules={[
-                    { required: true, message: "Số điện thoại không được để trống!" },
-                    { pattern: /^0[0-9]{9}$/, message: "SDT không đúng định dạng!" },
-                  ]}
+                  name="phoneNumber"
+                  rules={[{ required: true, message: "Số điện thoại không được để trống!" }, { pattern: /^0[0-9]{9}$/, message: "SDT không đúng định dạng!" }]}
                 >
-                  <Input placeholder="Nhập số điện thoại ..." />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-          <Col span={16}>
-            <h6>Địa chỉ liên hệ</h6>
-            <Divider />
-            <Row gutter={10}>
-              <Col span={12}>
-                <Form.Item
-                  label="Thành phố/Tỉnh"
-                  name="thanhPho"
-                  rules={[{ required: true, message: "Thành phố/Tỉnh không được để trống!" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Chọn thành phố"
-                    optionFilterProp="children"
-                    onChange={handleProvinceChange}
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {provinces.map((province) => (
-                      <Option key={province.ProvinceID} value={province.ProvinceID}>
-                        {province.ProvinceName}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Quận/Huyện"
-                  name="huyen"
-                  rules={[{ required: true, message: "Quận/Huyện không được để trống!" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Chọn quận/huyện"
-                    optionFilterProp="children"
-                    onChange={handleDistrictChange}
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {districts.map((district) => (
-                      <Option key={district.DistrictID} value={district.DistrictID}>
-                        {district.DistrictName}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Phường/Xã"
-                  name="phuong"
-                  rules={[{ required: true, message: "Phường/Xã không được để trống!" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Chọn phường/xã"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {wards.map((ward) => (
-                      <Option key={ward.WardCode} value={ward.WardCode}>
-                        {ward.WardName}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Input placeholder="Nhập số điện thoại ..." style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
               <Col span={24}>
                 <Form.Item
                   label="Địa chỉ cụ thể"
-                  name="diaChi"
+                  name="detailedAddress"
                   rules={[{ required: true, message: "Địa chỉ cụ thể không được để trống!" }]}
                 >
-                  <Input type='text' placeholder="Nhập địa chỉ cụ thể" />
+                  <Input type="text" placeholder="Nhập địa chỉ cụ thể" style={{ borderRadius: "6px", border: "1px solid #ddd", padding: "10px" }} />
                 </Form.Item>
               </Col>
             </Row>
           </Col>
+          <Col span={8}>
+            <Divider />
+            {previewUrl !== null ? (
+              <div className="text-center">
+                <img src={previewUrl} alt="Preview" style={{ width: "150px", height: "150px", borderRadius: "50%", objectFit: "cover", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }} className="mt-2 border border-warning shadow-lg bg-body-tertiary object-fit-contain" />
+                <Button className="position-absolute border-0" onClick={() => { setPreviewUrl(null); setAnh(null); }}>Xóa ảnh</Button>
+              </div>
+            ) : (
+              <div className="d-flex align-items-center justify-content-center">
+                <div className="position-relative rounded-circle border border-warning mt-2 d-flex align-items-center justify-content-center" style={{ width: "150px", height: "150px", backgroundColor: "#f7f7f7", borderRadius: "6px" }}>
+                  <Input type="file" accept="image/*" onChange={handleImageSelect} className="position-absolute opacity-0 py-5" />
+                  <div className="text-center text-secondary">
+                    <i className="fas fa-plus"></i> <br />
+                    <span>Chọn ảnh đại diện</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Col>
           <Col span={24}>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" style={{ backgroundColor: "#5e35b1", borderColor: "#5e35b1", borderRadius: "6px", padding: "10px 20px", fontWeight: "600", marginLeft: '500px', marginTop: '30px' }}>
                 Thêm nhân viên
               </Button>
             </Form.Item>

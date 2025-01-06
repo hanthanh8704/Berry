@@ -6,11 +6,11 @@ import account from './account';
 import bill from './bill';
 import orders from './orders';
 import statistical from './statistical';
-
+import returnOrder from 'menu-items/returnOrder';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [orders,product,bill,voucher,account]
+  items: [statistical,orders,returnOrder,product,bill,voucher,account]
 };
 
 export default menuItems;

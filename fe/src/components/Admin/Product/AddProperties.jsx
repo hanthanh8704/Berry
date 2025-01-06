@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Input } from 'antd';
-import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { Button, Form, Input, message } from 'antd';
 import * as request from "views/utilities/httpRequest";
 
 function AddProperties({ name, placeholder, onSuccess }) {
@@ -23,9 +21,9 @@ function AddProperties({ name, placeholder, onSuccess }) {
     }, [name]);
 
     const handleSubmit = async (data) => {
-        const duplicate = existingItems.some(item => item.ten.toLowerCase() === data.ten.toLowerCase());
+        const duplicate = existingItems.some(item => item.name.toLowerCase() === data.name.toLowerCase());
         if (duplicate) {
-            toast.error(`Tên ${placeholder} này đã tồn tại!`, { autoClose: 3000, closeOnClick: true });
+            message.error(`Tên ${placeholder} này đã tồn tại!`, 3); // Thông báo lỗi
             return;
         }
 
@@ -33,33 +31,30 @@ function AddProperties({ name, placeholder, onSuccess }) {
             const response = await request.post(`/${name}/create`, data);
             if (response.status === 200) {
                 form.resetFields();
-                toast.success('Thêm thành công!', { autoClose: 3000, closeOnClick: true });
+                message.success('Thêm thành công!', 3); // Thông báo thành công
                 onSuccess();
             }
         } catch (error) {
             console.error("Error adding data:", error);
-            toast.error(`Tên ${placeholder} này đã tồn tại!`, { autoClose: 3000, closeOnClick: true });
+            message.error(`Thêm thất bại: ${error.response?.data || "Lỗi không xác định"}`, 3); // Thông báo lỗi nếu thất bại
         }
     };
 
     return (
-        <>
-            <ToastContainer autoClose={3000} closeOnClick />
-            <Form className='d-flex' onFinish={handleSubmit} form={form}>
-                <Form.Item
-                    name="ten"
-                    rules={[
-                        { required: true, message: `Vui lòng nhập ${placeholder}!` },
-                        { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
-                        { pattern: /^[A-Za-zÀ-ỹ0-9\s'-]+$/, message: `Tên chỉ được chứa các ký tự chữ cái, số và không được là khoảng trắng!` },
-                    ]}
-                    className='me-1 p-0 m-0'
-                >
-                    <Input placeholder={`Thêm ${placeholder}`} />
-                </Form.Item>
-                <Button type="primary" htmlType="submit" style={{ backgroundColor: '#5e35b1' }} icon={<i className="fas fa-plus"></i>}>Thêm</Button>
-            </Form>
-        </>
+        <Form className='d-flex' onFinish={handleSubmit} form={form}>
+            <Form.Item
+                name="name"
+                rules={[
+                    { required: true, message: `Vui lòng nhập ${placeholder}!` },
+                    { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
+                    { pattern: /^[A-Za-zÀ-ỹ0-9\s'-]+$/, message: `Tên chỉ được chứa các ký tự chữ cái, số và không được là khoảng trắng!` },
+                ]}
+                className='me-1 p-0 m-0'
+            >
+                <Input placeholder={`Thêm ${placeholder}`} />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" style={{ backgroundColor: '#5e35b1' }} icon={<i className="fas fa-plus"></i>}>Thêm</Button>
+        </Form>
     );
 }
 

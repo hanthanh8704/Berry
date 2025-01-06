@@ -19,7 +19,7 @@ function TableCustomer({ setCustomerIds, setRowKeys }) {
     }, [setRowKeys])
 
     const loadShoe = () => {
-        request.get("/voucher/khach-hang", {
+        request.get("/voucher/customer", {
             params: { ten: searchValue, page: 1, sizePage: 1_000_000 },
         }).then((response) => {
             setProductList(response.data);
@@ -34,8 +34,8 @@ function TableCustomer({ setCustomerIds, setRowKeys }) {
        
         {
             title: "Tên",
-            dataIndex: "hoTen",
-            key: "hoTen",
+            dataIndex: "fullName",
+            key: "fullName",
         },
         {
             title: "Email",
@@ -44,8 +44,8 @@ function TableCustomer({ setCustomerIds, setRowKeys }) {
         },
         {
             title: "Số điện thoại",
-            dataIndex: "soDienThoai",
-            key: "soDienThoai",
+            dataIndex: "phoneNumber",
+            key: "phoneNumber",
         },
     ];
 

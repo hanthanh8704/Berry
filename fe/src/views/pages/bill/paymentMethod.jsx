@@ -1,81 +1,157 @@
-import { Button, Col, Form, Input, InputNumber, Modal, Row, Table, Tag } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import Title from "antd/es/typography/Title";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import formatCurrency from "views/utilities/format";
-import * as request from "views/utilities/httpRequest";
-import FormatDate from "views/utilities/FormatDate";
+import { Button, Form, Table, Tag, message, Alert, Row, Col } from "antd";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import PaymentModal from "views/pages/bill/Payment.jsx";
 import FormatCurrency from "views/utilities/FormatCurrency";
+import FormatDate from "views/utilities/FormatDate";
+const { Title, Text } = Typography;
+import { Card, Typography, Carousel } from 'antd';
+const listStatusPayMent = [
+  { name: "Đã thanh toán", status: "DA_THANH_TOAN", color: "#024FA0" },
+  { name: "Chưa thanh toán", status: "CHUA_THANH_TOAN", color: "#9C281C" },
+  { name: "Trả sau", status: "TRA_SAU", color: "#7925C7" },
+  { name: "Thanh toán", status: "THANH_TOAN", color: "#F2721E" },
+  { name: "Hoàn tiền", status: "HOAN_TIEN", color: "#2DC255" },
+];
 
 function PaymentMethod({ bill, onSucess }) {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái để điều khiển việc mở/đóng Modal
-  const [paymentMethod, setPaymentMethod] = useState([]); // Danh sách các phương thức thanh toán
-  const [method, setMethod] = useState(0); // Phương thức thanh toán được chọn
-  const [totalPayment, setTotalPayment] = useState(0); // Tổng số tiền đã thanh toán
-  const [extraMoney, setExtraMoney] = useState(null); // Số tiền thừa trả lại khách (nếu có)
-
-  const [totalBillDetail, setTotalBillDetail] = useState(0); // Tổng số tiền của chi tiết đơn hàng
-
-  const [isRefund, setIsRefund] = useState(false); // Biến để xác định xem đang là quá trình hoàn trả hay không
-
-  const [form] = Form.useForm(); // Form để quản lý dữ liệu đầu vào và gửi dữ liệu
+  const [paymentMethod, setPaymentMethod] = useState([]);
+  const [totalBillDetail, setTotalBillDetail] = useState(0);
+  const [form] = Form.useForm();
+  const shipFee = bill?.shippingFee || 0; // Nếu không có shippingFee, mặc định là 0
 
   useEffect(() => {
-    loadPaymentMethod(); // Load dữ liệu các phương thức thanh toán khi có sự thay đổi trong `bill`
+    loadPaymentMethod();
   }, [bill]);
 
+  const token = localStorage.getItem('token');
+    // Lấy dữ liệu từ localStorage
+    const idNhanVien = localStorage.getItem('employeeId');
+
   const loadPaymentMethod = () => {
-    // Lấy danh sách phương thức thanh toán từ API
-    request.get(`/payment-method/${bill.id}`).then((response) => {
-      setPaymentMethod(response); // Cập nhật danh sách phương thức thanh toán
-      // Tính tổng số tiền đã thanh toán
-      const caculateTotalPayment = response.reduce((total, item) => {
-        return total + item.totalMoney;
-      }, 0);
-      setTotalPayment(caculateTotalPayment); // Cập nhật tổng số tiền đã thanh toán
-    }).catch((error) => {
-      console.error(error);
-    });
+    // Lấy danh sách phương thức thanh toán
+    axios
+      .get(`http://localhost:8080/api/payment/${bill.id}`)
+      .then((response) => {
+        setPaymentMethod(response.data);
+        console.log("paymenttttttttttttttttttt", response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-    // Lấy chi tiết đơn hàng từ API
-    request.get(`/bill-detail`, {
-      params: { bill: bill.id, page: 1, sizePage: 1_000_000, }
-    }).then((response) => {
-      // Tính tổng số tiền của chi tiết đơn hàng
-      const calculatedTotalMoney = response.data.reduce((total, item) => {
-        return total + item.quantity * (item.discountPercent !== null ? item.discountValue : item.price);
-      }, 0);
-      setTotalBillDetail(calculatedTotalMoney); // Cập nhật tổng số tiền của chi tiết đơn hàng
-    }).catch((e) => {
-      console.log(e);
-    });
+    // Tính tổng tiền các chi tiết hóa đơn
+    axios
+      .get(`/bill-detail`, { params: { bill: bill.id, page: 1, sizePage: 1_000_000 } })
+      .then((response) => {
+        const calculatedTotalMoney = response.data.reduce((total, item) => {
+          return total + item.quantity * (item.discountPercent !== null ? item.discountValue : item.price);
+        }, 0);
+        setTotalBillDetail(calculatedTotalMoney);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
-    // Đặt giá trị mặc định cho form thanh toán
-    form.setFieldsValue({
-      totalMoney: bill.totalMoney + bill.moneyShip - totalPayment
-    });
-  }
+  const handleSubmitXacNhan = () => {
+    const requestData = {
+      idHD: bill.id,
+      employee: idNhanVien,
+      status: "DA_THANH_TOAN",
+      note: "THANH_TOAN",
+    };
 
-  const handleCreatePaymentMethod = (data) => {
-    data.totalMoney = bill.totalMoney + bill.moneyShip - totalPayment;
-    data.type = !isRefund; // Xác định loại giao dịch là thanh toán
-    data.method = method; // Xác định phương thức thanh toán
-    data.bill = bill.id; // Thêm ID đơn hàng vào dữ liệu gửi đi
-    // Gửi yêu cầu tạo mới phương thức thanh toán đến API
-    request.post(`/payment-method`, data).then((response) => {
-      loadPaymentMethod(); // Sau khi tạo mới thành công, load lại danh sách phương thức thanh toán
-      onSucess(); // Gọi hàm callback khi thành công
-      toast.success(`Đã thanh toán ${formatCurrency(data.totalMoney)}`); // Hiển thị thông báo thành công
-      setIsModalOpen(false); // Đóng Modal
-      form.resetFields(); // Đặt lại các trường trong form
-    }).catch((error) => {
-      console.error(error);
-      toast.error(error.response.data); // Hiển thị thông báo lỗi
-    });
-  }
+    axios
+      .put(`http://localhost:8080/api/bill/change-status`, requestData, {
+        params: { idNhanVien: idNhanVien },
+      })
+      .then((response) => {
+        onSucess();
+        message.success("Thay đổi trạng thái đơn hàng thành công!");
+      })
+      .catch((e) => {
+        console.error("Lỗi khi thay đổi trạng thái:", e);
+        message.error("Không thể thay đổi trạng thái. Chi tiết lỗi: " + (e.response?.data?.message || e.message));
+      });
+  };
 
+  const totalBillAmount = paymentMethod.reduce((sum, payment) => sum + payment.totalMoney, 0);
+
+  //Hàm tính lại số tiền được trả và cần trả 
+  const traSauTotal = paymentMethod
+    .filter((payment) => payment.status === 'TRA_SAU')
+    .reduce((sum, payment) => sum + payment.totalMoney, 0);
+
+  const hoanTienTotal = paymentMethod
+    .slice(1) // Loại bỏ khoản đầu tiên khỏi danh sách
+    .filter((payment) => payment.status === 'HOAN_TIEN')
+    .reduce((sum, payment) => sum + payment.totalMoney, 0);
+
+  const chenhLech = traSauTotal - hoanTienTotal;
+  const chenhLechSoSanh = traSauTotal - hoanTienTotal > 0 ? traSauTotal - hoanTienTotal : hoanTienTotal - traSauTotal;
+
+  console.log("Lỗi khi thay đổi trạng thái:", traSauTotal);
+
+  // const columns = [
+  //   {
+  //     title: "STT",
+  //     dataIndex: "index",
+  //     key: "index",
+  //     render: (_, __, index) => index + 1,
+  //   },
+  //   {
+  //     title: "Mã giao dịch",
+  //     dataIndex: "transactionNo",
+  //     key: "transactionNo",
+  //     render: (x) => (x === null ? "---" : x),
+  //   },
+  //   {
+  //     title: "Số tiền thanh toán",
+  //     dataIndex: "totalMoney",
+  //     key: "totalMoney",
+  //     render: (money) => formatCurrency(money),
+  //   },
+  //   {
+  //     title: 'Loại giao dịch',
+  //     dataIndex: 'status', // Sử dụng status làm dataIndex
+  //     key: 'status',
+  //     render: (status) => {
+  //       const foundStatus = listStatusPayMent.find(item => item.status === status);
+  //       return (
+  //         <Tag color={foundStatus ? foundStatus.color : 'default'} style={{ width: "100px" }} className="text-center">
+  //           {foundStatus ? foundStatus.name : 'Không xác định'}
+  //         </Tag>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     title: "Thời gian",
+  //     dataIndex: "createdAt",
+  //     key: "createdAt",
+  //   },
+  //   {
+  //     title: "Trạng thái",
+  //     dataIndex: "status",
+  //     key: "status",
+  //     render: (x) => {
+  //       const tagColors = {
+  //         THANH_TOAN: "green",
+  //         HOAN_TIEN: "red",
+  //       };
+  //       return (
+  //         <Tag color={tagColors[x] || "blue"} style={{ width: "100px", textAlign: "center" }}>
+  //           {x === "THANH_TOAN" ? "Thanh toán" : x === "HOAN_TIEN" ? "Hoàn tiền" : "Chưa xác định"}
+  //         </Tag>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     title: "Nhân viên xác nhận",
+  //     dataIndex: "employee",
+  //     key: "employee",
+  //   },
+  // ];
   const columns = [
     {
       title: '#',
@@ -84,105 +160,186 @@ function PaymentMethod({ bill, onSucess }) {
     },
     {
       title: 'Mã giao dịch',
-      dataIndex: 'maGiaoDich',
-      key: 'maGiaoDich',
+      dataIndex: 'transactionNo',
+      key: 'transactionNo',
       render: (x, record) => (
         <>{x === null ? '---' : x}</>
       )
     },
     {
-      title: 'Số tiền',
-      dataIndex: 'tongTienThanhToan',
-      key: 'tongTienThanhToan',
-      render: (x) => (<FormatCurrency value={x} />)
+      title: "Số tiền thanh toán",
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (totalMoney, record) => {
+        console.log("record.totalMoney:", record.totalMoney);
+        return <FormatCurrency value={record.totalMoney} />;
+      }
+
     },
     {
       title: 'Thời gian',
-      dataIndex: 'ngayTao',
-      key: 'ngayTao',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       render: (x) => (<FormatDate date={x} />)
     },
     {
-      title: 'Loại giao dịch',
-      dataIndex: 'tenHinhThuc',
-      key: 'tenHinhThuc',
+      title: 'Phương thức thanh toán',
+      dataIndex: 'method',
+      key: 'method',
       render: (x, record) => (
-        <Tag color={x === true ? 'green' : 'red'} style={{ width: "100px" }} className="text-center">{x === true ? 'Thanh toán' : 'Hoàn trả'}</Tag>
+        <Tag color={x === "TIEN_MAT" ? 'green' : 'red'} style={{ width: "100px" }} className="text-center">{x === "TIEN_MAT" ? 'Tiền mặt' : 'Chuyển khoản'}</Tag>
       )
     },
     {
-      title: 'Ghi chú',
-      dataIndex: 'ghiChu',
-      key: 'ghiChu',
+      title: 'Loại giao dịch',
+      dataIndex: 'status', // Sử dụng status làm dataIndex
+      key: 'status',
+      render: (status) => {
+        const foundStatus = listStatusPayMent.find(item => item.status === status);
+        return (
+          <Tag color={foundStatus ? foundStatus.color : 'default'} style={{ width: "100px" }} className="text-center">
+            {foundStatus ? foundStatus.name : 'Không xác định'}
+          </Tag>
+        );
+      },
     },
-    {
-      title: 'Nhân viên xác nhận',
-      dataIndex: 'nguoiTao',
-      key: 'nguoiTao',
-    },
+
+    // {
+    //   title: "Nhân viên tiếp nhận",
+    //   dataIndex: "nameEmployee",
+    //   key: "nameEmployee",
+    //   render: (employee, record) => {
+    //     // Kiểm tra nếu không có nhân viên (null hoặc undefined)
+    //     if (!employee) {
+    //       return "Không có";
+    //     }
+
+    //     // Kiểm tra trạng thái và trả về giá trị phù hợp
+    //     if (record.status === "HOAN_TIEN") {
+    //       return `${employee}`;
+    //     } else if (record.status === "TRA_SAU" || record.status === "DA_THANH_TOAN") {
+    //       return `${employee}`;
+    //     }
+
+    //     // Mặc định
+    //     return "Không rõ trạng thái";
+    //   },
+    // }
+
+
   ];
 
   return (
-    <>
-      <div className="mt-3">
-        <div className="d-flex align-items-center">
-        <h2 level={5} className="text-danger text-uppercase p-0 m-0 flex-grow-1 p-2" style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20', textAlign: 'left' ,background:'#c8d6e5', color:'#1e272e'}}> Lịch sử thanh toán </h2>
+    <div className="mt-3">
+      {/* Tiêu đề */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2
+          className="text-uppercase"
+          style={{
+            fontSize: "22px",
+            fontWeight: "bold",
+            background: "#f1f2f6",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            color: "#2f3542",
+          }}
+        >
+          Lịch sử thanh toán
+        </h2>
+        {totalBillAmount < bill.totalMoney + shipFee && bill.invoiceStatus === "VAN_CHUYEN"&& (
+          <PaymentModal
+            discountValue={bill.discountAmount}
+            voucher={bill.voucher}
+            shipFee={bill.shippingFee}
+            handleSubmitXacNhan={handleSubmitXacNhan}
+            totalMoney={bill.totalMoney}
+            billPayment={paymentMethod}
+            props={bill}
+            onClose={() => {
+              loadPaymentMethod();
+              onSucess();
+            }}
+          />
+        )}
+      </div>
 
-          <div className="p-2">
-            {/* Nút xác nhận thanh toán */}
-            {totalPayment < (bill.totalMoney + bill?.moneyShip) && (
-              <>
-                <Button type="primary" className='text-dark bg-warning' onClick={() => { setIsModalOpen(true); loadPaymentMethod() }}>Xác nhận thanh toán</Button>
-              </>)}
-          </div>
-        </div>
+      {/* Bảng lịch sử thanh toán */}
+      <Table
+        columns={columns}
+        pagination={false}
+        dataSource={paymentMethod.map((item, index) => ({ ...item, index }))}
+        rowKey="id"
+        style={{
+          background: "#ffffff",
+          border: "1px solid #dcdde1",
+          borderRadius: "8px",
+        }}
+      />
 
-        <Modal title={`Xác nhận thanh toán`} open={isModalOpen} onOk={() => { setIsModalOpen(false); }} onCancel={() => { setIsModalOpen(false); }} footer={
-          <>
-            <Button onClick={() => setIsModalOpen(false)}>Hủy</Button>
-            <Button onClick={() => form.submit()} type="primary">Thanh toán</Button>
-          </>
-        }>
-          <Form layout="vertical" form={form} onFinish={handleCreatePaymentMethod}>
-            <Form.Item label={`Tiền khách đưa`} name="totalMoney" rules={[{ required: true, message: `Tiền khách đưa không được để trống!`, },]}>
-              <InputNumber className='w-100 mb-2' formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} suffix="VNĐ" placeholder="Nhập tiền khách đưa..." onChange={(e) => { setExtraMoney(e - (bill.totalMoney + bill.moneyShip - totalPayment)); }} />
-            </Form.Item>
-            <Form.Item label="Ghi chú" name="note" rules={[{ required: true, message: "Ghi chú không được để trống!", },]}>
-              <TextArea />
-            </Form.Item>
-            <Row gutter={10} className="mt-3">
-              <Col xl={12} onClick={() => setMethod(0)}>
-                <div className={`py-2 border border-2 rounded-2 d-flex align-items-center justify-content-center ${method === 1 ? `text-secondary border-secondary` : 'border-warning text-warning'}`}>
-                  <i className="fa-solid fa-coins" style={{ fontSize: "36px" }}></i>
-                  <span className="ms-2 fw-semibold text-dark">Tiền mặt</span>
-                </div>
-              </Col>
-              <Col xl={12} onClick={() => setMethod(1)}>
-                <div className={`py-2 border border-2 rounded-2 d-flex align-items-center justify-content-center ${method === 0 ? `text-secondary border-secondary` : 'border-warning text-warning'}`}>
-                  <i class="fa-regular fa-credit-card" style={{ fontSize: "36px" }}></i>
-                  <span className="ms-2 fw-semibold text-dark">Chuyển khoản</span>
-                </div>
+
+      <div style={{ textAlign: "right", marginTop: "10px" }}>
+        <Alert
+          type="warning"
+          showIcon
+          message={
+            <Row>
+              <Col>
+                <Text>
+                  {paymentMethod.length === 1 && paymentMethod[0].status === 'TRA_SAU' && paymentMethod[0].method === 'TIEN_MAT' ? (
+                    <>
+                      Trả  sau <Text  style={{ color: "red" }} >
+                        <FormatCurrency value={paymentMethod[0].totalMoney} />
+                      </Text> bằng tiền mặt
+                    </>
+                  ) : paymentMethod.length > 1 && paymentMethod[0].status === 'TRA_SAU' && paymentMethod[0].method === 'TIEN_MAT' ? (
+                    <>
+                      Trả  sau<Text  style={{ color: "red" }} >
+                        <FormatCurrency value={paymentMethod[0].totalMoney} />
+                      </Text> bằng tiền mặt
+                    </>
+                  ) : paymentMethod.length > 1 && paymentMethod[0].status === 'DA_THANH_TOAN' && paymentMethod[0].method === 'CHUYEN_KHOAN' ? (
+                    <>
+                      <Text>
+                        Khách hàng đã trả <Text  style={{ color: "red" }} >
+                          <FormatCurrency value={paymentMethod[0].totalMoney} />
+                        </Text> bằng phí VNPay,
+                        {chenhLech > 0 && (
+                          <> và khách hàng phải trả thêm <Text  style={{ color: "red" }} >
+                            <FormatCurrency value={chenhLech} />
+                          </Text> bằng tiền mặt </>
+                        )}
+                        {chenhLech < 0 && (
+                          <> và được của hàng hoàn trả <Text  style={{ color: "red" }} >
+                            <FormatCurrency value={Math.abs(chenhLech)} />
+                          </Text> bằng phí VNPay </>
+                        )}
+
+                      </Text>
+                    </>
+                  ) : paymentMethod.length === 1 && paymentMethod[0].status === 'DA_THANH_TOAN' && paymentMethod[0].method === 'CHUYEN_KHOAN' ? (
+                    <>
+                     Khách hàng đã trả  <Text strong>
+                        <FormatCurrency value={paymentMethod[0].totalMoney} />
+                      </Text> bằng phí VNPay
+                    </>
+                  ) : null}
+                </Text>
               </Col>
             </Row>
-          </Form>
-          {/* Hiển thị thông tin tiền cần thanh toán và tiền thừa khi không phải quá trình hoàn tiền */}
-          <div className="mt-3 fw-semibold ">
-            Số tiền cần thanh toán: <span className=" float-end fw-semibold text-danger">
-              <FormatCurrency value={bill.totalMoney + bill.moneyShip - totalPayment} />
-            </span>
-            <br />
-            Tiền thừa trả khách: <span className=" float-end text-success">
-              <FormatCurrency value={extraMoney < 0 ? 0 : extraMoney} />
-            </span>
-          </div>
-        </Modal>
+          }
+          style={{
+            backgroundColor: '#fff9f0', // Màu nền nhạt
+            border: '1px solid #ffe58f', // Màu viền nhẹ
+            borderRadius: '8px', // Bo góc
+            padding: '12px',
+            fontSize: '14px',
+          }}
+        />
 
-        {/* Hiển thị bảng lịch sử thanh toán */}
-        <Table columns={columns} pagination={false} dataSource={paymentMethod} />
       </div>
-    </>
+
+    </div>
   );
 }
 
 export default PaymentMethod;
-

@@ -1,11 +1,11 @@
-// Hàm này sử dụng để thay đổi thông tin của đơn hàng
+// // Hàm này sử dụng để thay đổi thông tin của đơn hàng
 
-import { Button, Col, Form, Input, Modal, Row } from 'antd';
+import { Button, Col, Form, Input, Modal, Row, message } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import GHN from 'ui-component/GHN';
+import GHNDetail from 'ui-component/GHNDetail';
 import * as request from 'views/utilities/httpRequest';
 
 function changeBill({ bill, onSuccess }) {
@@ -134,7 +134,7 @@ function changeBill({ bill, onSuccess }) {
     request
       .put(`/bill/change-info-customer/${bill.id}`, newData)
       .then((response) => {
-        toast.success('Cập nhật thành công!');
+        message.success('Cập nhật thành công!');
         onSuccess();
         setIsModalOpen(false);
       })
@@ -183,7 +183,7 @@ function changeBill({ bill, onSuccess }) {
                 <Input />
               </Form.Item>
             </Col>
-            <GHNInfo
+            <GHNDetail
               thanhPho={address.thanhPho}
               dataAddress={(data) => setAddress({ ...address, ...data })}
               huyen={address.huyen}

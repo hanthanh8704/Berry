@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import * as request from 'views/utilities/httpRequest';
 import swal from "sweetalert";
-import {Button,Col,Form,Input,Modal,Row,} from "antd";
+import { Button, Col, Form, Input, Modal, Row, message, notification } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import GHN from "ui-component/GHN";
 import { toast } from "react-toastify";
 
-function CreateAddressModal({ idCustomer, onSuccess }) {
+function CreateAddressModal({ customer, onSucces }) {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
   const [form] = Form.useForm();
   const [dataAddress, setDataAddress] = useState(null);
@@ -14,7 +14,10 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
   const { confirm } = Modal;
 
   const handleAdd = (data) => {
-    data.account = idCustomer;
+    data.idCustomer = customer;
+    console.log("Cay vcccccccccccccccccccccccccccccccccccccccccc : ", customer);
+    data.defaultAddress = true;
+    console.log(data);
     confirm({
       title: "Xác nhận ",
       icon: <ExclamationCircleFilled />,
@@ -28,8 +31,10 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
           .then((response) => {
             form.resetFields();
             setIsModalAddOpen(false);
-            toast.success("Thêm mới thành công!");
-            onSuccess();
+            notification.success({
+              message: 'Thêm mới thành công!',
+              duration: 2,
+            }); onSucces();
           })
           .catch((e) => console.log(e));
         console.log(data);
@@ -73,7 +78,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24} sm={12}>
               <Form.Item
                 label={"Tên"}
-                name={"hoTen"}
+                name={"fullName"}
                 rules={[
                   { required: true, message: "Tên không được để trống!" },
                 ]}
@@ -84,7 +89,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24} sm={12}>
               <Form.Item
                 label={"Số điện thoại"}
-                name={"soDienThoai"}
+                name={"phoneNumber"}
                 rules={[
                   {
                     required: true,
@@ -98,7 +103,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             <Col xs={24}>
               <Form.Item
                 label={"Địa chỉ cụ thể"}
-                name={"diaChiCuThe"}
+                name={"detailedAddress"}
                 rules={[
                   {
                     required: true,
@@ -111,10 +116,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
             </Col>
             <Col xs={12}>
               <GHN
-                dataAddress={setDataAddress}
-                distr={autoFillAddress.thanhPho}
-                prov={autoFillAddress.phuong}
-                war={autoFillAddress.huyen}
+                dataAddress={setDataAddress} city={autoFillAddress.city} district={autoFillAddress.district} ward={autoFillAddress.ward}
               />
             </Col>
           </Row>
@@ -124,6 +126,7 @@ function CreateAddressModal({ idCustomer, onSuccess }) {
               <i className="fas fa-plus-circle me-1"></i> Thêm
             </Button>
           </div>
+          {/* <ToastContainer /> */}
         </Form>
       </Modal>
     </>

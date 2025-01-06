@@ -1,11 +1,13 @@
-import { Button, Col, Form, Input, Modal, Row, Select, Slider, Table, Tag, Pagination, InputNumber } from 'antd';
+import { Button, Col, Form, Input, Modal, Row, Select, Slider, Table, Tag, Pagination, InputNumber, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import * as request from 'views/utilities/httpRequest';
 import { toast } from 'react-toastify';
 import FormatCurrency from 'views/utilities/FormatCurrency';
+import { Hidden } from '@mui/material';
+import { IconShoppingCart } from '@tabler/icons-react';
 const { Option } = Select;
 
-function ShowProductModal({ idHoaDon, onClose }) {
+function ShowProductModal({ idBill, onClose }) {
   const [formFilter] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productList, setProductList] = useState([]);
@@ -29,27 +31,27 @@ function ShowProductModal({ idHoaDon, onClose }) {
 
   useEffect(() => {
     loadData(dataFilter);
-  }, [isModalOpen, dataFilter, currentPage, pageSize,priceRange]);
+  }, [isModalOpen, dataFilter, currentPage, pageSize, priceRange]);
 
   const loadData = (dataFilter) => {
     request
       .get('/shirt-detail', {
         params: {
-          ten: dataFilter.ten,
-          kichCo: dataFilter.kichCo,
-          mauSac: dataFilter.mauSac,
-          chatLieu: dataFilter.chatLieu,
-          thuongHieu: dataFilter.thuongHieu,
-          tayAo: dataFilter.tayAo,
-          coAo: dataFilter.coAo,
-          minPrice: priceRange[0],
-          maxPrice: priceRange[1],
+          name: dataFilter.name,
+          size: dataFilter.size,
+          color: dataFilter.color,
+          material: dataFilter.material,
+          brand: dataFilter.brand,
+          sleeve: dataFilter.sleeve,
+          collar: dataFilter.collar,
           page: currentPage,
           sizePage: pageSize
         }
       })
       .then((response) => {
         setProductList(response.data);
+        console.log(response.data);
+        console.log(dataFilter);
         setTotalPages(response.totalPages);
       })
       .catch((e) => {
@@ -107,35 +109,96 @@ function ShowProductModal({ idHoaDon, onClose }) {
         console.log(e);
       });
   }, [isModalOpen, searchKichCo]);
+  const token = localStorage.getItem('token');
+  // Lấy dữ liệu từ localStorage
+  const idNhanVienInt = localStorage.getItem('employeeId');
 
   const handleChoose = (chiTietSanPham) => {
     setSelectedProduct({
       ...chiTietSanPham,
-      newPrice: chiTietSanPham.giaTriDaGiam !== null ? chiTietSanPham.giaTriDaGiam : chiTietSanPham.giaBan,
-      oldPrice: chiTietSanPham.giaBan
+      newPrice: chiTietSanPham.discountPrice !== null ? chiTietSanPham.discountPrice : chiTietSanPham.price,
+      oldPrice: chiTietSanPham.price
     });
     setIsSelectModalOpen(true);
   };
 
+  // const createPayment = () => {
+  //   const newPayment = {
+  //     bill: idBill.id,
+  //     employee: idNhanVienInt,
+  //     method: 'CHUYEN_KHOAN',
+  //     totalMoney: selectedProduct.discountPercentage ? selectedProduct.newPrice : selectedProduct.price,
+  //     status: "TRA_SAU",
+  //     transactionNo: null,
+
+  //   };
+  //   request
+  //     .post(`/payment`, newPayment
+  //     )
+  //     .then((response) => {
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //       message.error(e.response.data);
+  //     });
+  // };
+
   const handleConfirm = () => {
     const data = {
-      chiTietSanPham: selectedProduct?.maSPCT,
-      hoaDon: idHoaDon,
-      giaBan: selectedProduct?.newPrice,
-      soLuong: quantity
+      detailCode: selectedProduct?.detailCode,
+      idBill: idBill.id,
+      quantity: quantity,
+      price: selectedProduct.discountPercentage ? selectedProduct?.price : selectedProduct.discountPrice
     };
+
+    console.log("Bi detail newwwwwwwwwwww", data);
+
     request
-      .post('/bill-detail', data)
+      .post('/bill-detail', data, { params: { idNhanVien: Number(idNhanVienInt) } })
       .then((response) => {
-        toast.success('Thêm thành công!');
+        message.success('Thêm thành công!');
         loadData(dataFilter);
         setIsSelectModalOpen(false);
+
+        // Kiểm tra trạng thái hóa đơn để tạo thanh toán nếu cần
+        if (bill.invoiceStatus === 'CHO_XAC_NHAN') {
+          createPayment();
+        }
+
+        // Reset số lượng sau khi thêm sản phẩm
         setQuantity(1);
       })
       .catch((e) => {
-        toast.error(e.response.data);
+        // Hiển thị thông báo lỗi nếu có
+        // message.error(e.response?.data?.message || 'Đã xảy ra lỗi!');
+        console.error(e);
       });
+
   };
+
+
+  // const handleConfirm = () => {
+  //   const data = {
+  //     detailCode: selectedProduct?.detailCode,
+  //     idBill: idBill.id,
+  //     price: selectedProduct?.newPrice,
+  //     quantity: quantity
+  //   };
+  //   console.log(data);
+  //   request
+  //     .post('/bill-detail', data)
+  //     .then((response) => {
+  //       message.success('Thêm thành công!');
+  //       loadData(dataFilter);
+  //       setIsSelectModalOpen(false);
+  //       if (bill.invoiceStatus === 'CHO_XAC_NHAN') createPayment();
+  //       setQuantity(1);
+  //     })
+  //     .catch((e) => {
+  //       message.error(e.response.data.message);
+  //       console.log(e);
+  //     });
+  // };
 
   const columns = [
     {
@@ -151,65 +214,53 @@ function ShowProductModal({ idHoaDon, onClose }) {
     },
     {
       title: 'Tên',
-      dataIndex: 'ten',
-      key: 'ten'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'Cổ áo',
-      dataIndex: 'coAo',
-      key: 'coAo'
+      dataIndex: 'collar',
+      key: 'collar'
     },
     {
       title: 'Tay Áo',
-      dataIndex: 'tayAo',
-      key: 'tayAo'
-    },
-    {
-      title: 'Thương hiệu',
-      dataIndex: 'thuongHieu',
-      key: 'thuongHieu'
-    },
-    {
-      title: 'Màu sắc',
-      dataIndex: 'mauSac',
-      key: 'mauSac'
+      dataIndex: 'sleeve',
+      key: 'sleeve'
     },
     {
       title: 'Chất liệu',
-      dataIndex: 'chatLieu',
-      key: 'chatLieu'
-    },
-    {
-      title: 'Size',
-      dataIndex: 'kichCo',
-      key: 'kichCo'
+      dataIndex: 'material',
+      key: 'material'
     },
     {
       title: 'Số Lượng',
-      dataIndex: 'soLuong',
-      key: 'soLuong'
+      dataIndex: 'quantity',
+      key: 'quantity'
     },
     {
       title: 'Giá',
-      dataIndex: 'giaBan',
-      key: 'giaBan',
-      render: (giaBan, record) => (
+      dataIndex: 'price',
+      key: 'price',
+      render: (price, record) => (
         <>
-          {record.giaTriDaGiam !== null ? (
+          {/* {record.discountPrice !== null ? (
             <>
               <span className="text-decoration-line-through">
-                <FormatCurrency value={record.giaBan} />
+                <FormatCurrency value={record.price} />
               </span>
               <br />
               <span className="text-danger">
-                <FormatCurrency value={record.giaTriDaGiam} />
+                <FormatCurrency value={record.discountPrice} />
               </span>
             </>
           ) : (
             <span className="text-danger">
-              <FormatCurrency value={record.giaBan} />
+              <FormatCurrency value={record.price} />
             </span>
-          )}
+          )} */}
+                      <span className="text-danger">
+              <FormatCurrency value={record.price} />
+            </span>
         </>
       )
     },
@@ -224,11 +275,13 @@ function ShowProductModal({ idHoaDon, onClose }) {
       )
     }
   ];
-
+  const isValidQuantity = (value) => {
+    return value !== null && !isNaN(value) && Number(value) > 0;
+  };
   return (
     <>
       <Button type="primary" onClick={() => setIsModalOpen(true)}>
-        Thêm sản phẩm
+        Thêm sản phẩm <IconShoppingCart />
       </Button>
       <Modal
         title="Danh sách sản phẩm"
@@ -238,139 +291,94 @@ function ShowProductModal({ idHoaDon, onClose }) {
           onClose();
         }}
         footer={null}
-        width={1200}
+        width={900}
       >
-        <Form layout="vertical" onFinish={(data) => setDataFilter(data)} form={formFilter}>
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item label="Tên sản phẩm" name="ten">
-                <Input placeholder="Tìm kiếm sản phẩm theo tên..." />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Kích cỡ" name="kichCo">
-                <Select
-                  showSearch
-                  placeholder="Chọn kích cỡ..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listKichCo.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Màu sắc" name="mauSac">
-                <Select
-                  showSearch
-                  placeholder="Chọn màu sắc..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listMauSac.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Chất liệu" name="chatLieu">
-                <Select
-                  showSearch
-                  placeholder="Chọn chất liệu..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listChatLieu.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item label="Thương hiệu" name="thuongHieu">
-                <Select
-                  showSearch
-                  placeholder="Chọn thương hiệu..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listThuongHieu.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Tay áo" name="tayAo">
-                <Select
-                  showSearch
-                  placeholder="Chọn kiểu tay áo..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listTayAo.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Cổ áo" name="coAo">
-                <Select
-                  showSearch
-                  placeholder="Chọn kiểu cổ áo..."
-                  optionFilterProp="children"
-                  onSearch={setSearchKichCo}
-                >
-                  <Option value="">Tất cả</Option>
-                  {listCoAo.map((item) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.ten}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Khoảng giá">
-                <Slider
-                  min={100000}
-                  max={1000000}
-                  range
-                  value={priceRange}
-                  step={10000}
-                  tooltipVisible
-                  tipFormatter={(value) => `${value.toLocaleString()} VND`}
-                  onChange={(value) => setPriceRange(value)}
-                  onAfterChange={() => loadData(dataFilter)} // Tải lại dữ liệu khi khoảng giá thay đổi
+        <Form layout="vertical" form={formFilter}>
+          <Row gutter={32}>
+            <Col span={24}>
+              <Form.Item label="Tên sản phẩm" name="name">
+                <Input
+                  placeholder="Tìm kiếm sản phẩm theo tên..."
+                  onChange={(e) => setDataFilter({ ...dataFilter, name: e.target.value })}
                 />
               </Form.Item>
             </Col>
           </Row>
-          <Button type="primary" htmlType="submit" style={{marginBottom: 10,marginTop: 16, textAlign: 'right' }}>
-            Lọc
-          </Button>
+          <Row gutter={32}>
+            {/* Kích cỡ */}
+            <Col span={8}>
+              <Form.Item label="Kích cỡ" name="size">
+                <Select placeholder="Chọn kích cỡ" allowClear onChange={(value) => setDataFilter({ ...dataFilter, size: value })}>
+                  {listKichCo.map((size) => (
+                    <Option key={size.id} value={size.id}>
+                      {size.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            {/* Màu sắc */}
+            <Col span={8}>
+              <Form.Item label="Màu sắc" name="color">
+                <Select placeholder="Chọn màu sắc" allowClear onChange={(value) => setDataFilter({ ...dataFilter, color: value })}>
+                  {listMauSac.map((color) => (
+                    <Option key={color.id} value={color.id}>
+                      {color.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            {/* Chất liệu */}
+            <Col span={8}>
+              <Form.Item label="Chất liệu" name="material">
+                <Select placeholder="Chọn chất liệu" allowClear onChange={(value) => setDataFilter({ ...dataFilter, material: value })}>
+                  {listChatLieu.map((material) => (
+                    <Option key={material.id} value={material.id}>
+                      {material.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col span={8}>
+              <Form.Item label="Thương hiệu" name="brand">
+                <Select placeholder="Chọn thương hiệu" allowClear onChange={(value) => setDataFilter({ ...dataFilter, brand: value })}>
+                  {listThuongHieu.map((brand) => (
+                    <Option key={brand.id} value={brand.id}>
+                      {brand.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="Tay áo" name="sleeve">
+                <Select placeholder="Chọn tay áo" allowClear onChange={(value) => setDataFilter({ ...dataFilter, sleeve: value })}>
+                  {listTayAo.map((sleeve) => (
+                    <Option key={sleeve.id} value={sleeve.id}>
+                      {sleeve.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="Cổ áo" name="collar">
+                <Select placeholder="Chọn cổ áo" allowClear onChange={(value) => setDataFilter({ ...dataFilter, collar: value })}>
+                  {listCoAo.map((collar) => (
+                    <Option key={collar.id} value={collar.id}>
+                      {collar.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
+
         <Table columns={columns} dataSource={productList} pagination={false} />
         <Pagination
           current={currentPage}
@@ -380,6 +388,8 @@ function ShowProductModal({ idHoaDon, onClose }) {
           style={{ marginTop: 16, textAlign: 'right' }}
         />
       </Modal>
+
+      {/* Modal của chọn số lượng sản phẩm  */}
       <Modal
         title="Chi tiết sản phẩm"
         visible={isSelectModalOpen}
@@ -388,21 +398,62 @@ function ShowProductModal({ idHoaDon, onClose }) {
         okText="Xác nhận"
         cancelText="Hủy"
       >
-        {selectedProduct && (
+        {selectedProduct ? (
           <>
             <Row gutter={16}>
               <Col span={8}>
-                <img src={selectedProduct?.images.split(',')[0]} alt="" width="100%" />
+                <img src={selectedProduct.images.split(',')[0]} alt="" width="100%" />
               </Col>
               <Col span={16}>
-                <h3>{selectedProduct?.ten}</h3>
+                <h3>{selectedProduct.name}</h3>
                 <p>
-                  Giá: <span className="text-danger"><FormatCurrency value={selectedProduct?.newPrice} /></span> {selectedProduct?.newPrice !== selectedProduct?.oldPrice && <span className="text-decoration-line-through"><FormatCurrency value={selectedProduct?.oldPrice} /></span>}
+                  Giá:
+                  {selectedProduct.discountPercentage ? (
+                    <>
+                      <span className="text-danger ms-2">
+                        <FormatCurrency value={selectedProduct.newPrice} />
+                      </span>
+                      {selectedProduct.newPrice !== selectedProduct.price && (
+                        <span className="text-decoration-line-through ms-2">
+                          <FormatCurrency value={selectedProduct.oldPrice} />
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="ms-2">
+                      <FormatCurrency value={selectedProduct.price} />
+                    </span>
+                  )}
                 </p>
-                <InputNumber min={1} value={quantity} onChange={setQuantity} />
+
+                <Form.Item label="Số lượng">
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+
+
+                    <InputNumber
+                      className="text-center"
+                      value={quantity}
+                      style={{ width: '64px', textAlign: 'center' }}
+                      min={1}
+                      inputMode="numeric" // Giới hạn việc nhập số
+                      onChange={(value) => {
+                        if (value === '' || !isNaN(value)) {
+                          setQuantity(value); // Cập nhật khi nhập đúng số
+                        } else {
+                          message.error('Vui lòng chỉ nhập số và phải lớn hơn hoặc bằng 1!');
+                        }
+                      }
+                      }
+                    />
+
+                  </div>
+                </Form.Item>
+
               </Col>
             </Row>
           </>
+        ) : (
+          <p>Không có thông tin sản phẩm.</p>
         )}
       </Modal>
     </>

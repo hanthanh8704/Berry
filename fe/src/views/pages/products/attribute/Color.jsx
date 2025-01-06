@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Input, Modal, Row, Table, Tooltip, Form,Tag } from "antd";
+import { Button, Col, Input, Modal, Row, Table, Tooltip, Form } from "antd";
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { IconEdit } from "@tabler/icons-react";
 import moment from "moment";
@@ -23,10 +23,15 @@ function Color() {
         loadData(currentPage, pageSize, searchValue);
     }, [currentPage, pageSize, searchValue]);
 
-    const loadData = async (page, size, search) => {
+    const loadData = async (page, size, searchValue) => {
         try {
             const response = await request.get("/color", {
-                params: { name: search, page, sizePage: size },
+                params: {
+                    ma: searchValue ? `%${searchValue.replace(/\s+/g, '%')}%` : null,
+                    name: searchValue ? `%${searchValue.replace(/\s+/g, '%')}%` : null,
+                    page,
+                    sizePage: size
+                },
             });
             setColorList(response.data);
             setTotalPages(response.totalPages);
@@ -70,7 +75,7 @@ function Color() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = colorList.some(color => color.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = colorList.some(color => color.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên màu sắc đã tồn tại!");
                         return;
@@ -100,7 +105,7 @@ function Color() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = colorList.some(color => color.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = colorList.some(color => color.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên màu sắc đã tồn tại!");
                         return;
@@ -134,7 +139,7 @@ function Color() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten,
+            name: record.name,
         });
     };
 
@@ -146,12 +151,13 @@ function Color() {
     return (
         <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold m-2 mt-2">Danh sách màu sắc</h6>
+            <h2 className="fw-bold mb-3 text-center">QUẢN LÝ MÀU SẮC</h2>
             <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Màu sắc</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        value={searchValue}
                         placeholder="Tìm kiếm màu sắc theo tên..."
                     />
                 </Col>
@@ -180,32 +186,33 @@ function Color() {
                     },
                     {
                         title: "Tên Màu Sắc",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
+                        render: (status) => (
+                            <span
+                                style={{
+                                    color: status ? '#52c41a' : '#ff4d4f',
+                                    fontWeight: '500',
+                                    padding: '4px 8px',
+                                    backgroundColor: status ? '#f6ffed' : '#fff1f0',
+                                    borderRadius: '4px'
+                                }}
                             >
-                              {text}
-                            </Tag>
-                        )
+                                {status ? "Đang hoạt động" : "Ngừng hoạt động"}
+                            </span>
+                        ),
                     },
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -254,7 +261,7 @@ function Color() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Màu sắc"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên màu sắc!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -287,7 +294,7 @@ function Color() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Màu sắc"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên màu sắc!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },

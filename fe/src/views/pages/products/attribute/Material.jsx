@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, Table,Tag, Tooltip } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Table, Tooltip } from "antd";
 import { IconEdit } from "@tabler/icons-react";
 import { EditOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
@@ -25,10 +25,13 @@ function Material() {
         loadData(currentPage, pageSize, searchValue, statusMaterial);
     }, [currentPage, pageSize, searchValue, statusMaterial]);
 
-    const loadData = async (page, size, search, status) => {
+    const loadData = async (page, size, searchValue, status) => {
         try {
             const response = await request.get("/material", {
-                params: { name: search, page, sizePage: size, status },
+                params: {
+                    name: searchValue ? `%${searchValue.replace(/\s+/g, '%')}%` : null,
+                    page, sizePage: size, status
+                },
             });
             setMaterialList(response.data);
             setTotalPages(response.totalPages);
@@ -72,7 +75,7 @@ function Material() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = materialList.some(material => material.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = materialList.some(material => material.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên chất liệu đã tồn tại!");
                         return;
@@ -102,7 +105,7 @@ function Material() {
             cancelText: "Hủy",
             async onOk() {
                 try {
-                    const duplicate = materialList.some(material => material.ten.toLowerCase() === values.ten.toLowerCase());
+                    const duplicate = materialList.some(material => material.name.toLowerCase() === values.name.toLowerCase());
                     if (duplicate) {
                         toast.error("Tên chất liệu đã tồn tại!");
                         return;
@@ -137,7 +140,7 @@ function Material() {
         setItem(record);
         setIsModalUpdateOpen(true);
         formUpdate.setFieldsValue({
-            ten: record.ten,
+            name: record.name,
 
         });
     };
@@ -151,12 +154,13 @@ function Material() {
     return (
         <div className="bg-white rounded-3 p-3">
             <ToastContainer />
-            <h6 className="fw-semibold m-3">Danh sách chất liệu</h6>
+            <h2 className="fw-bold mb-3 text-center">QUẢN LÝ CHẤT LIỆU</h2>
             <Row gutter={10} className="m-2">
                 <Col span={13}>
                     <label className="mb-1">Chất liệu</label>
                     <Input
                         onChange={(event) => setSearchValue(event.target.value)}
+                        value={searchValue}
                         placeholder="Tìm kiếm chất liệu theo tên..."
                     />
                 </Col>
@@ -184,32 +188,34 @@ function Material() {
                     },
                     {
                         title: "Tên Chất Liệu",
-                        dataIndex: "ten",
-                        key: "ten",
+                        dataIndex: "name",
+                        key: "name",
                         className: "text-center",
                     },
                     {
                         title: "Trạng Thái",
-                        dataIndex: "trangThai",
-                        key: "trangThai",
+                        dataIndex: "status",
+                        key: "status",
                         className: "text-center",
-                        render: (text) => (
-                            <Tag
-                              style={{ width: '120px' }}
-                              className="text-center"
-                              color={
-                                text === 'Đang hoạt động' ? '#2ed573' :
-                                text === 'Ngừng hoạt động' ? '#f50' : '#636e72'
-                              }
+                        render: (status) => (
+                            <span
+                                style={{
+                                    color: status ? '#52c41a' : '#ff4d4f',
+                                    fontWeight: '500',
+                                    padding: '4px 8px',
+                                    backgroundColor: status ? '#f6ffed' : '#fff1f0',
+                                    borderRadius: '4px'
+                                }}
                             >
-                              {text}
-                            </Tag>
-                          )
+                                {status ? "Đang hoạt động" : "Ngừng hoạt động"}
+                            </span>
+                        ),
                     },
+
                     {
                         title: "Ngày tạo",
-                        dataIndex: "ngayTao",
-                        key: "ngayTao",
+                        dataIndex: "createdAt",
+                        key: "createdAt",
                         className: "text-center",
                         render: (text) => moment(text).format("DD-MM-YYYY"),
                     },
@@ -263,7 +269,7 @@ function Material() {
                 <Form layout="vertical" form={formAdd} onFinish={handleAdd}>
                     <Form.Item
                         label="Chất liệu"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên chất liệu!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },
@@ -300,7 +306,7 @@ function Material() {
                 <Form layout="vertical" form={formUpdate} onFinish={handleUpdate}>
                     <Form.Item
                         label="Chất liệu"
-                        name="ten"
+                        name="name"
                         rules={[
                             { required: true, message: "Vui lòng nhập tên chất liệu!" },
                             { whitespace: true, message: "Không được chỉ là khoảng trắng!" },

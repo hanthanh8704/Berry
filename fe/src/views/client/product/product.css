@@ -1,0 +1,41 @@
+
+.image-container {
+  position: relative;
+
+}
+
+.object-fit-contain {
+ 
+  object-fit: contain;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: red;
+  /* Nền đỏ */
+  color: white;
+  /* Chữ trắng */
+  padding: 2px 5px;
+  border-radius: 5px;
+  /* Bo góc */
+  font-weight: bold;
+  font-size: 12px;
+  /* Kích thước chữ */
+  margin: 0;
+  /* Đảm bảo không có margin mặc định */
+  z-index: 1;
+  /* Đảm bảo thẻ này luôn hiển thị trên ảnh */
+}
+
+/* Hiệu ứng khi hover vào ảnh bên trong Card */
+.card-image {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-image:hover {
+  transform: scale(1.05); /* Phóng to ảnh nhẹ */
+  box-shadow: 0 4px 8px rgba(106, 13, 173, 0.3); /* Đổ bóng mềm */
+  border-radius: 8px; /* Đảm bảo góc ảnh vẫn bo tròn */
+}

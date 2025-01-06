@@ -1,0 +1,74 @@
+/* Header.css */
+
+/* Tổng thể AppBar */
+.app-bar {
+    background-color: #f4f2ee; /* Nền trắng */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    height: 60px; /* Chiều cao Header */
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+/* Logo container */
+.logo-container img {
+    height: 40px; /* Chiều cao logo */
+    object-fit: contain; /* Giữ tỉ lệ */
+}
+
+/* Text hiển thị "Xin chào" khi người dùng đã đăng nhập */
+.user-info {
+    display: flex;
+    align-items: center; /* Căn chỉnh dọc */
+    justify-content: flex-end; /* Căn chỉnh sang bên phải */
+    margin-left: auto; /* Đẩy phần tử sang bên phải */
+}
+
+/* Hiển thị thông tin "Xin chào" */
+.user-info p {
+    margin: 0;
+    color: #000000; /* Chữ màu đen */
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* Menu đăng nhập/đăng ký */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa các mục */
+}
+
+.nav-link {
+    text-decoration: none; /* Xóa gạch chân */
+    color: #000000; /* Màu chữ đen */
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease-in-out; /* Hiệu ứng hover */
+}
+
+.nav-link:hover {
+    color: #6A0DAD; /* Màu tím khi hover */
+}
+
+/* Dấu gạch đứng phân cách */
+.nav-divider {
+    color: #CCCCCC; /* Màu xám nhạt */
+    font-size: 16px;
+}
+
+/* Responsive: điều chỉnh layout trên mobile */
+@media (max-width: 768px) {
+    .app-bar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        margin-top: 10px;
+        gap: 10px;
+    }
+}
+

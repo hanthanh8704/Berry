@@ -16,7 +16,7 @@ function Loading() {
       </div>
     </div>
     </div>
-    // <img width={"100%"} src="https://res.cloudinary.com/beeshoes/image/upload/v1693305212/common/nyan-cat_e6me4f.gif" alt="" />
+   
   )
 }
 

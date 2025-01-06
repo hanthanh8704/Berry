@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, Col, Input, Radio, Row, Select, Switch, Table, Tooltip, Card } from "antd";
+import { Button, Col, Input, Radio, Row, Select, Table, Tooltip, Card } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { EditOutlined } from '@ant-design/icons';
-import { IconEdit, IconTrash, IconPhoto } from "@tabler/icons-react";
 import { PlusOutlined } from '@ant-design/icons';
 import * as request from "views/utilities/httpRequest";
-import { HelpOutline } from "@mui/icons-material";
+import { IconEdit } from "@tabler/icons-react";
 
 function Product() {
     const [productList, setProductList] = useState([]);
@@ -20,68 +18,82 @@ function Product() {
     const [statusProduct, setStatusProduct] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const [searchCate, setSearchCate] = useState('');
+    const [loading, setLoading] = useState(false);
 
 
 
+
+    // Lấy danh sách danh mục
     useEffect(() => {
-        request.get("/category", { params: { ten: searchCate, status: false, sizePage: 1_000_000 } })
-            .then((response) => {
+        const fetchCategories = async () => {
+            try {
+                const response = await request.get("/category", {
+                    params: {
+                        name: searchCate ? `%${searchCate}%` : null,
+                        sizePage: 1000000
+                    }
+                });
                 setListCate(response.data);
-            }).catch((error) => { console.log(error); });
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                toast.error("Không thể tải danh sách danh mục");
+            }
+        };
+        fetchCategories();
     }, [searchCate]);
+
 
     useEffect(() => {
         loadData(currentPage, pageSize, searchValue, selectedCate, statusProduct);
     }, [currentPage, pageSize, searchValue, selectedCate, statusProduct]);
 
-
-    //Hàm Load dữ liệu
-    const loadData = async (page, size, searchValue, danhMuc, status) => {
+    const loadData = async (page, size, searchValue, category, status) => {
+        setLoading(true);
         try {
             const response = await request.get("/shirt", {
                 params: {
-                    ma: searchValue ? `%${searchValue}%` : null,
-                    ten: searchValue ? `%${searchValue}%` : null,
+                    code: searchValue ? `%${searchValue.replace(/\s+/g, '%')}%` : null,
+                    name: searchValue ? `%${searchValue.replace(/\s+/g, '%')}%` : null,
                     page,
                     sizePage: size,
-                    danhMuc: danhMuc !== 'All' ? danhMuc : null,
+                    category: category,
                     status,
                 },
             });
-            setProductList(response.data);
+
+            if (status === false && response.data.length > 0) {
+                setProductList(response.data);
+            } else if (status === false && response.data.length === 0) {
+                setProductList([]);
+            } else {
+                setProductList(response.data);
+            }
+
             setTotalPages(response.totalPages);
         } catch (error) {
             console.error("Error fetching data:", error);
+            toast.error("Có lỗi xảy ra khi tải dữ liệu");
+        } finally {
+            setLoading(false);
         }
     };
 
 
 
-    //Hàm tìm kiếm
     const handleSearch = (event) => {
         const value = event.target.value;
         setSearchValue(value);
         setCurrentPage(1);
-        loadData(1, pageSize, value, selectedCate, statusProduct);
     };
-
 
     const handleCategoryChange = (value) => {
-        setSelectedCate(value);
+        setSelectedCate(value === 'All' ? null : value);
         setCurrentPage(1);
-        loadData(1, pageSize, searchValue, value, statusProduct);
     };
 
-    const handleChangeStatus = async (id) => {
-        try {
-            await request.remove(`/shirt/${id}`);
-            toast.success("Đã cập nhật trạng thái!", {
-                autoClose: 3000, // Close after 3 seconds
-            });
-            loadData(currentPage, pageSize, searchValue, selectedCate, statusProduct);
-        } catch (error) {
-            console.log(error);
-        }
+    const handleStatusChange = (event) => {
+        setStatusProduct(event.target.value);
+        setCurrentPage(1);
     };
 
     const columns = [
@@ -95,89 +107,133 @@ function Product() {
         },
         {
             title: 'Mã',
-            dataIndex: 'ma',
-            key: 'ma',
+            dataIndex: 'code',
+            key: 'code',
+            align: 'center',
+            render: (text) => <span >{text}</span>
         },
         {
             title: 'Tên',
-            dataIndex: 'ten',
-            key: 'ten',
+            dataIndex: 'name',
+            key: 'name',
+            align: 'center',
+            render: (text) => <span>{text}</span>
         },
         {
             title: 'Số lượng',
-            dataIndex: 'soLuong',
-            key: 'soLuong',
-            render: (x) => x == null ? 0 : x,
+            dataIndex: 'quantity',
+            key: 'quantity',
+
+            render: (quantity) => (
+                <span>
+                    {quantity ?? 0}
+                </span>
+            ),
             align: 'center',
         },
         {
             title: 'Danh mục',
-            dataIndex: 'danhMuc',
-            key: 'danhMuc',
+            dataIndex: 'category',
+            key: 'category',
+            align: 'center',
+            // render: (category) => category?.name || "Chưa có", // Hiển thị tên danh mục
         },
         {
-
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            render: (x, record) => (
-                <Tooltip title={x ? "Ngừng bán" : "Đang bán"} color="#5e35b1">
-                    <Switch
-                        className="custom-switch"
-                        defaultChecked={!x}
-                        onChange={() => handleChangeStatus(record.id)}
-                    />
-                </Tooltip>
+            render: (status) => (
+                <span style={{
+                    color: status ? '#52c41a' : '#ff4d4f',
+                    fontWeight: '500',
+                    padding: '4px 8px',
+                    backgroundColor: status ? '#f6ffed' : '#fff1f0',
+                    borderRadius: '4px'
+                }}>
+                    {status ? "Đang bán" : "Ngừng bán"}
+                </span>
             ),
             align: 'center',
         },
+
         {
             title: 'Hành động',
             dataIndex: 'id',
             key: 'action',
-            render: (x) => (
+            render: (id) => (
                 <Tooltip title="Chỉnh sửa">
-                    <Link style={{ color: '#5e35b1' }} to={`/products/${x}`}>
-                        <i className="fas fa-edit "><IconEdit /></i>
+                    <Link
+                        style={{
+                            color: '#5e35b1',
+                            fontSize: '18px'
+                        }}
+                        to={`/products/${id}`}
+                    >
+                        <IconEdit />
                     </Link>
                 </Tooltip>
             ),
             align: 'center',
+            width: 150,
         },
     ];
 
     return (
         <div style={{ background: '#fff', padding: '20px', borderRadius: '10px' }}>
-            <ToastContainer autoClose={3000} /> {/* Set autoClose property */}
-            <Card className="mb-1 p-2">
-                <h6 className="fw-bold mt-3">Danh sách sản phẩm</h6>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+
+            <Card className="mb-3">
+                <h2 className="fw-bold mb-3 text-center">QUẢN LÝ SẢN PHẨM</h2>
                 <Row gutter={16} className="mb-3">
                     <Col span={20}>
-                        <label className="mb-2">Tên sản phẩm</label>
-                        <Input onChange={(e) => setSearchValue(e.target.value)} value={searchValue} placeholder="Tìm kiếm sản phẩm theo tên..." />
+                        <label className="mb-2 fw-medium">Tên sản phẩm</label>
+                        <Input
+                            onChange={handleSearch}
+                            value={searchValue}
+                            placeholder="Tìm kiếm sản phẩm theo tên..."
+                            allowClear
+                        />
                     </Col>
                     <Col span={4} className="d-flex align-items-end justify-content-end">
                         <Link to={"/products/add-shirt"}>
-                            <Button type="primary" className=" w-100"
-                                style={{ backgroundColor: '#5e35b1' }}>
-                                <PlusOutlined /> Thêm sản phẩm
+                            <Button
+                                type="primary"
+                                className="w-100"
+                                style={{ backgroundColor: '#5e35b1' }}
+                                icon={<PlusOutlined />}
+                            >
+                                Thêm sản phẩm
                             </Button>
                         </Link>
                     </Col>
                 </Row>
             </Card>
-            <Card className="mb-2 p-1">
+
+            <Card className="mb-3">
                 <Row gutter={16}>
                     <Col span={8}>
-                        <div className="mb-2">Trạng thái</div>
-                        <Radio.Group defaultValue={null} onChange={(event) => setStatusProduct(event.target.value)}>
+                        <div className="mb-2 fw-medium">Trạng thái</div>
+                        <Radio.Group
+                            value={statusProduct}
+                            onChange={handleStatusChange}
+                        >
                             <Radio value={null}>Tất cả</Radio>
-                            <Radio value={false}>Đang bán</Radio>
-                            <Radio value={true}>Ngừng bán</Radio>
+                            <Radio value={true}>Đang bán</Radio>
+                            <Radio value={false}>Ngừng bán</Radio>
                         </Radio.Group>
                     </Col>
                     <Col span={8}>
-                        <label className="mb-2">Danh mục</label>
+                        <label className="mb-2 fw-medium">Danh mục</label>
                         <Select
                             showSearch
                             onChange={handleCategoryChange}
@@ -186,22 +242,26 @@ function Product() {
                             style={{ width: "100%" }}
                             onSearch={setSearchCate}
                             value={selectedCate}
+                            allowClear
                         >
-                            <Select.Option value="All">Chọn danh mục</Select.Option>
+                            <Select.Option value="All">Tất cả danh mục</Select.Option>
                             {listCate.map((item) => (
                                 <Select.Option key={item.id} value={item.id}>
-                                    {item.ten}
+                                    {item.name}
                                 </Select.Option>
                             ))}
                         </Select>
                     </Col>
                 </Row>
             </Card>
+
             <Card>
                 <Table
                     dataSource={productList}
                     columns={columns}
                     className="custom-table"
+                    rowKey="id"
+                    loading={loading}
                     pagination={{
                         showSizeChanger: true,
                         current: currentPage,
@@ -213,6 +273,7 @@ function Product() {
                             setCurrentPage(page);
                             setPageSize(pageSize);
                         },
+                        showTotal: (total) => `Tổng ${total} sản phẩm`,
                     }}
                 />
             </Card>

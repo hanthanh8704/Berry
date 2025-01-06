@@ -47,6 +47,10 @@ import NavigationScroll from 'layout/NavigationScroll';
 // Import router từ file routes
 import { adminRouter, clientRouter } from 'routes';
 
+
+// routing
+import router from 'routes';
+
 // ==============================|| APP ||============================== //
 
 const App = () => {
@@ -62,6 +66,9 @@ const App = () => {
         <CssBaseline />
         <NavigationScroll>
           <RouterProvider router={selectedRouter} /> {/* Sử dụng selectedRouter */}
+        </NavigationScroll>
+        <NavigationScroll>
+          <RouterProvider router={router} />
         </NavigationScroll>
       </ThemeProvider>
     </StyledEngineProvider>
